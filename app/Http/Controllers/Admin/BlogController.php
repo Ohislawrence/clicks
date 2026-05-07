@@ -70,6 +70,12 @@ class BlogController extends Controller
         if ($request->hasFile('featured_image')) {
             $path = $request->file('featured_image')->store('blog', 'public');
             $validated['featured_image'] = $path;
+
+            // Dispatch image processing job for optimization
+            ProcessImageJob::dispatch($path, 'public', [
+                'thumbnail' => ['width' => 300, 'height' => 200],
+                'medium' => ['width' => 800, 'height' => 533],
+            ], 85);
         }
 
         // Set published_at if publishing
@@ -130,6 +136,12 @@ class BlogController extends Controller
             }
             $path = $request->file('featured_image')->store('blog', 'public');
             $validated['featured_image'] = $path;
+
+            // Dispatch image processing job for optimization
+            ProcessImageJob::dispatch($path, 'public', [
+                'thumbnail' => ['width' => 300, 'height' => 200],
+                'medium' => ['width' => 800, 'height' => 533],
+            ], 85);
         }
 
         // Set published_at if publishing for the first time

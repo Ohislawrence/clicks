@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Advertiser;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessBulkConversionActionJob;
 use App\Models\Conversion;
 use App\Models\Offer;
 use App\Models\User;
@@ -133,25 +134,23 @@ class ConversionController extends Controller
         $user = $request->user();
         $offerIds = Offer::where('advertiser_id', $user->id)->pluck('id');
 
+        // Verify conversions belong to this advertiser and are pending
         $conversions = Conversion::whereIn('id', $validated['conversion_ids'])
             ->whereIn('offer_id', $offerIds)
             ->where('status', 'pending')
             ->get();
 
-        DB::transaction(function () use ($conversions) {
-            foreach ($conversions as $conversion) {
-                $conversion->update(['status' => 'approved']);
-                $conversion->commission?->update(['status' => 'approved']);
+        if ($conversions->isEmpty()) {
+            return back()->with('error', 'No valid pending conversions found.');
+        }
 
-                $affiliate = $conversion->affiliate;
-                $affiliate->update([
-                    'pending_balance' => DB::raw('pending_balance - ' . $conversion->commission_amount),
-                    'balance' => DB::raw('balance + ' . $conversion->commission_amount),
-                ]);
-            }
-        });
+        // Dispatch job to process in background
+        ProcessBulkConversionActionJob::dispatch(
+            $conversions->pluck('id')->toArray(),
+            'approve'
+        );
 
-        return back()->with('success', count($conversions) . ' conversions approved successfully!');
+        return back()->with('success', count($conversions) . ' conversions are being approved. You\'ll be notified when complete.');
     }
 
     public function create(Request $request)

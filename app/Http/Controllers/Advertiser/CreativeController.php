@@ -79,7 +79,7 @@ class CreativeController extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $path = $file->store('creatives', 'public');
-            
+
             $creativesData['file_path'] = $path;
             $creativesData['size'] = $this->formatFileSize($file->getSize());
             $creativesData['format'] = strtoupper($file->getClientOriginalExtension());
@@ -94,6 +94,12 @@ class CreativeController extends Controller
                         $creativesData['height'] = $imageInfo[1];
                     }
                 }
+
+                // Dispatch image processing job for optimization
+                ProcessImageJob::dispatch($path, 'public', [
+                    'thumbnail' => ['width' => 150, 'height' => 150],
+                    'preview' => ['width' => 400, 'height' => 300],
+                ], 85);
             }
         }
 
@@ -131,7 +137,7 @@ class CreativeController extends Controller
 
             $file = $request->file('file');
             $path = $file->store('creatives', 'public');
-            
+
             $updateData['file_path'] = $path;
             $updateData['size'] = $this->formatFileSize($file->getSize());
             $updateData['format'] = strtoupper($file->getClientOriginalExtension());
@@ -146,6 +152,12 @@ class CreativeController extends Controller
                         $updateData['height'] = $imageInfo[1];
                     }
                 }
+
+                // Dispatch image processing job for optimization
+                ProcessImageJob::dispatch($path, 'public', [
+                    'thumbnail' => ['width' => 150, 'height' => 150],
+                    'preview' => ['width' => 400, 'height' => 300],
+                ], 85);
             }
         }
 
