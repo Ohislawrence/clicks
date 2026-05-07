@@ -23,8 +23,8 @@ class DatabaseSeeder extends Seeder
 
         // Create Admin User
         $admin = User::factory()->create([
-            'name' => 'Admin User',
-            'email' => 'admin@clicksintel.com',
+            'name' => 'ClcksIntel Admin',
+            'email' => 'lord@clicksintel.com',
             'is_verified' => true,
             'is_active' => true,
         ]);

@@ -6,6 +6,9 @@
 
         <title inertia><?php echo e(config('app.name', 'ClicksIntel')); ?></title>
 
+        <!-- Favicon -->
+        <link rel="icon" type="image/png" href="<?php echo e(asset('logo/favico-black.png')); ?>">
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />

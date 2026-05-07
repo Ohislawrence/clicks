@@ -1,12 +1,8 @@
 <script setup>
 import { ref } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import AuthenticationCard from '@/Components/AuthenticationCard.vue';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
+import AuthLayout from '@/Layouts/AuthLayout.vue';
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
 
 const form = useForm({
     password: '',
@@ -28,36 +24,42 @@ const submit = () => {
 <template>
     <Head title="Secure Area" />
 
-    <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
-        </template>
-
-        <div class="mb-4 text-sm text-gray-600">
+    <AuthLayout title="Confirm Password">
+        <div class="mb-6 text-sm text-neutral-400">
             This is a secure area of the application. Please confirm your password before continuing.
         </div>
 
-        <form @submit.prevent="submit">
+        <form @submit.prevent="submit" class="space-y-6">
             <div>
-                <InputLabel for="password" value="Password" />
-                <TextInput
-                    id="password"
-                    ref="passwordInput"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="current-password"
+                <label for="password" class="block text-sm font-medium text-neutral-300">
+                    Password
+                </label>
+                <div class="mt-2">
+                    <input
+                        id="password"
+                        ref="passwordInput"
+                        v-model="form.password"
+                        type="password"
+                        required
+                        autocomplete="current-password"
+                        class="block w-full rounded-lg border-0 bg-neutral-800/50 px-4 py-3 text-white shadow-sm ring-1 ring-inset ring-neutral-700 placeholder:text-neutral-500 focus:ring-2 focus:ring-inset focus:ring-emerald-500 sm:text-sm sm:leading-6"
+                        placeholder="••••••••"
                     autofocus
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
+                    />
+                    <InputError class="mt-2" :message="form.errors.password" />
+                </div>
             </div>
 
-            <div class="flex justify-end mt-4">
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Confirm
-                </PrimaryButton>
+            <div>
+                <button
+                    type="submit"
+                    :disabled="form.processing"
+                    class="flex w-full justify-center rounded-lg bg-emerald-500 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                    <span v-if="form.processing">Confirming...</span>
+                    <span v-else>Confirm</span>
+                </button>
             </div>
         </form>
-    </AuthenticationCard>
+    </AuthLayout>
 </template>

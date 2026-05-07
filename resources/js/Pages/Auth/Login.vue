@@ -1,12 +1,8 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import AuthenticationCard from '@/Components/AuthenticationCard.vue';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
+import AuthLayout from '@/Layouts/AuthLayout.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
 
 defineProps({
     canResetPassword: Boolean,
@@ -32,59 +28,79 @@ const submit = () => {
 <template>
     <Head title="Log in" />
 
-    <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
-        </template>
-
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
+    <AuthLayout title="Welcome back">
+        <div v-if="status" class="mb-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-4 py-3 text-sm text-emerald-400">
             {{ status }}
         </div>
 
-        <form @submit.prevent="submit">
+        <form @submit.prevent="submit" class="space-y-6">
             <div>
-                <InputLabel for="email" value="Email" />
-                <TextInput
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-                <TextInput
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="current-password"
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="block mt-4">
-                <label class="flex items-center">
-                    <Checkbox v-model:checked="form.remember" name="remember" />
-                    <span class="ms-2 text-sm text-gray-600">Remember me</span>
+                <label for="email" class="block text-sm font-medium text-neutral-300">
+                    Email address
                 </label>
+                <div class="mt-2">
+                    <input
+                        id="email"
+                        v-model="form.email"
+                        type="email"
+                        required
+                        autofocus
+                        autocomplete="username"
+                        class="block w-full rounded-lg border-0 bg-neutral-800/50 px-4 py-3 text-white shadow-sm ring-1 ring-inset ring-neutral-700 placeholder:text-neutral-500 focus:ring-2 focus:ring-inset focus:ring-emerald-500 sm:text-sm sm:leading-6"
+                        placeholder="you@example.com"
+                    />
+                    <InputError class="mt-2" :message="form.errors.email" />
+                </div>
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <Link v-if="canResetPassword" :href="route('password.request')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Forgot your password?
-                </Link>
+            <div>
+                <label for="password" class="block text-sm font-medium text-neutral-300">
+                    Password
+                </label>
+                <div class="mt-2">
+                    <input
+                        id="password"
+                        v-model="form.password"
+                        type="password"
+                        required
+                        autocomplete="current-password"
+                        class="block w-full rounded-lg border-0 bg-neutral-800/50 px-4 py-3 text-white shadow-sm ring-1 ring-inset ring-neutral-700 placeholder:text-neutral-500 focus:ring-2 focus:ring-inset focus:ring-emerald-500 sm:text-sm sm:leading-6"
+                        placeholder="••••••••"
+                    />
+                    <InputError class="mt-2" :message="form.errors.password" />
+                </div>
+            </div>
 
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Log in
-                </PrimaryButton>
+            <div class="flex items-center justify-between">
+                <label class="flex items-center">
+                    <Checkbox v-model:checked="form.remember" name="remember" class="rounded border-neutral-700 bg-neutral-800/50 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-neutral-900" />
+                    <span class="ms-2 text-sm text-neutral-400">Remember me</span>
+                </label>
+
+                <Link v-if="canResetPassword" :href="route('password.request')" class="text-sm font-medium text-emerald-500 hover:text-emerald-400 transition-colors">
+                    Forgot password?
+                </Link>
+            </div>
+
+            <div>
+                <button
+                    type="submit"
+                    :disabled="form.processing"
+                    class="flex w-full justify-center rounded-lg bg-emerald-500 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                    <span v-if="form.processing">Signing in...</span>
+                    <span v-else>Sign in</span>
+                </button>
             </div>
         </form>
-    </AuthenticationCard>
+
+        <template #footer>
+            <p class="text-center text-sm text-neutral-400">
+                Don't have an account?
+                <Link :href="route('register')" class="font-semibold text-emerald-500 hover:text-emerald-400 transition-colors">
+                    Sign up
+                </Link>
+            </p>
+        </template>
+    </AuthLayout>
 </template>

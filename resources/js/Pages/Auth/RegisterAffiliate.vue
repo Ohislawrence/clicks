@@ -1,13 +1,9 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import AuthenticationCard from '@/Components/AuthenticationCard.vue';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
+import AuthLayout from '@/Layouts/AuthLayout.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
 
 const form = useForm({
     name: '',
@@ -55,123 +51,150 @@ const submit = () => {
 <template>
     <Head title="Register as Affiliate" />
 
-    <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
-        </template>
+    <AuthLayout title="Affiliate Registration">
+        <p class="text-center text-neutral-400 mb-8 text-sm">
+            Join our network and start earning commissions
+        </p>
 
-        <div class="mb-6">
-            <h2 class="text-2xl font-bold text-gray-900">Affiliate Registration</h2>
-            <p class="mt-1 text-sm text-gray-600">Join our network and start earning commissions</p>
-        </div>
-
-        <form @submit.prevent="submit">
+        <form @submit.prevent="submit" class="space-y-6">
             <!-- Basic Information -->
             <div class="space-y-4">
                 <div>
-                    <InputLabel for="name" value="Full Name *" />
-                    <TextInput
-                        id="name"
-                        v-model="form.name"
-                        type="text"
-                        class="mt-1 block w-full"
-                        required
-                        autofocus
-                        autocomplete="name"
-                    />
-                    <InputError class="mt-2" :message="form.errors.name" />
-                </div>
-
-                <div>
-                    <InputLabel for="email" value="Email Address *" />
-                    <TextInput
-                        id="email"
-                        v-model="form.email"
-                        type="email"
-                        class="mt-1 block w-full"
-                        required
-                        autocomplete="username"
-                    />
-                    <InputError class="mt-2" :message="form.errors.email" />
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <InputLabel for="password" value="Password *" />
-                        <TextInput
-                            id="password"
-                            v-model="form.password"
-                            type="password"
-                            class="mt-1 block w-full"
+                    <label for="name" class="block text-sm font-medium text-neutral-300">
+                        Full Name *
+                    </label>
+                    <div class="mt-2">
+                        <input
+                            id="name"
+                            v-model="form.name"
+                            type="text"
                             required
-                            autocomplete="new-password"
+                            autofocus
+                            autocomplete="name"
+                            class="block w-full rounded-lg border-0 bg-neutral-800/50 px-4 py-3 text-white shadow-sm ring-1 ring-inset ring-neutral-700 placeholder:text-neutral-500 focus:ring-2 focus:ring-inset focus:ring-emerald-500 sm:text-sm sm:leading-6"
+                            placeholder="John Doe"
                         />
-                        <InputError class="mt-2" :message="form.errors.password" />
-                    </div>
-
-                    <div>
-                        <InputLabel for="password_confirmation" value="Confirm Password *" />
-                        <TextInput
-                            id="password_confirmation"
-                            v-model="form.password_confirmation"
-                            type="password"
-                            class="mt-1 block w-full"
-                            required
-                            autocomplete="new-password"
-                        />
-                        <InputError class="mt-2" :message="form.errors.password_confirmation" />
+                        <InputError class="mt-2" :message="form.errors.name" />
                     </div>
                 </div>
 
                 <div>
-                    <InputLabel for="phone" value="Phone Number" />
-                    <TextInput
-                        id="phone"
-                        v-model="form.phone"
-                        type="tel"
-                        class="mt-1 block w-full"
-                        placeholder="+1 234 567 8900"
-                    />
-                    <InputError class="mt-2" :message="form.errors.phone" />
+                    <label for="email" class="block text-sm font-medium text-neutral-300">
+                        Email Address *
+                    </label>
+                    <div class="mt-2">
+                        <input
+                            id="email"
+                            v-model="form.email"
+                            type="email"
+                            required
+                            autocomplete="username"
+                            class="block w-full rounded-lg border-0 bg-neutral-800/50 px-4 py-3 text-white shadow-sm ring-1 ring-inset ring-neutral-700 placeholder:text-neutral-500 focus:ring-2 focus:ring-inset focus:ring-emerald-500 sm:text-sm sm:leading-6"
+                            placeholder="you@example.com"
+                        />
+                        <InputError class="mt-2" :message="form.errors.email" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-neutral-300">
+                            Password *
+                        </label>
+                        <div class="mt-2">
+                            <input
+                                id="password"
+                                v-model="form.password"
+                                type="password"
+                                required
+                                autocomplete="new-password"
+                                class="block w-full rounded-lg border-0 bg-neutral-800/50 px-4 py-3 text-white shadow-sm ring-1 ring-inset ring-neutral-700 placeholder:text-neutral-500 focus:ring-2 focus:ring-inset focus:ring-emerald-500 sm:text-sm sm:leading-6"
+                                placeholder="••••••••"
+                            />
+                            <InputError class="mt-2" :message="form.errors.password" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="password_confirmation" class="block text-sm font-medium text-neutral-300">
+                            Confirm Password *
+                        </label>
+                        <div class="mt-2">
+                            <input
+                                id="password_confirmation"
+                                v-model="form.password_confirmation"
+                                type="password"
+                                required
+                                autocomplete="new-password"
+                                class="block w-full rounded-lg border-0 bg-neutral-800/50 px-4 py-3 text-white shadow-sm ring-1 ring-inset ring-neutral-700 placeholder:text-neutral-500 focus:ring-2 focus:ring-inset focus:ring-emerald-500 sm:text-sm sm:leading-6"
+                                placeholder="••••••••"
+                            />
+                            <InputError class="mt-2" :message="form.errors.password_confirmation" />
+                        </div>
+                    </div>
                 </div>
 
                 <div>
-                    <InputLabel for="country" value="Country *" />
-                    <TextInput
-                        id="country"
-                        v-model="form.country"
-                        type="text"
-                        class="mt-1 block w-full"
-                        required
-                        placeholder="e.g., United States"
-                    />
-                    <InputError class="mt-2" :message="form.errors.country" />
+                    <label for="phone" class="block text-sm font-medium text-neutral-300">
+                        Phone Number
+                    </label>
+                    <div class="mt-2">
+                        <input
+                            id="phone"
+                            v-model="form.phone"
+                            type="tel"
+                            class="block w-full rounded-lg border-0 bg-neutral-800/50 px-4 py-3 text-white shadow-sm ring-1 ring-inset ring-neutral-700 placeholder:text-neutral-500 focus:ring-2 focus:ring-inset focus:ring-emerald-500 sm:text-sm sm:leading-6"
+                            placeholder="+1 234 567 8900"
+                        />
+                        <InputError class="mt-2" :message="form.errors.phone" />
+                    </div>
                 </div>
 
                 <div>
-                    <InputLabel for="bio" value="Tell us about yourself" />
-                    <textarea
-                        id="bio"
-                        v-model="form.bio"
-                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm mt-1 block w-full"
-                        rows="3"
-                        placeholder="Brief description of your experience and niche..."
-                    ></textarea>
-                    <InputError class="mt-2" :message="form.errors.bio" />
+                    <label for="country" class="block text-sm font-medium text-neutral-300">
+                        Country *
+                    </label>
+                    <div class="mt-2">
+                        <input
+                            id="country"
+                            v-model="form.country"
+                            type="text"
+                            required
+                            class="block w-full rounded-lg border-0 bg-neutral-800/50 px-4 py-3 text-white shadow-sm ring-1 ring-inset ring-neutral-700 placeholder:text-neutral-500 focus:ring-2 focus:ring-inset focus:ring-emerald-500 sm:text-sm sm:leading-6"
+                            placeholder="e.g., United States"
+                        />
+                        <InputError class="mt-2" :message="form.errors.country" />
+                    </div>
+                </div>
+
+                <div>
+                    <label for="bio" class="block text-sm font-medium text-neutral-300">
+                        Tell us about yourself
+                    </label>
+                    <div class="mt-2">
+                        <textarea
+                            id="bio"
+                            v-model="form.bio"
+                            rows="3"
+                            class="block w-full rounded-lg border-0 bg-neutral-800/50 px-4 py-3 text-white shadow-sm ring-1 ring-inset ring-neutral-700 placeholder:text-neutral-500 focus:ring-2 focus:ring-inset focus:ring-emerald-500 sm:text-sm sm:leading-6 resize-none"
+                            placeholder="Brief description of your experience and niche..."
+                        ></textarea>
+                        <InputError class="mt-2" :message="form.errors.bio" />
+                    </div>
                 </div>
             </div>
 
             <!-- Traffic Sources Section -->
-            <div class="mt-6 pt-6 border-t border-gray-200">
+            <div class="pt-6 border-t border-neutral-700">
                 <div class="flex items-center justify-between mb-4">
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900">Your Traffic Sources *</h3>
-                        <p class="text-sm text-gray-600">Add your social media accounts, websites, or blogs</p>
+                        <h3 class="text-base font-semibold text-white">Your Traffic Sources *</h3>
+                        <p class="text-sm text-neutral-400">Add your social media accounts, websites, or blogs</p>
                     </div>
                     <button
                         type="button"
                         @click="addTrafficSource"
-                        class="inline-flex items-center px-3 py-2 border border-indigo-300 text-sm font-medium rounded-md text-indigo-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        class="inline-flex items-center px-3 py-2 border border-emerald-600 text-sm font-medium rounded-lg text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors"
                     >
                         <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -184,14 +207,14 @@ const submit = () => {
                     <div
                         v-for="(source, index) in form.traffic_sources"
                         :key="index"
-                        class="p-4 bg-gray-50 rounded-lg border border-gray-200 relative"
+                        class="p-4 bg-neutral-800/30 rounded-lg border border-neutral-700 relative"
                     >
                         <!-- Remove Button -->
                         <button
                             v-if="form.traffic_sources.length > 1"
                             type="button"
                             @click="removeTrafficSource(index)"
-                            class="absolute top-2 right-2 text-red-600 hover:text-red-800"
+                            class="absolute top-2 right-2 text-red-400 hover:text-red-300 transition-colors"
                         >
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -200,55 +223,68 @@ const submit = () => {
 
                         <div class="space-y-3">
                             <div>
-                                <InputLabel :for="`source_type_${index}`" value="Platform Type" />
-                                <select
-                                    :id="`source_type_${index}`"
-                                    v-model="source.type"
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm mt-1 block w-full"
-                                >
-                                    <option v-for="type in trafficSourceTypes" :key="type.value" :value="type.value">
-                                        {{ type.icon }} {{ type.label }}
-                                    </option>
-                                </select>
+                                <label :for="`source_type_${index}`" class="block text-sm font-medium text-neutral-300">
+                                    Platform Type
+                                </label>
+                                <div class="mt-2">
+                                    <select
+                                        :id="`source_type_${index}`"
+                                        v-model="source.type"
+                                        class="block w-full rounded-lg border-0 bg-neutral-800/50 px-4 py-3 text-white shadow-sm ring-1 ring-inset ring-neutral-700 focus:ring-2 focus:ring-inset focus:ring-emerald-500 sm:text-sm sm:leading-6"
+                                    >
+                                        <option v-for="type in trafficSourceTypes" :key="type.value" :value="type.value">
+                                            {{ type.icon }} {{ type.label }}
+                                        </option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div>
-                                <InputLabel :for="`source_name_${index}`" :value="source.type === 'website' || source.type === 'blog' ? 'Website/Blog Name' : 'Account Name'" />
-                                <TextInput
-                                    :id="`source_name_${index}`"
-                                    v-model="source.name"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    :placeholder="source.type === 'website' ? 'My Awesome Blog' : '@yourusername'"
-                                />
-                                <InputError class="mt-2" :message="form.errors[`traffic_sources.${index}.name`]" />
+                                <label :for="`source_name_${index}`" class="block text-sm font-medium text-neutral-300">
+                                    {{ source.type === 'website' || source.type === 'blog' ? 'Website/Blog Name' : 'Account Name' }}
+                                </label>
+                                <div class="mt-2">
+                                    <input
+                                        :id="`source_name_${index}`"
+                                        v-model="source.name"
+                                        type="text"
+                                        class="block w-full rounded-lg border-0 bg-neutral-800/50 px-4 py-3 text-white shadow-sm ring-1 ring-inset ring-neutral-700 placeholder:text-neutral-500 focus:ring-2 focus:ring-inset focus:ring-emerald-500 sm:text-sm sm:leading-6"
+                                        :placeholder="source.type === 'website' ? 'My Awesome Blog' : '@yourusername'"
+                                    />
+                                    <InputError class="mt-2" :message="form.errors[`traffic_sources.${index}.name`]" />
+                                </div>
                             </div>
 
                             <div>
-                                <InputLabel :for="`source_url_${index}`" value="URL/Link" />
-                                <TextInput
-                                    :id="`source_url_${index}`"
-                                    v-model="source.url"
-                                    type="url"
-                                    class="mt-1 block w-full"
-                                    :placeholder="source.type === 'instagram' ? 'https://instagram.com/yourusername' : 'https://yourwebsite.com'"
-                                />
-                                <InputError class="mt-2" :message="form.errors[`traffic_sources.${index}.url`]" />
+                                <label :for="`source_url_${index}`" class="block text-sm font-medium text-neutral-300">
+                                    URL/Link
+                                </label>
+                                <div class="mt-2">
+                                    <input
+                                        :id="`source_url_${index}`"
+                                        v-model="source.url"
+                                        type="url"
+                                        class="block w-full rounded-lg border-0 bg-neutral-800/50 px-4 py-3 text-white shadow-sm ring-1 ring-inset ring-neutral-700 placeholder:text-neutral-500 focus:ring-2 focus:ring-inset focus:ring-emerald-500 sm:text-sm sm:leading-6"
+                                        :placeholder="source.type === 'instagram' ? 'https://instagram.com/yourusername' : 'https://yourwebsite.com'"
+                                    />
+                                    <InputError class="mt-2" :message="form.errors[`traffic_sources.${index}.url`]" />
+                                </div>
                             </div>
 
                             <div>
-                                <InputLabel
-                                    :for="`source_followers_${index}`"
-                                    :value="source.type === 'website' || source.type === 'blog' ? 'Monthly Visitors (optional)' : 'Followers/Subscribers (optional)'"
-                                />
-                                <TextInput
-                                    :id="`source_followers_${index}`"
-                                    v-model="source.followers"
-                                    type="number"
-                                    class="mt-1 block w-full"
-                                    placeholder="e.g., 10000"
-                                />
-                                <InputError class="mt-2" :message="form.errors[`traffic_sources.${index}.followers`]" />
+                                <label :for="`source_followers_${index}`" class="block text-sm font-medium text-neutral-300">
+                                    {{ source.type === 'website' || source.type === 'blog' ? 'Monthly Visitors (optional)' : 'Followers/Subscribers (optional)' }}
+                                </label>
+                                <div class="mt-2">
+                                    <input
+                                        :id="`source_followers_${index}`"
+                                        v-model="source.followers"
+                                        type="number"
+                                        class="block w-full rounded-lg border-0 bg-neutral-800/50 px-4 py-3 text-white shadow-sm ring-1 ring-inset ring-neutral-700 placeholder:text-neutral-500 focus:ring-2 focus:ring-inset focus:ring-emerald-500 sm:text-sm sm:leading-6"
+                                        placeholder="e.g., 10000"
+                                    />
+                                    <InputError class="mt-2" :message="form.errors[`traffic_sources.${index}.followers`]" />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -258,34 +294,39 @@ const submit = () => {
             </div>
 
             <!-- Terms and Conditions -->
-            <div v-if="$page.props.jetstream.hasTermsAndPrivacyPolicyFeature" class="mt-6">
-                <InputLabel for="terms">
-                    <div class="flex items-center">
-                        <Checkbox id="terms" v-model:checked="form.terms" name="terms" required />
-
-                        <div class="ms-2">
-                            I agree to the <a target="_blank" :href="route('terms.show')" class="underline text-sm text-indigo-600 hover:text-indigo-900">Terms of Service</a> and <a target="_blank" :href="route('policy.show')" class="underline text-sm text-indigo-600 hover:text-indigo-900">Privacy Policy</a>
-                        </div>
-                    </div>
-                    <InputError class="mt-2" :message="form.errors.terms" />
-                </InputLabel>
+            <div v-if="$page.props.jetstream.hasTermsAndPrivacyPolicyFeature">
+                <label class="flex items-start">
+                    <Checkbox id="terms" v-model:checked="form.terms" name="terms" required class="mt-0.5 rounded border-neutral-700 bg-neutral-800/50 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-neutral-900" />
+                    <span class="ms-2 text-sm text-neutral-400">
+                        I agree to the
+                        <a target="_blank" :href="route('terms.show')" class="text-emerald-500 hover:text-emerald-400 transition-colors">Terms of Service</a>
+                        and
+                        <a target="_blank" :href="route('policy.show')" class="text-emerald-500 hover:text-emerald-400 transition-colors">Privacy Policy</a>
+                    </span>
+                </label>
+                <InputError class="mt-2" :message="form.errors.terms" />
             </div>
 
-            <div class="flex items-center justify-between mt-6">
-                <Link :href="route('register')" class="text-sm text-gray-600 hover:text-gray-900 underline">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <Link :href="route('register')" class="text-sm text-neutral-400 hover:text-white transition-colors">
                     ← Back to account type
                 </Link>
 
-                <div class="flex items-center space-x-4">
-                    <Link :href="route('login')" class="text-sm text-gray-600 hover:text-gray-900 underline">
+                <div class="flex items-center gap-4">
+                    <Link :href="route('login')" class="text-sm text-neutral-400 hover:text-white transition-colors">
                         Already registered?
                     </Link>
 
-                    <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                        Create Affiliate Account
-                    </PrimaryButton>
+                    <button
+                        type="submit"
+                        :disabled="form.processing"
+                        class="inline-flex justify-center rounded-lg bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                        <span v-if="form.processing">Creating account...</span>
+                        <span v-else>Create Affiliate Account</span>
+                    </button>
                 </div>
             </div>
         </form>
-    </AuthenticationCard>
+    </AuthLayout>
 </template>
