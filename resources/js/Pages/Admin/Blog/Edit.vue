@@ -1,6 +1,8 @@
 <template>
-    <AdminLayout>
-        <Head title="Edit Blog Post" />
+    <AppLayout title="Edit Blog Post">
+        <template #header>
+            <h2 class="text-2xl font-bold text-gray-900">Edit Blog Post</h2>
+        </template>
 
         <div class="py-6">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -162,12 +164,12 @@
                 </form>
             </div>
         </div>
-    </AdminLayout>
+    </AppLayout>
 </template>
 
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
+import { Link, useForm } from '@inertiajs/vue3';
+import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps({
     post: Object,

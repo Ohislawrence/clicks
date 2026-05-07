@@ -1,6 +1,8 @@
 <template>
-    <AdminLayout>
-        <Head title="Blog Categories" />
+    <AppLayout title="Blog Categories">
+        <template #header>
+            <h2 class="text-2xl font-bold text-gray-900">Blog Categories</h2>
+        </template>
 
         <div class="py-6">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -141,13 +143,13 @@
                 </div>
             </div>
         </div>
-    </AdminLayout>
+    </AppLayout>
 </template>
 
 <script setup>
 import { ref, reactive } from 'vue';
-import { Head, Link, router } from '@inertiajs/vue3';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
+import { Link, router } from '@inertiajs/vue3';
+import AppLayout from '@/Layouts/AppLayout.vue';
 
 defineProps({
     categories: Object,
