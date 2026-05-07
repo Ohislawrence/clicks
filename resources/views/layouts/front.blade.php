@@ -35,8 +35,8 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
 
-    <!-- Styles -->
-    @vite(['resources/css/app.css'])
+    <!-- Styles & Scripts -->
+    @vite('resources/js/app.js')
     @stack('styles')
 </head>
 <body class="font-sans antialiased bg-neutral-950 text-neutral-100">
