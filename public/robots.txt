@@ -1,0 +1,30 @@
+# robots.txt for DealsIntel
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /affiliate/
+Disallow: /advertiser/
+Disallow: /api/
+Disallow: /dashboard
+Disallow: /login
+Disallow: /register/
+Disallow: /user/
+Disallow: /track/
+
+# Allow specific front pages
+Allow: /
+Allow: /about
+Allow: /features
+Allow: /for-affiliates
+Allow: /for-advertisers
+Allow: /faq
+Allow: /contact
+Allow: /privacy
+Allow: /terms
+
+# Sitemap location
+Sitemap: /sitemap.xml
+
+# Crawl-delay (optional)
+Crawl-delay: 1
+
