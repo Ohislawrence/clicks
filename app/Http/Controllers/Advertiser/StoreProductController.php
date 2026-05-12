@@ -28,6 +28,7 @@ class StoreProductController extends Controller
 
         $products = $store->products()
             ->withTrashed()
+            ->with(['offer:id,store_product_id,name,approval_status,is_active'])
             ->latest()
             ->get();
 

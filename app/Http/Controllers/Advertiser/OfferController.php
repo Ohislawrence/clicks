@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Offer;
 use App\Models\OfferCategory;
 use App\Models\OfferCreative;
+use App\Models\StoreProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -25,20 +26,43 @@ class OfferController extends Controller
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $categories = OfferCategory::where('is_active', true)
             ->orderBy('sort_order')
             ->get();
 
+        $prefill = null;
+
+        if ($request->filled('product_id')) {
+            $product = StoreProduct::with('store')
+                ->whereHas('store', fn ($q) => $q->where('user_id', $request->user()->id))
+                ->findOrFail($request->integer('product_id'));
+
+            $store = $product->store;
+
+            $prefill = [
+                'store_product_id' => $product->id,
+                'name'             => $product->name,
+                'description'      => $product->description ?? '',
+                'preview_url'      => url("/store/{$store->slug}"),
+                'whatsapp_number'  => $store->whatsapp_number ?? '',
+                'product_price'    => (float) $product->price,
+                'product_image'    => isset($product->images[0]) ? $product->images[0] : null,
+                'store_name'       => $store->name,
+            ];
+        }
+
         return Inertia::render('Advertiser/Offers/Create', [
             'categories' => $categories,
+            'prefill'    => $prefill,
         ]);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'store_product_id'          => 'nullable|integer|exists:store_products,id',
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'category_id' => 'required|exists:offer_categories,id',
@@ -60,8 +84,15 @@ class OfferController extends Controller
             'creatives.*.content' => 'nullable|string',
         ]);
 
+        // If linked to a store product, verify the advertiser owns it
+        if (!empty($validated['store_product_id'])) {
+            StoreProduct::whereHas('store', fn ($q) => $q->where('user_id', $request->user()->id))
+                ->findOrFail($validated['store_product_id']);
+        }
+
         $offer = Offer::create([
-            'advertiser_id' => $request->user()->id,
+            'advertiser_id'    => $request->user()->id,
+            'store_product_id' => $validated['store_product_id'] ?? null,
             'name' => $validated['name'],
             'slug' => Str::slug($validated['name']) . '-' . Str::random(6),
             'description' => $validated['description'],

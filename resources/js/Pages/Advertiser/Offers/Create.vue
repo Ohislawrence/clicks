@@ -16,6 +16,23 @@
 
         <div class="py-8">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                <!-- Product prefill banner -->
+                <div v-if="prefill" class="mb-6 flex items-start gap-4 p-4 bg-indigo-50 border border-indigo-200 rounded-xl">
+                    <img v-if="prefill.product_image" :src="prefill.product_image" class="w-16 h-16 rounded-lg object-cover flex-shrink-0 border" alt="Product" />
+                    <div v-else class="w-16 h-16 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-7 h-7 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-indigo-800">Creating offer from store product</p>
+                        <p class="text-sm text-indigo-700 truncate font-medium">{{ prefill.name }}</p>
+                        <p class="text-xs text-indigo-500 mt-0.5">{{ prefill.store_name }} &nbsp;·&nbsp; ₦{{ Number(prefill.product_price).toLocaleString() }}</p>
+                        <p class="text-xs text-indigo-500 mt-1">Key fields have been pre-filled from your product. Review and adjust before submitting.</p>
+                    </div>
+                </div>
+
                 <form @submit.prevent="submitForm" class="space-y-6">
                     <!-- Basic Information -->
                     <div class="bg-white rounded-xl shadow-sm p-6">
@@ -446,7 +463,8 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps({
     offer: Object,
-    categories: Array
+    categories: Array,
+    prefill: Object,
 });
 
 const isEditing = computed(() => !!props.offer);
@@ -459,18 +477,19 @@ const creativeTypes = [
 ];
 
 const form = useForm({
-    name: props.offer?.name || '',
-    description: props.offer?.description || '',
+    store_product_id: props.prefill?.store_product_id || props.offer?.store_product_id || null,
+    name: props.offer?.name || props.prefill?.name || '',
+    description: props.offer?.description || props.prefill?.description || '',
     category_id: props.offer?.category_id || '',
     commission_model: props.offer?.commission_model || 'pps',
     commission_rate: props.offer?.commission_rate || '',
     cookie_duration: props.offer?.cookie_duration || 30,
     access_type: props.offer?.access_type || 'open',
-    preview_url: props.offer?.preview_url || '',
+    preview_url: props.offer?.preview_url || props.prefill?.preview_url || '',
     terms_and_conditions: props.offer?.terms_and_conditions || '',
     postback_url: props.offer?.postback_url || '',
     enable_whatsapp_tracking: props.offer?.enable_whatsapp_tracking || false,
-    whatsapp_number: props.offer?.whatsapp_number || '',
+    whatsapp_number: props.offer?.whatsapp_number || props.prefill?.whatsapp_number || '',
     whatsapp_message_template: props.offer?.whatsapp_message_template || '',
     is_active: props.offer?.is_active ?? true,
     creatives: [],

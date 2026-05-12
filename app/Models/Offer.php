@@ -13,6 +13,7 @@ class Offer extends Model
 
     protected $fillable = [
         'advertiser_id',
+        'store_product_id',
         'category_id',
         'name',
         'slug',
@@ -87,6 +88,11 @@ class Offer extends Model
     public function advertiser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'advertiser_id');
+    }
+
+    public function storeProduct(): BelongsTo
+    {
+        return $this->belongsTo(StoreProduct::class, 'store_product_id');
     }
 
     public function reviewer(): BelongsTo

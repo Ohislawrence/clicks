@@ -36,6 +36,7 @@
                                     <th class="text-left py-3 px-4 text-sm font-medium text-gray-500">Stock</th>
                                     <th class="text-left py-3 px-4 text-sm font-medium text-gray-500">Status</th>
                                     <th class="text-left py-3 px-4 text-sm font-medium text-gray-500">Featured</th>
+                                    <th class="text-left py-3 px-4 text-sm font-medium text-gray-500">Offer</th>
                                     <th class="text-right py-3 px-4 text-sm font-medium text-gray-500">Actions</th>
                                 </tr>
                             </thead>
@@ -94,6 +95,40 @@
                                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                             </svg>
                                         </button>
+                                    </td>
+                                    <!-- Offer status cell -->
+                                    <td class="py-3 px-4">
+                                        <template v-if="product.offer">
+                                            <Link
+                                                :href="route('advertiser.offers.show', product.offer.id)"
+                                                :class="[
+                                                    'inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full font-medium',
+                                                    product.offer.approval_status === 'approved'
+                                                        ? 'bg-green-100 text-green-700'
+                                                        : product.offer.approval_status === 'pending'
+                                                            ? 'bg-yellow-100 text-yellow-700'
+                                                            : 'bg-red-100 text-red-700'
+                                                ]"
+                                                :title="product.offer.name"
+                                            >
+                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                                </svg>
+                                                {{ product.offer.approval_status === 'approved' ? 'Live' : product.offer.approval_status === 'pending' ? 'Pending' : 'Rejected' }}
+                                            </Link>
+                                        </template>
+                                        <template v-else>
+                                            <Link
+                                                :href="route('advertiser.offers.create', { product_id: product.id })"
+                                                class="inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full font-medium bg-gray-100 text-gray-500 hover:bg-indigo-100 hover:text-indigo-700 transition-colors"
+                                                title="Create an affiliate offer for this product"
+                                            >
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                                </svg>
+                                                Add Offer
+                                            </Link>
+                                        </template>
                                     </td>
                                     <td class="py-3 px-4 text-right">
                                         <div class="flex items-center justify-end gap-2">
