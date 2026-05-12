@@ -74,10 +74,8 @@ class ConversionController extends Controller
 
             // Update affiliate balance
             $affiliate = $conversion->affiliate;
-            $affiliate->update([
-                'pending_balance' => DB::raw('pending_balance - ' . $conversion->commission_amount),
-                'balance' => DB::raw('balance + ' . $conversion->commission_amount),
-            ]);
+            $affiliate->decrement('pending_balance', $conversion->commission_amount);
+            $affiliate->increment('balance', $conversion->commission_amount);
 
             // Send notification to affiliate
             $affiliate->notify(new ConversionApprovedNotification($conversion));

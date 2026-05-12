@@ -68,14 +68,34 @@
                     <!-- Content -->
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Content *</label>
-                        <textarea
-                            v-model="form.content"
-                            rows="15"
-                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-mono text-sm"
-                            required
-                        ></textarea>
-                        <p class="text-xs text-gray-500 mt-1">Use HTML tags for formatting</p>
+                        <div class="mb-16">
+                            <QuillEditor
+                                v-model:content="form.content"
+                                theme="snow"
+                                toolbar="full"
+                                contentType="html"
+                                :style="{ height: '400px' }"
+                                class="bg-white"
+                            />
+                        </div>
                         <div v-if="form.errors.content" class="text-red-600 text-sm mt-1">{{ form.errors.content }}</div>
+                    </div>
+
+                    <!-- Featured Image -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Featured Image</label>
+                        <input
+                            type="file"
+                            @change="handleImageChange"
+                            accept="image/*"
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        />
+                        <p class="text-xs text-gray-500 mt-1">Recommended size: 1200x630px (max 2MB). Leave empty to keep existing image.</p>
+                        <div v-if="imagePreview || post.featured_image" class="mt-3">
+                            <p class="text-xs font-medium text-gray-600 mb-2">{{ imagePreview ? 'New Image Preview:' : 'Current Image:' }}</p>
+                            <img :src="imagePreview || `/storage/${post.featured_image}`" alt="Featured Image" class="max-w-sm rounded-lg border border-gray-300" />
+                        </div>
+                        <div v-if="form.errors.featured_image" class="text-red-600 text-sm mt-1">{{ form.errors.featured_image }}</div>
                     </div>
 
                     <!-- SEO Section -->
@@ -168,8 +188,11 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import { Link, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import { QuillEditor } from '@vueup/vue-quill';
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 const props = defineProps({
     post: Object,
@@ -182,6 +205,7 @@ const form = useForm({
     slug: props.post.slug,
     excerpt: props.post.excerpt || '',
     content: props.post.content,
+    featured_image: null,
     meta_title: props.post.meta_title || '',
     meta_description: props.post.meta_description || '',
     meta_keywords: props.post.meta_keywords || '',
@@ -189,7 +213,24 @@ const form = useForm({
     published_at: props.post.published_at ? new Date(props.post.published_at).toISOString().slice(0, 16) : '',
 });
 
+const imagePreview = ref(null);
+
+const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        form.featured_image = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            imagePreview.value = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
 const submit = () => {
-    form.put(route('admin.blog.update', props.post.id));
+    form.post(route('admin.blog.update', props.post.id), {
+        forceFormData: true,
+        _method: 'put',
+    });
 };
 </script>

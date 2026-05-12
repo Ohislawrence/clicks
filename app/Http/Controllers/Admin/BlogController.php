@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessImageJob;
 use App\Models\BlogPost;
 use App\Models\BlogCategory;
 use Illuminate\Http\Request;

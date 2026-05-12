@@ -42,6 +42,10 @@ const alignmentClasses = computed(() => {
         return 'ltr:origin-top-right rtl:origin-top-left end-0';
     }
 
+    if (props.align === 'top') {
+        return 'origin-bottom start-0';
+    }
+
     return 'origin-top';
 });
 </script>
@@ -65,8 +69,8 @@ const alignmentClasses = computed(() => {
         >
             <div
                 v-show="open"
-                class="absolute z-50 mt-2 rounded-md shadow-lg"
-                :class="[widthClass, alignmentClasses]"
+                class="absolute z-50 rounded-md shadow-lg"
+                :class="[widthClass, alignmentClasses, props.align === 'top' ? 'bottom-full mb-2' : 'mt-2']"
                 style="display: none;"
                 @click="open = false"
             >

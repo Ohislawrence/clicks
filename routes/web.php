@@ -50,6 +50,7 @@ Route::get('/about', [FrontPageController::class, 'about'])->name('front.about')
 Route::get('/features', [FrontPageController::class, 'features'])->name('front.features');
 Route::get('/for-affiliates', [FrontPageController::class, 'forAffiliates'])->name('front.for-affiliates');
 Route::get('/for-advertisers', [FrontPageController::class, 'forAdvertisers'])->name('front.for-advertisers');
+Route::get('/store-builder{slash?}', [FrontPageController::class, 'storeBuilder'])->where('slash', '\/')->name('front.store-builder');
 Route::get('/faq', [FrontPageController::class, 'faq'])->name('front.faq');
 Route::get('/privacy', [FrontPageController::class, 'privacy'])->name('front.privacy');
 Route::get('/terms', [FrontPageController::class, 'terms'])->name('front.terms');
@@ -169,6 +170,63 @@ Route::middleware([
 
     // Documentation
     Route::get('/documentation', [AdvertiserDocumentationController::class, 'index'])->name('documentation.index');
+
+    // Store Management
+    Route::get('/stores', [\App\Http\Controllers\Advertiser\StoreController::class, 'index'])->name('store.index');
+    Route::get('/store/setup', [\App\Http\Controllers\Advertiser\StoreController::class, 'setup'])->name('store.setup');
+    Route::post('/store/setup', [\App\Http\Controllers\Advertiser\StoreController::class, 'createStore'])->name('store.create');
+    Route::get('/store/{store}/dashboard', [\App\Http\Controllers\Advertiser\StoreController::class, 'dashboard'])->name('store.dashboard');
+    Route::get('/store/{store}/edit', [\App\Http\Controllers\Advertiser\StoreController::class, 'edit'])->name('store.edit');
+    Route::put('/store/{store}', [\App\Http\Controllers\Advertiser\StoreController::class, 'update'])->name('store.update');
+    Route::get('/store/{store}/preview', [\App\Http\Controllers\Advertiser\StoreController::class, 'preview'])->name('store.preview');
+    Route::post('/store/{store}/publish', [\App\Http\Controllers\Advertiser\StoreController::class, 'publish'])->name('store.publish');
+    Route::post('/store/{store}/unpublish', [\App\Http\Controllers\Advertiser\StoreController::class, 'unpublish'])->name('store.unpublish');
+
+    // Store Products Management
+    Route::get('/store/{store}/products', [\App\Http\Controllers\Advertiser\StoreProductController::class, 'index'])->name('store.products.index');
+    Route::get('/store/{store}/products/create', [\App\Http\Controllers\Advertiser\StoreProductController::class, 'create'])->name('store.products.create');
+    Route::post('/store/{store}/products', [\App\Http\Controllers\Advertiser\StoreProductController::class, 'store'])->name('store.products.store');
+    Route::get('/store/{store}/products/{product}/edit', [\App\Http\Controllers\Advertiser\StoreProductController::class, 'edit'])->name('store.products.edit');
+    Route::put('/store/{store}/products/{product}', [\App\Http\Controllers\Advertiser\StoreProductController::class, 'update'])->name('store.products.update');
+    Route::delete('/store/{store}/products/{product}', [\App\Http\Controllers\Advertiser\StoreProductController::class, 'destroy'])->name('store.products.destroy');
+    Route::patch('/store/{store}/products/{product}/toggle', [\App\Http\Controllers\Advertiser\StoreProductController::class, 'toggle'])->name('store.products.toggle');
+    Route::patch('/store/{store}/products/{product}/featured', [\App\Http\Controllers\Advertiser\StoreProductController::class, 'toggleFeatured'])->name('store.products.featured');
+
+    // Store Categories Management
+    Route::get('/store/{store}/categories', [\App\Http\Controllers\Advertiser\StoreCategoryController::class, 'index'])->name('store.categories.index');
+    Route::get('/store/{store}/categories/create', [\App\Http\Controllers\Advertiser\StoreCategoryController::class, 'create'])->name('store.categories.create');
+    Route::post('/store/{store}/categories', [\App\Http\Controllers\Advertiser\StoreCategoryController::class, 'store'])->name('store.categories.store');
+    Route::get('/store/{store}/categories/{category}/edit', [\App\Http\Controllers\Advertiser\StoreCategoryController::class, 'edit'])->name('store.categories.edit');
+    Route::put('/store/{store}/categories/{category}', [\App\Http\Controllers\Advertiser\StoreCategoryController::class, 'update'])->name('store.categories.update');
+    Route::delete('/store/{store}/categories/{category}', [\App\Http\Controllers\Advertiser\StoreCategoryController::class, 'destroy'])->name('store.categories.destroy');
+
+    // Store Discount Codes Management
+    Route::get('/store/{store}/discount-codes', [\App\Http\Controllers\Advertiser\StoreDiscountCodeController::class, 'index'])->name('store.discount-codes.index');
+    Route::get('/store/{store}/discount-codes/create', [\App\Http\Controllers\Advertiser\StoreDiscountCodeController::class, 'create'])->name('store.discount-codes.create');
+    Route::post('/store/{store}/discount-codes', [\App\Http\Controllers\Advertiser\StoreDiscountCodeController::class, 'store'])->name('store.discount-codes.store');
+    Route::get('/store/{store}/discount-codes/{discountCode}/edit', [\App\Http\Controllers\Advertiser\StoreDiscountCodeController::class, 'edit'])->name('store.discount-codes.edit');
+    Route::put('/store/{store}/discount-codes/{discountCode}', [\App\Http\Controllers\Advertiser\StoreDiscountCodeController::class, 'update'])->name('store.discount-codes.update');
+    Route::delete('/store/{store}/discount-codes/{discountCode}', [\App\Http\Controllers\Advertiser\StoreDiscountCodeController::class, 'destroy'])->name('store.discount-codes.destroy');
+    Route::patch('/store/{store}/discount-codes/{discountCode}/toggle', [\App\Http\Controllers\Advertiser\StoreDiscountCodeController::class, 'toggle'])->name('store.discount-codes.toggle');
+
+    // Store Subscription Management
+    Route::get('/store/{store}/subscription', [\App\Http\Controllers\Advertiser\StoreSubscriptionController::class, 'index'])->name('store.subscription.index');
+    Route::post('/store/{store}/subscription/renew', [\App\Http\Controllers\Advertiser\StoreSubscriptionController::class, 'initiateRenewal'])->name('store.subscription.renew');
+    Route::get('/store/{store}/subscription/verify', [\App\Http\Controllers\Advertiser\StoreSubscriptionController::class, 'verifyPayment'])->name('store.subscription.verify');
+    Route::post('/store/{store}/subscription/change-plan', [\App\Http\Controllers\Advertiser\StoreSubscriptionController::class, 'changePlan'])->name('store.subscription.change-plan');
+
+    // Store Orders Management
+    Route::get('/store/{store}/orders', [\App\Http\Controllers\Advertiser\StoreOrderController::class, 'index'])->name('store.orders.index');
+    Route::get('/store/{store}/orders/{order}', [\App\Http\Controllers\Advertiser\StoreOrderController::class, 'show'])->name('store.orders.show');
+    Route::patch('/store/{store}/orders/{order}/status', [\App\Http\Controllers\Advertiser\StoreOrderController::class, 'updateStatus'])->name('store.orders.update-status');
+    Route::patch('/store/{store}/orders/{order}/mark-paid', [\App\Http\Controllers\Advertiser\StoreOrderController::class, 'markAsPaid'])->name('store.orders.mark-paid');
+
+    // Store Analytics
+    Route::get('/store/{store}/analytics', [\App\Http\Controllers\Advertiser\StoreAnalyticsController::class, 'index'])->name('store.analytics');
+
+    // Store Theme Customizer
+    Route::get('/store/{store}/theme', [\App\Http\Controllers\Advertiser\StoreController::class, 'themeCustomizer'])->name('store.theme');
+    Route::post('/store/{store}/theme', [\App\Http\Controllers\Advertiser\StoreController::class, 'updateTheme'])->name('store.theme.update');
 });
 
 // Admin Routes
@@ -247,4 +305,59 @@ Route::middleware([
     Route::get('/blacklists/export', [\App\Http\Controllers\Admin\BlacklistController::class, 'export'])->name('blacklists.export');
     Route::post('/blacklists/test', [\App\Http\Controllers\Admin\BlacklistController::class, 'test'])->name('blacklists.test');
     Route::get('/blacklists/stats', [\App\Http\Controllers\Admin\BlacklistController::class, 'stats'])->name('blacklists.stats');
+
+    // Store Plans Management
+    Route::get('/store-plans', [\App\Http\Controllers\Admin\StorePlanController::class, 'index'])->name('store-plans.index');
+    Route::get('/store-plans/create', [\App\Http\Controllers\Admin\StorePlanController::class, 'create'])->name('store-plans.create');
+    Route::post('/store-plans', [\App\Http\Controllers\Admin\StorePlanController::class, 'store'])->name('store-plans.store');
+    Route::get('/store-plans/{storePlan}/edit', [\App\Http\Controllers\Admin\StorePlanController::class, 'edit'])->name('store-plans.edit');
+    Route::put('/store-plans/{storePlan}', [\App\Http\Controllers\Admin\StorePlanController::class, 'update'])->name('store-plans.update');
+    Route::delete('/store-plans/{storePlan}', [\App\Http\Controllers\Admin\StorePlanController::class, 'destroy'])->name('store-plans.destroy');
+    Route::patch('/store-plans/{storePlan}/toggle', [\App\Http\Controllers\Admin\StorePlanController::class, 'toggle'])->name('store-plans.toggle');
+
+    // Store Themes Management
+    Route::get('/store-themes', [\App\Http\Controllers\Admin\StoreThemeController::class, 'index'])->name('store-themes.index');
+    Route::get('/store-themes/create', [\App\Http\Controllers\Admin\StoreThemeController::class, 'create'])->name('store-themes.create');
+    Route::post('/store-themes', [\App\Http\Controllers\Admin\StoreThemeController::class, 'store'])->name('store-themes.store');
+    Route::get('/store-themes/{storeTheme}/edit', [\App\Http\Controllers\Admin\StoreThemeController::class, 'edit'])->name('store-themes.edit');
+    Route::put('/store-themes/{storeTheme}', [\App\Http\Controllers\Admin\StoreThemeController::class, 'update'])->name('store-themes.update');
+    Route::delete('/store-themes/{storeTheme}', [\App\Http\Controllers\Admin\StoreThemeController::class, 'destroy'])->name('store-themes.destroy');
+    Route::patch('/store-themes/{storeTheme}/toggle', [\App\Http\Controllers\Admin\StoreThemeController::class, 'toggle'])->name('store-themes.toggle');
+
+    // Store Management (Manage User Stores)
+    Route::get('/stores', [\App\Http\Controllers\Admin\StoreController::class, 'index'])->name('stores.index');
+    Route::get('/stores/{store}', [\App\Http\Controllers\Admin\StoreController::class, 'show'])->name('stores.show');
+    Route::get('/stores/{store}/edit', [\App\Http\Controllers\Admin\StoreController::class, 'edit'])->name('stores.edit');
+    Route::put('/stores/{store}', [\App\Http\Controllers\Admin\StoreController::class, 'update'])->name('stores.update');
+    Route::delete('/stores/{store}', [\App\Http\Controllers\Admin\StoreController::class, 'destroy'])->name('stores.destroy');
+    Route::post('/stores/{store}/toggle-status', [\App\Http\Controllers\Admin\StoreController::class, 'toggleStatus'])->name('stores.toggle-status');
+    Route::post('/stores/{store}/toggle-published', [\App\Http\Controllers\Admin\StoreController::class, 'togglePublished'])->name('stores.toggle-published');
+    Route::post('/stores/{store}/extend-subscription', [\App\Http\Controllers\Admin\StoreController::class, 'extendSubscription'])->name('stores.extend-subscription');
+    Route::post('/stores/{store}/cancel-subscription', [\App\Http\Controllers\Admin\StoreController::class, 'cancelSubscription'])->name('stores.cancel-subscription');
+
+    // Store Analytics (Platform-wide)
+    Route::get('/store-analytics', [\App\Http\Controllers\Admin\StoreAnalyticsController::class, 'index'])->name('store-analytics');
+});
+
+// ============================================================================
+// PUBLIC STOREFRONT ROUTES
+// ============================================================================
+// These routes handle the public-facing storefronts created by advertisers
+// Format: /store/{business-slug}
+
+Route::prefix('store')->name('storefront.')->group(function () {
+    // Store Homepage (single or multi-product based on store type)
+    Route::get('/{slug}', [\App\Http\Controllers\StorefrontController::class, 'show'])->name('show');
+    Route::get('/{slug}/shop', [\App\Http\Controllers\StorefrontController::class, 'shop'])->name('shop');
+    Route::get('/{slug}/about', [\App\Http\Controllers\StorefrontController::class, 'about'])->name('about');
+
+    // Product Detail Page (multi-product stores only)
+    Route::get('/{slug}/product/{productSlug}', [\App\Http\Controllers\StorefrontController::class, 'product'])->name('product');
+
+    // Checkout Process
+    Route::post('/{slug}/checkout', [\App\Http\Controllers\StorefrontController::class, 'checkout'])->name('checkout');
+    Route::get('/{slug}/checkout/verify', [\App\Http\Controllers\StorefrontController::class, 'verifyPayment'])->name('checkout.verify');
+
+    // Order Confirmation
+    Route::get('/{slug}/order/{orderNumber}/thank-you', [\App\Http\Controllers\StorefrontController::class, 'thankYou'])->name('thank-you');
 });

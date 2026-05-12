@@ -179,6 +179,17 @@ class User extends Authenticatable
         return $this->hasMany(Offer::class, 'advertiser_id');
     }
 
+    public function stores()
+    {
+        return $this->hasMany(Store::class);
+    }
+
+    // Get primary/first store (for backward compatibility)
+    public function store()
+    {
+        return $this->hasOne(Store::class)->latestOfMany();
+    }
+
     // Referral Cap Methods
 
     /**

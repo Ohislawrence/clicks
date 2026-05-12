@@ -22,9 +22,11 @@
     },
     "dependencies": {
         "@heroicons/vue": "^2.2.0",
+        "@vueup/vue-quill": "^1.2.0",
         "apexcharts": "^5.10.6",
         "axios": "^1.15.2",
         "lodash": "^4.18.1",
+        "quill": "^2.0.3",
         "vue3-apexcharts": "^1.11.1"
     }
 }

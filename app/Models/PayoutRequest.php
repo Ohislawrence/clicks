@@ -17,6 +17,8 @@ class PayoutRequest extends Model
         'transaction_reference',
         'admin_notes',
         'failure_reason',
+        'rejection_reason',
+        'processed_by',
         'processed_at',
         'completed_at',
     ];

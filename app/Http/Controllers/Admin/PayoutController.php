@@ -80,9 +80,7 @@ class PayoutController extends Controller
             ]);
 
             // Return funds to affiliate balance
-            $payout->affiliate->update([
-                'balance' => DB::raw('balance + ' . $payout->amount),
-            ]);
+            $payout->affiliate->increment('balance', $payout->amount);
 
             // Send rejection notification
             $payout->affiliate->notify(new PayoutRejectedNotification($payout, $validated['rejection_reason']));

@@ -72,6 +72,14 @@ class FrontPageController extends Controller
     }
 
     /**
+     * Display the Store Builder landing page.
+     */
+    public function storeBuilder()
+    {
+        return view('front.store-builder');
+    }
+
+    /**
      * Display the FAQ page.
      */
     public function faq()

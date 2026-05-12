@@ -18,11 +18,13 @@ return new class extends Migration
             $table->decimal('amount', 10, 2);
             $table->enum('payment_method', ['paystack', 'flutterwave', 'bank_transfer'])->default('paystack');
             $table->json('payment_details'); // Store account info
-            $table->enum('status', ['pending', 'processing', 'completed', 'failed', 'cancelled'])->default('pending');
+            $table->enum('status', ['pending', 'processing', 'completed', 'failed', 'cancelled', 'rejected'])->default('pending');
             
             $table->string('transaction_reference')->nullable();
             $table->text('admin_notes')->nullable();
             $table->text('failure_reason')->nullable();
+            $table->text('rejection_reason')->nullable();
+            $table->foreignId('processed_by')->nullable()->constrained('users')->nullOnDelete();
             
             $table->timestamp('processed_at')->nullable();
             $table->timestamp('completed_at')->nullable();

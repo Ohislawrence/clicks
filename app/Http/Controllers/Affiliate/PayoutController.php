@@ -99,9 +99,7 @@ class PayoutController extends Controller
             }
 
             // Deduct from balance
-            $user->update([
-                'balance' => DB::raw('balance - ' . $validated['amount']),
-            ]);
+            $user->decrement('balance', $validated['amount']);
         });
 
         // Send notification
@@ -128,9 +126,7 @@ class PayoutController extends Controller
                 ->update(['payout_request_id' => null]);
 
             // Return to balance
-            $payout->affiliate->update([
-                'balance' => DB::raw('balance + ' . $payout->amount),
-            ]);
+            $payout->affiliate->increment('balance', $payout->amount);
 
             // Update payout status
             $payout->update(['status' => 'cancelled']);

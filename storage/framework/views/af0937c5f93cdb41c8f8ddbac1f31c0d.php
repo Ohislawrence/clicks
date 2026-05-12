@@ -131,12 +131,15 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                     </svg>
                 </a>
+                <a href="<?php echo e(route('front.store-builder')); ?>" class="inline-flex items-center justify-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-white px-8 py-4 rounded-xl font-semibold text-lg border border-neutral-700 transition-all duration-200">
+                    Explore Store Builder
+                </a>
                 <a href="<?php echo e(route('front.contact')); ?>" class="inline-flex items-center justify-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-white px-8 py-4 rounded-xl font-semibold text-lg border border-neutral-700 transition-all duration-200">
                     Contact Sales
                 </a>
             </div>
             <p class="text-sm text-neutral-500 mt-6">
-                Schedule a demo and see how we can help grow your business
+                Now build your own advertiser storefront with product catalogs, checkout, and subscription plans.
             </p>
         </div>
     </div>
@@ -252,6 +255,82 @@
                 <h3 class="text-xl font-bold text-white mb-2">Dedicated Support</h3>
                 <p class="text-neutral-400 leading-relaxed">
                     Work with experienced account managers who help optimize your campaigns for maximum ROI.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Store Builder Highlight -->
+<section class="py-20 bg-neutral-900 border-t border-neutral-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6">
+                <div class="inline-flex items-center gap-2 bg-neutral-800/50 rounded-full px-4 py-1.5 mb-4">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-emerald-400">Store Builder</span>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-white">
+                    Build a Branded Storefront for Your Offers
+                </h2>
+                <p class="text-lg text-neutral-400 max-w-xl">
+                    Launch a customised single-product or multi-product storefront in minutes. Connect direct payments, publish your own brand store URL, and manage products, orders, and subscriptions from the advertiser portal.
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="feature-box p-5">
+                        <h3 class="font-semibold text-white mb-2">Customizable store themes</h3>
+                        <p class="text-sm text-neutral-400">Choose themes, set colors, fonts, headings, spacing, and create a look that matches your brand.</p>
+                    </div>
+                    <div class="feature-box p-5">
+                        <h3 class="font-semibold text-white mb-2">Direct payment integration</h3>
+                        <p class="text-sm text-neutral-400">Accept payments through Paystack or Flutterwave using your own keys, or use payment links for faster setup.</p>
+                    </div>
+                    <div class="feature-box p-5">
+                        <h3 class="font-semibold text-white mb-2">Subscription-based pricing</h3>
+                        <p class="text-sm text-neutral-400">Start with affordable store plans from ₦5,000 monthly. Renew manually and keep your shop live while you grow.</p>
+                    </div>
+                    <div class="feature-box p-5">
+                        <h3 class="font-semibold text-white mb-2">Order & product management</h3>
+                        <p class="text-sm text-neutral-400">Manage products, order status, store visibility and subscription expiry without leaving the advertiser dashboard.</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 mt-6">
+                    <a href="<?php echo e(route('front.store-builder')); ?>" class="inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200">
+                        View Store Builder Plans
+                    </a>
+                    <a href="<?php echo e(route('front.contact')); ?>" class="inline-flex items-center justify-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-white px-8 py-4 rounded-xl font-semibold border border-neutral-700 transition-all duration-200">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-neutral-950 border border-neutral-800 rounded-3xl p-8">
+                <div class="text-sm uppercase tracking-wider text-emerald-400 font-semibold mb-4">Starting plans</div>
+                <div class="space-y-4">
+                    <div class="p-5 bg-neutral-900 border border-neutral-800 rounded-2xl">
+                        <div class="text-sm text-neutral-500">Single Product Store</div>
+                        <div class="text-2xl font-bold text-white">₦5,000</div>
+                        <div class="text-sm text-neutral-400">Monthly / ₦50,000 yearly (save 17%)</div>
+                    </div>
+                    <div class="p-5 bg-neutral-900 border border-neutral-800 rounded-2xl">
+                        <div class="text-sm text-neutral-500">Multi-Product Bronze</div>
+                        <div class="text-2xl font-bold text-white">₦15,000</div>
+                        <div class="text-sm text-neutral-400">Monthly / ₦150,000 yearly - up to 10 products</div>
+                    </div>
+                    <div class="p-5 bg-neutral-900 border border-neutral-800 rounded-2xl">
+                        <div class="text-sm text-neutral-500">Multi-Product Silver</div>
+                        <div class="text-2xl font-bold text-white">₦30,000</div>
+                        <div class="text-sm text-neutral-400">Monthly / ₦300,000 yearly - up to 50 products</div>
+                    </div>
+                    <div class="p-5 bg-neutral-900 border border-neutral-800 rounded-2xl">
+                        <div class="text-sm text-neutral-500">Multi-Product Gold</div>
+                        <div class="text-2xl font-bold text-white">₦50,000</div>
+                        <div class="text-sm text-neutral-400">Monthly / ₦500,000 yearly - up to 200 products</div>
+                    </div>
+                </div>
+                <p class="text-sm text-neutral-500 mt-6">
+                    All prices are in NGN. Manual subscription renewal is required, and stores expire if not renewed on time.
                 </p>
             </div>
         </div>

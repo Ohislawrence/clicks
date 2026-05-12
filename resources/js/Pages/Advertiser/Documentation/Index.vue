@@ -405,7 +405,7 @@
                                         <div class="mt-3 bg-gradient-to-r from-blue-50 to-cyan-50 p-3 rounded border-2 border-blue-300">
                                             <div class="text-xs font-bold text-blue-900 mb-2">📌 Real Example (What Your Customer Sees):</div>
                                             <div class="bg-white p-2 rounded mb-2">
-                                                <div class="text-xs text-gray-500 mb-1">If customer bought items worth $149.99 and order number is #1234:</div>
+                                                <div class="text-xs text-gray-500 mb-1">If customer bought items worth ₦149.99 and order number is #1234:</div>
                                                 <code class="text-xs text-green-700 font-mono">
                                                     &lt;img src="https://dealsintel.com/pixel?value=<strong>149.99</strong>&txn_id=<strong>1234</strong>" width="1" height="1" style="display:none" /&gt;
                                                 </code>
@@ -612,7 +612,7 @@ requests.post('https://dealsintel.com/api/postback', json={
                                 <div class="mb-4">
                                     <div class="text-sm text-gray-600 mb-2">Example Affiliate Link with Discount:</div>
                                     <div class="bg-gray-100 p-3 rounded border border-gray-300 font-mono text-sm break-all">
-                                        https://yourdomain.com/products/123<span class="bg-yellow-200 font-bold">?cid=abc123&discount=10</span>
+                                        https://clicksintel.com/products/123<span class="bg-yellow-200 font-bold">?cid=abc123&discount=10</span>
                                     </div>
                                     <div class="text-xs text-gray-500 mt-2">
                                         The <span class="font-mono bg-yellow-100 px-1">discount=10</span> means the customer should get 10% off
@@ -1227,7 +1227,347 @@ requests.post('https://dealsintel.com/api/postback', json={
                     </div>
                 </div>
 
-                <!-- 7. FAQs -->
+                <!-- Store Builder Section -->
+                <div id="store-builder" class="bg-white overflow-hidden shadow-xl sm:rounded-lg mb-6">
+                    <div class="p-6 border-b border-gray-200 bg-gray-50">
+                        <h3 class="text-2xl font-bold text-gray-800">🏪 Store Builder</h3>
+                        <p class="text-gray-600 mt-1">Everything you need to know about building and managing your storefront.</p>
+                    </div>
+                    <div class="p-6 space-y-8">
+
+                        <!-- 1. Creating a Store -->
+                        <div>
+                            <h4 class="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                <span class="bg-blue-100 text-blue-700 rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">1</span>
+                                Creating Your Store
+                            </h4>
+                            <p class="text-gray-700 mb-4">Go to <strong>My Store → Setup</strong> to create your store. The setup wizard has four steps:</p>
+                            <div class="grid md:grid-cols-2 gap-4 mb-4">
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="font-semibold text-gray-800 mb-1">Step 1 — Business Info</div>
+                                    <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                                        <li>Business name, URL slug, and description</li>
+                                        <li>Contact email, phone, and WhatsApp number</li>
+                                        <li>About Us content (shown on your about page)</li>
+                                    </ul>
+                                </div>
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="font-semibold text-gray-800 mb-1">Step 2 — Choose Theme</div>
+                                    <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                                        <li>Select a storefront theme (single or multi-product)</li>
+                                        <li>Theme determines your store's layout</li>
+                                    </ul>
+                                </div>
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="font-semibold text-gray-800 mb-1">Step 3 — Payment Setup</div>
+                                    <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                                        <li><strong>Paystack</strong> — Enter your Paystack public &amp; secret keys</li>
+                                        <li><strong>Flutterwave</strong> — Enter your Flutterwave public &amp; secret keys</li>
+                                        <li>All stores use direct API integration for secure in-store checkout</li>
+                                    </ul>
+                                </div>
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="font-semibold text-gray-800 mb-1">Step 4 — Choose Plan</div>
+                                    <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                                        <li>Pick a subscription plan (single or multi-product)</li>
+                                        <li>Your plan determines available features</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="bg-blue-50 border-l-4 border-blue-400 p-3 rounded-r text-sm text-blue-800">
+                                <strong>Tip:</strong> After setup, configure your payment gateway webhooks so orders are automatically marked as paid when customers complete payment. See the <a href="#webhook-setup" class="underline font-semibold">Webhook Setup</a> section below.
+                            </div>
+                        </div>
+
+                        <!-- 2. Store Settings -->
+                        <div>
+                            <h4 class="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                <span class="bg-blue-100 text-blue-700 rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">2</span>
+                                Editing Store Settings
+                            </h4>
+                            <p class="text-gray-700 mb-4">After creation, go to <strong>My Store → Edit Settings</strong> to update any of the following:</p>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="text-left p-3 font-semibold text-gray-700 border-b">Field</th>
+                                            <th class="text-left p-3 font-semibold text-gray-700 border-b">Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100">
+                                        <tr><td class="p-3 font-medium">Business Name</td><td class="p-3 text-gray-600">Your store's display name</td></tr>
+                                        <tr><td class="p-3 font-medium">URL Slug</td><td class="p-3 text-gray-600">The URL path for your store e.g. <code class="bg-gray-100 px-1 rounded">/store/my-shop</code></td></tr>
+                                        <tr><td class="p-3 font-medium">Description</td><td class="p-3 text-gray-600">Short store description shown in the hero section</td></tr>
+                                        <tr><td class="p-3 font-medium">About Us Content</td><td class="p-3 text-gray-600">Rich-text content for your About Us page. Supports headings, bold, lists, etc.</td></tr>
+                                        <tr><td class="p-3 font-medium">Email / Phone</td><td class="p-3 text-gray-600">Contact info shown in your store footer</td></tr>
+                                        <tr><td class="p-3 font-medium">WhatsApp Number</td><td class="p-3 text-gray-600">Adds a floating green WhatsApp button to every page of your store. Enter with country code e.g. <code class="bg-gray-100 px-1 rounded">2348012345678</code></td></tr>
+                                        <tr><td class="p-3 font-medium">Meta Title</td><td class="p-3 text-gray-600">SEO page title (overrides store name in Google results)</td></tr>
+                                        <tr><td class="p-3 font-medium">Meta Description</td><td class="p-3 text-gray-600">SEO description shown in search results and social media previews</td></tr>
+                                        <tr><td class="p-3 font-medium">Meta Keywords</td><td class="p-3 text-gray-600">Comma-separated keywords for SEO</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 3. Theme Customization -->
+                        <div>
+                            <h4 class="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                <span class="bg-blue-100 text-blue-700 rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">3</span>
+                                Theme Customization
+                            </h4>
+                            <p class="text-gray-700 mb-4">Go to <strong>My Store → Customize Theme</strong> to personalize your storefront's look and feel.</p>
+                            <div class="grid md:grid-cols-3 gap-4">
+                                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                                    <div class="font-semibold text-purple-800 mb-2">🎨 Colors</div>
+                                    <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                                        <li>Primary &amp; secondary brand colors</li>
+                                        <li>Background color</li>
+                                        <li>Text color</li>
+                                        <li>Header &amp; footer background</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                                    <div class="font-semibold text-indigo-800 mb-2">📢 Header &amp; Hero</div>
+                                    <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                                        <li>Tagline and announcement banner text</li>
+                                        <li>Hero heading &amp; subheading</li>
+                                        <li>Hero button text</li>
+                                        <li>Hero background image (upload)</li>
+                                        <li>Image overlay opacity</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-teal-50 border border-teal-200 rounded-lg p-4">
+                                    <div class="font-semibold text-teal-800 mb-2">📋 Footer</div>
+                                    <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                                        <li>Footer tagline</li>
+                                        <li>Facebook, Instagram, Twitter links</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Products -->
+                        <div>
+                            <h4 class="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                <span class="bg-blue-100 text-blue-700 rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">4</span>
+                                Managing Products
+                            </h4>
+                            <p class="text-gray-700 mb-4">Go to <strong>My Store → Products</strong> to add, edit, or remove products.</p>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="font-semibold text-gray-800 mb-2">Product Fields</div>
+                                    <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                                        <li>Name, slug, description (rich text)</li>
+                                        <li>Price and compare-at price (discount display)</li>
+                                        <li>SKU and stock quantity</li>
+                                        <li>Up to 5 product images</li>
+                                        <li>Category assignment</li>
+                                        <li>Featured flag (appears in featured section)</li>
+                                    </ul>
+                                </div>
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="font-semibold text-gray-800 mb-2">Delivery Fees (per product)</div>
+                                    <p class="text-sm text-gray-600 mb-2">Set state-specific delivery fees per product. The fee is calculated automatically at checkout based on the customer's selected state.</p>
+                                    <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                                        <li>Choose a Nigerian state</li>
+                                        <li>Enter the delivery fee for that state</li>
+                                        <li>Add as many states as needed</li>
+                                        <li>States with no fee set = free delivery</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. Checkout Flow -->
+                        <div>
+                            <h4 class="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                <span class="bg-blue-100 text-blue-700 rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">5</span>
+                                Customer Checkout Flow
+                            </h4>
+                            <p class="text-gray-700 mb-4">Here's what your customers experience when placing an order:</p>
+                            <div class="flex flex-col md:flex-row gap-3 items-stretch">
+                                <div class="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+                                    <div class="text-2xl mb-1">🛍️</div>
+                                    <div class="font-semibold text-sm">Browse / Select Product</div>
+                                </div>
+                                <div class="text-gray-400 font-bold self-center hidden md:block">→</div>
+                                <div class="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+                                    <div class="text-2xl mb-1">🛒</div>
+                                    <div class="font-semibold text-sm">Add to Cart / Buy Now</div>
+                                </div>
+                                <div class="text-gray-400 font-bold self-center hidden md:block">→</div>
+                                <div class="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+                                    <div class="text-2xl mb-1">📍</div>
+                                    <div class="font-semibold text-sm">Select Delivery State</div>
+                                </div>
+                                <div class="text-gray-400 font-bold self-center hidden md:block">→</div>
+                                <div class="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+                                    <div class="text-2xl mb-1">💳</div>
+                                    <div class="font-semibold text-sm">Pay (Card / Link)</div>
+                                </div>
+                                <div class="text-gray-400 font-bold self-center hidden md:block">→</div>
+                                <div class="flex-1 bg-green-50 border border-green-300 rounded-lg p-4 text-center">
+                                    <div class="text-2xl mb-1">✅</div>
+                                    <div class="font-semibold text-sm">Order Confirmed</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 6. Orders -->
+                        <div>
+                            <h4 class="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                <span class="bg-blue-100 text-blue-700 rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">6</span>
+                                Managing Orders
+                            </h4>
+                            <p class="text-gray-700 mb-3">Go to <strong>My Store → Orders</strong> to view and manage all placed orders.</p>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-center">
+                                    <div class="font-bold text-yellow-700">Pending</div>
+                                    <p class="text-xs text-gray-600 mt-1">Order placed, payment not yet confirmed</p>
+                                </div>
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
+                                    <div class="font-bold text-blue-700">Paid</div>
+                                    <p class="text-xs text-gray-600 mt-1">Payment received, ready to fulfil</p>
+                                </div>
+                                <div class="bg-purple-50 border border-purple-200 rounded-lg p-3 text-center">
+                                    <div class="font-bold text-purple-700">Shipped</div>
+                                    <p class="text-xs text-gray-600 mt-1">Item dispatched to customer</p>
+                                </div>
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
+                                    <div class="font-bold text-green-700">Delivered</div>
+                                    <p class="text-xs text-gray-600 mt-1">Order completed successfully</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 7. Publishing -->
+                        <div class="bg-green-50 border border-green-300 rounded-lg p-5">
+                            <h4 class="text-lg font-semibold text-green-800 mb-2">🚀 Publishing Your Store</h4>
+                            <p class="text-gray-700 text-sm mb-3">Your store is only visible to the public once it is <strong>active</strong>. To publish:</p>
+                            <ol class="text-sm text-gray-700 space-y-1 list-decimal list-inside">
+                                <li>Ensure your subscription is active (paid)</li>
+                                <li>Add at least one product</li>
+                                <li>Click <strong>Publish Store</strong> from the Store Dashboard</li>
+                            </ol>
+                            <p class="text-sm text-gray-600 mt-3">If your subscription lapses, your store enters preview-only mode — only you can see it. Customers will see a "Store Unavailable" message until you renew.</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Webhook Setup -->
+                <div id="webhook-setup" class="bg-white overflow-hidden shadow-xl sm:rounded-lg mb-6">
+                    <div class="p-6 border-b border-gray-200 bg-gray-50">
+                        <h3 class="text-2xl font-bold text-gray-800">🔗 Webhook Setup</h3>
+                        <p class="text-gray-600 mt-1">Configure your payment gateway to notify us when payments are completed — so orders are marked paid automatically.</p>
+                    </div>
+                    <div class="p-6 space-y-8">
+
+                        <!-- What are webhooks -->
+                        <div>
+                            <h4 class="text-xl font-semibold text-gray-800 mb-3">What are Webhooks?</h4>
+                            <p class="text-gray-700 mb-3">Webhooks are server-to-server notifications. When a customer pays, Paystack or Flutterwave sends an instant HTTP POST to your store's webhook URL — even if the customer closes their browser before being redirected back.</p>
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-green-800">
+                                <strong>Why webhooks are more reliable:</strong> The redirect callback can fail if the customer closes the tab, has a poor connection, or navigates away. Webhooks ensure every successful payment is captured.
+                            </div>
+                        </div>
+
+                        <!-- Webhook URLs -->
+                        <div>
+                            <h4 class="text-xl font-semibold text-gray-800 mb-3">Your Webhook URLs</h4>
+                            <p class="text-gray-700 mb-4">Register these URLs in your payment gateway dashboard:</p>
+                            <div class="space-y-3">
+                                <div class="bg-gray-900 rounded-lg p-4">
+                                    <div class="text-xs text-gray-400 mb-1 font-semibold">PAYSTACK — Store Orders</div>
+                                    <code class="text-green-400 text-sm">POST https://clicksintel.com/api/webhooks/paystack/store-order</code>
+                                </div>
+                                <div class="bg-gray-900 rounded-lg p-4">
+                                    <div class="text-xs text-gray-400 mb-1 font-semibold">FLUTTERWAVE — Store Orders</div>
+                                    <code class="text-green-400 text-sm">POST https://clicksintel.com/api/webhooks/flutterwave/store-order</code>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-3">Replace <code class="bg-gray-100 px-1 rounded">clicksintel.com</code> with your actual site domain.</p>
+                        </div>
+
+                        <!-- Paystack Setup -->
+                        <div>
+                            <h4 class="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                <span class="bg-blue-100 text-blue-700 rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">1</span>
+                                Setting Up Paystack Webhooks
+                            </h4>
+                            <ol class="space-y-3 text-gray-700">
+                                <li class="flex gap-3">
+                                    <span class="font-bold text-blue-600 shrink-0">1.</span>
+                                    <span>Log in to your <strong>Paystack Dashboard</strong> at <code class="bg-gray-100 px-1 rounded text-sm">dashboard.paystack.com</code></span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="font-bold text-blue-600 shrink-0">2.</span>
+                                    <span>Go to <strong>Settings → API Keys &amp; Webhooks</strong></span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="font-bold text-blue-600 shrink-0">3.</span>
+                                    <span>In the <strong>Webhook URL</strong> field, enter: <code class="bg-gray-100 px-1 rounded text-sm">https://clicksintel.com/api/webhooks/paystack/store-order</code></span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="font-bold text-blue-600 shrink-0">4.</span>
+                                    <span>Click <strong>Save</strong>. Paystack will now POST to this URL on every successful charge.</span>
+                                </li>
+                            </ol>
+                            <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+                                <strong>Security:</strong> All Paystack webhook requests are verified using an HMAC-SHA512 signature computed from your secret key. Your store automatically validates this — no extra setup needed.
+                            </div>
+                        </div>
+
+                        <!-- Flutterwave Setup -->
+                        <div>
+                            <h4 class="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                <span class="bg-orange-100 text-orange-700 rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">2</span>
+                                Setting Up Flutterwave Webhooks
+                            </h4>
+                            <ol class="space-y-3 text-gray-700">
+                                <li class="flex gap-3">
+                                    <span class="font-bold text-orange-600 shrink-0">1.</span>
+                                    <span>Log in to your <strong>Flutterwave Dashboard</strong> at <code class="bg-gray-100 px-1 rounded text-sm">app.flutterwave.com</code></span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="font-bold text-orange-600 shrink-0">2.</span>
+                                    <span>Go to <strong>Settings → Webhooks</strong></span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="font-bold text-orange-600 shrink-0">3.</span>
+                                    <span>Enter your webhook URL: <code class="bg-gray-100 px-1 rounded text-sm">https://clicksintel.com/api/webhooks/flutterwave/store-order</code></span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="font-bold text-orange-600 shrink-0">4.</span>
+                                    <span>Set a <strong>Secret Hash</strong> — a custom string you choose (e.g. <code class="bg-gray-100 px-1 rounded text-sm">my-secret-hash-123</code>). You will enter this same value as your <strong>Webhook Secret</strong> in your store's payment settings.</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="font-bold text-orange-600 shrink-0">5.</span>
+                                    <span>Click <strong>Save</strong>.</span>
+                                </li>
+                            </ol>
+                            <div class="mt-4 bg-orange-50 border border-orange-200 rounded-lg p-4 text-sm text-orange-800">
+                                <strong>Flutterwave Note:</strong> Flutterwave uses a custom <em>verif-hash</em> header for webhook verification. Make sure the Secret Hash you set in Flutterwave matches exactly what you enter in your store's <strong>Webhook Secret</strong> field.
+                            </div>
+                        </div>
+
+                        <!-- Security note -->
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-5">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-2">🔒 Security &amp; Best Practices</h4>
+                            <ul class="text-sm text-gray-700 space-y-2 list-disc list-inside">
+                                <li>Always use your <strong>live</strong> keys and webhook URL for production stores.</li>
+                                <li>Webhooks are verified server-side — forged requests are rejected automatically.</li>
+                                <li>Webhook endpoints always respond with HTTP 200 quickly, even if processing is deferred.</li>
+                                <li>Duplicate webhook calls (same order paid twice) are handled safely — orders won't be double-credited.</li>
+                                <li>For Paystack: your store's secret key is used for webhook signature verification — no extra configuration needed.</li>
+                                <li>For Flutterwave: you must enter a separate webhook secret in your store payment settings.</li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- FAQs -->
                 <div id="faqs" class="bg-white overflow-hidden shadow-xl sm:rounded-lg mb-6">
                     <div class="p-6 border-b border-gray-200 bg-gray-50">
                         <h3 class="text-2xl font-bold text-gray-800">❓ Frequently Asked Questions</h3>
@@ -1292,6 +1632,8 @@ const sections = [
     { id: 'budget-caps', title: 'Budget & Caps', description: 'Control spending', icon: '💰' },
     { id: 'fraud-prevention', title: 'Fraud Prevention', description: 'Built-in protection', icon: '🛡️' },
     { id: 'best-practices', title: 'Best Practices', description: 'Tips for success', icon: '⭐' },
+    { id: 'store-builder', title: 'Store Builder', description: 'Build & manage your storefront', icon: '🏪' },
+    { id: 'webhook-setup', title: 'Webhook Setup', description: 'Configure payment notifications', icon: '🔗' },
     { id: 'faqs', title: 'FAQs', description: 'Common questions', icon: '❓' },
 ];
 

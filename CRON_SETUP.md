@@ -119,6 +119,20 @@ Your cron will automatically handle these jobs:
 
 ---
 
+## Scheduled Tasks (Laravel Scheduler)
+
+These tasks run automatically via the Laravel scheduler (every minute cron):
+
+| Task | Schedule | Description |
+|------|----------|-------------|
+| **Reset Daily Caps** | Daily at 00:00 | Reset daily offer conversion limits |
+| **Reset Monthly Caps** | 1st of month at 00:00 | Reset monthly offer conversion limits |
+| **Update Affiliate Tiers** | Weekly (Mondays) at 01:00 | Recalculate affiliate tier levels |
+| **Weekly Performance Summaries** | Weekly (Mondays) at 09:00 | Send performance reports to users |
+| **Telescope Data Pruning** | Daily at 02:00 | Delete Telescope entries older than 7 days |
+
+---
+
 ## Troubleshooting
 
 ### Jobs not processing?

@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\SendWeeklyPerformanceSummaries;
+use App\Jobs\CheckStoreSubscriptionExpiryJob;
 use App\Services\OfferCapService;
 use App\Services\TierService;
 use App\Models\User;
@@ -36,3 +37,15 @@ Schedule::job(new SendWeeklyPerformanceSummaries())
     ->mondays()
     ->at('09:00')
     ->description('Send weekly performance summaries to users');
+
+// Prune Telescope entries older than 7 days (daily at 2 AM)
+Schedule::command('telescope:prune --hours=168')
+    ->daily()
+    ->at('02:00')
+    ->description('Delete Telescope entries older than 7 days');
+
+// Check store subscription expiry and send reminders (daily at 8:00 AM)
+Schedule::job(new CheckStoreSubscriptionExpiryJob())
+    ->daily()
+    ->at('08:00')
+    ->description('Check store subscriptions, send expiry reminders, and deactivate expired stores');
