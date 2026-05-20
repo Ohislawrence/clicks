@@ -1,4 +1,4 @@
-@extends('layouts.front')
+﻿@extends('layouts.front')
 
 @section('title', 'For Affiliates - Earn with Top CPA Offers | ' . config('app.name'))
 @section('meta_description', 'Join 15,000+ successful affiliates earning competitive commissions. Access 2,000+ exclusive offers, weekly payments, and dedicated support. Sign up free today!')
@@ -32,62 +32,28 @@
 
 @push('styles')
 <style>
-    .benefit-card {
-        background: #1a1a1a;
-        border: 1px solid #2a2a2a;
-        border-radius: 20px;
-        transition: all 0.25s ease;
+    :root {
+        --ink: #0a0c0b; --ink-2: #111410; --ink-3: #181c16; --ink-4: #1e231b;
+        --em: #10b981; --em-l: #34d399; --em-dim: #064e3b;
+        --snow: #f0f5f1; --ash: #9aab9e; --stone: #566b5b;
+        --wire: rgba(16,185,129,0.12); --wire-s: rgba(16,185,129,0.22);
+        --fd: 'Inter', sans-serif; --fb: 'Inter', sans-serif;
     }
-    .benefit-card:hover {
-        border-color: #3a3a3a;
-        background: #1e1e1e;
-        transform: translateY(-4px);
-    }
-
-    .vertical-card {
-        background: #171717;
-        border: 1px solid #262626;
-        border-radius: 16px;
-        transition: all 0.2s ease;
-    }
-    .vertical-card:hover {
-        border-color: #10b981;
-        background: #1c1c1c;
-        transform: translateY(-2px);
-    }
-
-    .step-number {
-        background: #10b981;
-        color: white;
-        font-weight: 700;
-    }
-
-    .testimonial-card {
-        background: #171717;
-        border: 1px solid #262626;
-        border-radius: 20px;
-    }
-
-    .stat-card {
-        background: #171717;
-        border: 1px solid #262626;
-        border-radius: 16px;
-    }
-
-    .fade-up {
-        opacity: 0;
-        transform: translateY(24px);
-        transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-    }
-    .fade-up.visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    .delay-100 { transition-delay: 0.05s; }
-    .delay-200 { transition-delay: 0.1s; }
-    .delay-300 { transition-delay: 0.15s; }
-    .delay-400 { transition-delay: 0.2s; }
+    body::before { content:''; position:fixed; inset:0;
+        background-image: linear-gradient(rgba(16,185,129,0.025) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(16,185,129,0.025) 1px, transparent 1px);
+        background-size: 52px 52px; pointer-events:none; z-index:0; }
+    .reveal { opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease; }
+    .reveal.in-view { opacity:1; transform:translateY(0); }
+    .stat-card { background:var(--ink-2); border:1px solid var(--wire); border-radius:16px; }
+    .benefit-card { background:var(--ink-2); border:1px solid var(--wire); border-radius:20px;
+        transition:transform .25s ease, border-color .25s ease; }
+    .benefit-card:hover { border-color:var(--wire-s); transform:translateY(-4px); }
+    .vertical-card { background:var(--ink-2); border:1px solid var(--wire); border-radius:16px;
+        transition:border-color .2s ease, transform .2s ease; }
+    .vertical-card:hover { border-color:var(--em); transform:translateY(-2px); }
+    .step-number { background:var(--em); color:var(--ink); font-weight:700; }
+    .testimonial-card { background:var(--ink-2); border:1px solid var(--wire); border-radius:20px; }
 </style>
 @endpush
 
@@ -111,7 +77,7 @@
                 across multiple verticals.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{{ route('register.affiliate') }}" class="inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 group">
+                <a href="{{ route('register') . '?type=affiliate' }}" class="inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 group">
                     Join Now - It's Free
                     <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -132,19 +98,19 @@
 <section class="py-12 bg-neutral-900 border-y border-neutral-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div class="stat-card p-5 text-center fade-up" data-animate>
+            <div class="stat-card p-5 text-center reveal">
                 <div class="text-3xl md:text-4xl font-bold text-emerald-400 mb-1">15,000+</div>
                 <div class="text-sm text-neutral-500 font-medium uppercase tracking-wide">Active Affiliates</div>
             </div>
-            <div class="stat-card p-5 text-center fade-up" data-animate data-delay="100">
+            <div class="stat-card p-5 text-center reveal">
                 <div class="text-3xl md:text-4xl font-bold text-white mb-1">2,000+</div>
                 <div class="text-sm text-neutral-500 font-medium uppercase tracking-wide">Live Offers</div>
             </div>
-            <div class="stat-card p-5 text-center fade-up" data-animate data-delay="200">
-                <div class="text-3xl md:text-4xl font-bold text-emerald-400 mb-1">$3M+</div>
+            <div class="stat-card p-5 text-center reveal">
+                <div class="text-3xl md:text-4xl font-bold text-emerald-400 mb-1">₦2.4B+</div>
                 <div class="text-sm text-neutral-500 font-medium uppercase tracking-wide">Paid Monthly</div>
             </div>
-            <div class="stat-card p-5 text-center fade-up" data-animate data-delay="300">
+            <div class="stat-card p-5 text-center reveal">
                 <div class="text-3xl md:text-4xl font-bold text-white mb-1">24/7</div>
                 <div class="text-sm text-neutral-500 font-medium uppercase tracking-wide">Support Available</div>
             </div>
@@ -168,7 +134,7 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="benefit-card p-6 fade-up" data-animate>
+            <div class="benefit-card p-6 reveal">
                 <div class="feature-icon w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4">
                     <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -180,7 +146,7 @@
                 </p>
             </div>
 
-            <div class="benefit-card p-6 fade-up" data-animate data-delay="100">
+            <div class="benefit-card p-6 reveal">
                 <div class="feature-icon w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4">
                     <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
@@ -192,7 +158,7 @@
                 </p>
             </div>
 
-            <div class="benefit-card p-6 fade-up" data-animate data-delay="200">
+            <div class="benefit-card p-6 reveal">
                 <div class="feature-icon w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4">
                     <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
@@ -204,7 +170,7 @@
                 </p>
             </div>
 
-            <div class="benefit-card p-6 fade-up" data-animate>
+            <div class="benefit-card p-6 reveal">
                 <div class="feature-icon w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4">
                     <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -216,7 +182,7 @@
                 </p>
             </div>
 
-            <div class="benefit-card p-6 fade-up" data-animate data-delay="100">
+            <div class="benefit-card p-6 reveal">
                 <div class="feature-icon w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4">
                     <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M6 6.5L7.5 8l8.5-8.5M6 6.5l-4 4M6 6.5l3 3M6 6.5l3-3M12 6.5l-1.5 1.5M12 6.5l4 4M12 6.5l-4-4M12 6.5l4-4" />
@@ -228,7 +194,7 @@
                 </p>
             </div>
 
-            <div class="benefit-card p-6 fade-up" data-animate data-delay="200">
+            <div class="benefit-card p-6 reveal">
                 <div class="feature-icon w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4">
                     <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
@@ -237,6 +203,18 @@
                 <h3 class="text-xl font-bold text-white mb-2">Marketing Tools</h3>
                 <p class="text-neutral-400 leading-relaxed">
                     Access banners, landing pages, email creatives, and other promotional materials to maximize conversions.
+                </p>
+            </div>
+
+            <div class="benefit-card p-6 reveal">
+                <div class="feature-icon w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Earn on Advertiser Store Sales</h3>
+                <p class="text-neutral-400 leading-relaxed">
+                    When you share a tracking link to an advertiser&rsquo;s platform-managed store and a customer completes a purchase, you automatically earn your commission &mdash; no manual tracking setup required.
                 </p>
             </div>
         </div>
@@ -259,44 +237,44 @@
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div class="vertical-card p-5 text-center fade-up" data-animate>
-                <div class="text-3xl mb-2">🛍️</div>
+            <div class="vertical-card p-5 text-center reveal">
+                <div class="text-3xl mb-2">ðŸ›ï¸</div>
                 <h3 class="font-semibold text-white text-sm">E-commerce</h3>
             </div>
-            <div class="vertical-card p-5 text-center fade-up" data-animate data-delay="100">
-                <div class="text-3xl mb-2">💰</div>
+            <div class="vertical-card p-5 text-center reveal">
+                <div class="text-3xl mb-2">ðŸ’°</div>
                 <h3 class="font-semibold text-white text-sm">Finance</h3>
             </div>
-            <div class="vertical-card p-5 text-center fade-up" data-animate data-delay="200">
-                <div class="text-3xl mb-2">❤️</div>
+            <div class="vertical-card p-5 text-center reveal">
+                <div class="text-3xl mb-2">â¤ï¸</div>
                 <h3 class="font-semibold text-white text-sm">Health & Fitness</h3>
             </div>
-            <div class="vertical-card p-5 text-center fade-up" data-animate data-delay="300">
-                <div class="text-3xl mb-2">🎮</div>
+            <div class="vertical-card p-5 text-center reveal">
+                <div class="text-3xl mb-2">ðŸŽ®</div>
                 <h3 class="font-semibold text-white text-sm">Gaming</h3>
             </div>
-            <div class="vertical-card p-5 text-center fade-up" data-animate data-delay="400">
-                <div class="text-3xl mb-2">💻</div>
+            <div class="vertical-card p-5 text-center reveal">
+                <div class="text-3xl mb-2">ðŸ’»</div>
                 <h3 class="font-semibold text-white text-sm">Software</h3>
             </div>
-            <div class="vertical-card p-5 text-center fade-up" data-animate>
-                <div class="text-3xl mb-2">🎓</div>
+            <div class="vertical-card p-5 text-center reveal">
+                <div class="text-3xl mb-2">ðŸŽ“</div>
                 <h3 class="font-semibold text-white text-sm">Education</h3>
             </div>
-            <div class="vertical-card p-5 text-center fade-up" data-animate data-delay="100">
-                <div class="text-3xl mb-2">✈️</div>
+            <div class="vertical-card p-5 text-center reveal">
+                <div class="text-3xl mb-2">âœˆï¸</div>
                 <h3 class="font-semibold text-white text-sm">Travel</h3>
             </div>
-            <div class="vertical-card p-5 text-center fade-up" data-animate data-delay="200">
-                <div class="text-3xl mb-2">📱</div>
+            <div class="vertical-card p-5 text-center reveal">
+                <div class="text-3xl mb-2">ðŸ“±</div>
                 <h3 class="font-semibold text-white text-sm">Mobile Apps</h3>
             </div>
-            <div class="vertical-card p-5 text-center fade-up" data-animate data-delay="300">
-                <div class="text-3xl mb-2">🏠</div>
+            <div class="vertical-card p-5 text-center reveal">
+                <div class="text-3xl mb-2">ðŸ </div>
                 <h3 class="font-semibold text-white text-sm">Home & Garden</h3>
             </div>
-            <div class="vertical-card p-5 text-center fade-up" data-animate data-delay="400">
-                <div class="text-3xl mb-2">🎯</div>
+            <div class="vertical-card p-5 text-center reveal">
+                <div class="text-3xl mb-2">ðŸŽ¯</div>
                 <h3 class="font-semibold text-white text-sm">Lead Gen</h3>
             </div>
         </div>
@@ -319,22 +297,22 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div class="text-center fade-up" data-animate>
+            <div class="text-center reveal">
                 <div class="step-number w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">1</div>
                 <h3 class="text-lg font-bold text-white mb-2">Sign Up Free</h3>
                 <p class="text-sm text-neutral-400">Create your free affiliate account in minutes</p>
             </div>
-            <div class="text-center fade-up" data-animate data-delay="100">
+            <div class="text-center reveal">
                 <div class="step-number w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">2</div>
                 <h3 class="text-lg font-bold text-white mb-2">Browse Offers</h3>
                 <p class="text-sm text-neutral-400">Select offers that match your traffic and audience</p>
             </div>
-            <div class="text-center fade-up" data-animate data-delay="200">
+            <div class="text-center reveal">
                 <div class="step-number w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">3</div>
                 <h3 class="text-lg font-bold text-white mb-2">Drive Traffic</h3>
                 <p class="text-sm text-neutral-400">Use your unique tracking links to promote offers</p>
             </div>
-            <div class="text-center fade-up" data-animate data-delay="300">
+            <div class="text-center reveal">
                 <div class="step-number w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">4</div>
                 <h3 class="text-lg font-bold text-white mb-2">Get Paid</h3>
                 <p class="text-sm text-neutral-400">Earn commissions for every conversion</p>
@@ -359,28 +337,28 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="testimonial-card p-6 fade-up" data-animate>
-                <div class="flex gap-1 text-emerald-400 mb-4">★★★★★</div>
+            <div class="testimonial-card p-6 reveal">
+                <div class="flex gap-1 text-emerald-400 mb-4">â˜…â˜…â˜…â˜…â˜…</div>
                 <p class="text-neutral-400 mb-4 leading-relaxed">
                     "Best affiliate network I've worked with. On-time payments, great offers, and responsive support team."
                 </p>
-                <p class="font-semibold text-white">— Sarah M.</p>
+                <p class="font-semibold text-white">- Sarah M.</p>
                 <p class="text-sm text-neutral-500">Super Affiliate</p>
             </div>
-            <div class="testimonial-card p-6 fade-up" data-animate data-delay="100">
-                <div class="flex gap-1 text-emerald-400 mb-4">★★★★★</div>
+            <div class="testimonial-card p-6 reveal">
+                <div class="flex gap-1 text-emerald-400 mb-4">â˜…â˜…â˜…â˜…â˜…</div>
                 <p class="text-neutral-400 mb-4 leading-relaxed">
                     "The tracking is accurate and the dashboard makes it easy to optimize campaigns. Highly recommend!"
                 </p>
-                <p class="font-semibold text-white">— James K.</p>
+                <p class="font-semibold text-white">- James K.</p>
                 <p class="text-sm text-neutral-500">Media Buyer</p>
             </div>
-            <div class="testimonial-card p-6 fade-up" data-animate data-delay="200">
-                <div class="flex gap-1 text-emerald-400 mb-4">★★★★★</div>
+            <div class="testimonial-card p-6 reveal">
+                <div class="flex gap-1 text-emerald-400 mb-4">â˜…â˜…â˜…â˜…â˜…</div>
                 <p class="text-neutral-400 mb-4 leading-relaxed">
                     "Finally found a network that actually cares about affiliates. Exclusive offers and top payouts."
                 </p>
-                <p class="font-semibold text-white">— Michael R.</p>
+                <p class="font-semibold text-white">- Michael R.</p>
                 <p class="text-sm text-neutral-500">Influencer</p>
             </div>
         </div>
@@ -398,7 +376,7 @@
                 Join {{ config('app.name') }} today and start monetizing your traffic with top-converting offers.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{{ route('register.affiliate') }}" class="inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3.5 rounded-xl font-semibold transition-all duration-200 group">
+                <a href="{{ route('register') . '?type=affiliate' }}" class="inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3.5 rounded-xl font-semibold transition-all duration-200 group">
                     Create Free Account
                     <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -419,22 +397,15 @@
 
 @push('scripts')
 <script>
-    // Intersection Observer for fade-up animations
-    (function() {
-        const observerOptions = { threshold: 0.15, rootMargin: '0px 0px -20px 0px' };
-
-        const elements = document.querySelectorAll('[data-animate]');
-        elements.forEach((el) => {
-            const obs = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        obs.unobserve(entry.target);
-                    }
-                });
-            }, observerOptions);
-            obs.observe(el);
+(function () {
+    var reveals = document.querySelectorAll('.reveal');
+    if (!reveals.length) return;
+    var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+            if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); }
         });
-    })();
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(function (r) { io.observe(r); });
+})();
 </script>
 @endpush

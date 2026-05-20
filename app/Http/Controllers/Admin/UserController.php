@@ -63,6 +63,7 @@ class UserController extends Controller
             'total_earnings' => $user->lifetime_earnings,
             'balance' => $user->balance,
             'pending_balance' => $user->pending_balance,
+            'advertiser_balance' => (float) ($user->advertiser_balance ?? 0),
         ];
 
         // Get referral cap data if user is affiliate
@@ -99,6 +100,7 @@ class UserController extends Controller
             'is_active' => 'boolean',
             'is_verified' => 'boolean',
             'balance' => 'nullable|numeric|min:0',
+            'advertiser_balance' => 'nullable|numeric|min:0',
             'roles' => 'required|array',
         ]);
 
@@ -109,6 +111,7 @@ class UserController extends Controller
             'is_active' => $validated['is_active'] ?? $user->is_active,
             'is_verified' => $validated['is_verified'] ?? $user->is_verified,
             'balance' => $validated['balance'] ?? $user->balance,
+            'advertiser_balance' => $validated['advertiser_balance'] ?? $user->advertiser_balance,
         ]);
 
         // Sync roles

@@ -38,6 +38,9 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
 
+    <!-- Prevent FOUC -->
+    <style>html{background:#0a0a0a}body{visibility:hidden}</style>
+
     <!-- Styles & Scripts -->
     @vite('resources/js/app.js')
     @stack('styles')
@@ -204,6 +207,26 @@
         </div>
     </footer>
 
+    <!-- Cookie Consent Banner (NDPR) -->
+    <div id="cookie-banner" class="fixed bottom-0 inset-x-0 z-50 bg-neutral-900 border-t border-neutral-700 px-4 py-4 sm:px-6 hidden" role="dialog" aria-live="polite" aria-label="Cookie consent">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="flex-1 text-sm text-neutral-300">
+                <span class="font-semibold text-white">We use cookies</span> — including essential, analytics, and affiliate-tracking cookies.
+                By clicking <strong>Accept All</strong> you consent to our use of cookies as described in our
+                <a href="{{ route('front.privacy') }}" class="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">Privacy Policy</a>.
+                You may <strong>Reject Non-Essential</strong> cookies without affecting core functionality.
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+                <button id="cookie-reject" class="px-4 py-2 text-sm font-medium text-neutral-300 border border-neutral-600 rounded-lg hover:bg-neutral-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    Reject Non-Essential
+                </button>
+                <button id="cookie-accept" class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                    Accept All
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script>
         // Mobile menu toggle
@@ -221,5 +244,24 @@
         })();
     </script>
     @stack('scripts')
+    <script>
+        // Cookie consent banner (NDPR)
+        (function() {
+            const banner = document.getElementById('cookie-banner');
+            if (!banner) return;
+            const consent = localStorage.getItem('ndpr_cookie_consent');
+            if (!consent) banner.classList.remove('hidden');
+
+            document.getElementById('cookie-accept').addEventListener('click', function() {
+                localStorage.setItem('ndpr_cookie_consent', 'all');
+                banner.classList.add('hidden');
+            });
+            document.getElementById('cookie-reject').addEventListener('click', function() {
+                localStorage.setItem('ndpr_cookie_consent', 'essential');
+                banner.classList.add('hidden');
+            });
+        })();
+    </script>
+    <script type="module">document.body.style.visibility='visible'</script>
 </body>
 </html>

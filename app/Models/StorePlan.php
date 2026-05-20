@@ -18,6 +18,7 @@ class StorePlan extends Model
         'features',
         'is_active',
         'sort_order',
+        'platform_fee_percentage',
     ];
 
     protected $casts = [
@@ -28,6 +29,7 @@ class StorePlan extends Model
         'features' => 'array',
         'is_active' => 'boolean',
         'sort_order' => 'integer',
+        'platform_fee_percentage' => 'decimal:2',
     ];
 
     /**

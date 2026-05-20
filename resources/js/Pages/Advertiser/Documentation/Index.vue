@@ -493,17 +493,17 @@
                                         <h6 class="font-bold mb-3">📋 What to Send (JSON Format):</h6>
                                         <div class="bg-gray-900 text-gray-100 p-4 rounded-lg font-mono text-xs overflow-x-auto mb-3">
 {
-  "<span class="text-yellow-400">click_id</span>": "<span class="text-green-400">abc123def456</span>",     <span class="text-gray-500">// From URL when customer clicked affiliate link</span>
-  "<span class="text-yellow-400">transaction_id</span>": "<span class="text-green-400">ORDER-789</span>", <span class="text-gray-500">// Your unique order number</span>
-  "<span class="text-yellow-400">amount</span>": <span class="text-green-400">1500.00</span>,             <span class="text-gray-500">// Order total</span>
-  "<span class="text-yellow-400">currency</span>": "<span class="text-green-400">NGN</span>",            <span class="text-gray-500">// Currency code</span>
-  "<span class="text-yellow-400">status</span>": "<span class="text-green-400">approved</span>"           <span class="text-gray-500">// 'approved' or 'pending'</span>
+  "<span class="text-yellow-400">tracking_code</span>": "<span class="text-green-400">ABC123def456</span>", <span class="text-gray-500">// From ?tracking_code= in your URL when customer arrived</span>
+  "<span class="text-yellow-400">token</span>": "<span class="text-green-400">your-offer-postback-secret</span>",       <span class="text-gray-500">// From your offer settings in this dashboard</span>
+  "<span class="text-yellow-400">conversion_value</span>": <span class="text-green-400">1500.00</span>,              <span class="text-gray-500">// Order total / lead value</span>
+  "<span class="text-yellow-400">transaction_id</span>": "<span class="text-green-400">ORDER-789</span>"              <span class="text-gray-500">// Your unique order number (strongly recommended — prevents duplicates)</span>
 }
                                         </div>
                                         <div class="bg-yellow-50 p-3 rounded border border-yellow-300">
                                             <div class="text-sm text-yellow-900">
-                                                <strong>🔑 Where's the click_id?</strong><br>
-                                                When a customer clicks an affiliate link, they arrive at your site with <code class="bg-yellow-200 px-1">?cid=abc123def456</code> in the URL. Save that <code class="bg-yellow-200 px-1">cid</code> value and send it back to us when they purchase!
+                                                <strong>🔑 Where do I get these values?</strong><br>
+                                                <strong>tracking_code</strong> — When a customer clicks an affiliate link, they arrive at your site with <code class="bg-yellow-200 px-1">?tracking_code=ABC123</code> in the URL. Save that value and send it back when they convert.<br>
+                                                <strong>token</strong> — Copy your <em>Postback Secret</em> from your offer's settings page in this dashboard.
                                             </div>
                                         </div>
                                     </div>
@@ -515,16 +515,19 @@
                                         <div class="mb-4">
                                             <div class="bg-purple-100 px-3 py-1 rounded-t font-semibold text-purple-900">PHP (Laravel, WordPress, etc.)</div>
                                             <div class="bg-gray-900 text-gray-100 p-4 rounded-b font-mono text-xs overflow-x-auto">
-<span class="text-gray-500">// When order is completed:</span>
-$clickId = $_SESSION['affiliate_click_id']; <span class="text-gray-500">// You saved this earlier</span>
+<span class="text-gray-500">// Step 1: On landing page — save the tracking code from the URL</span>
+$_SESSION['affiliate_tracking_code'] = $_GET['tracking_code'] ?? null;
 
-$response = Http::post('https://dealsintel.com/api/postback', [
-    'click_id' => $clickId,
-    'transaction_id' => $order->id,
-    'amount' => $order->total,
-    'currency' => 'NGN',
-    'status' => 'approved'
-]);
+<span class="text-gray-500">// Step 2: When order is completed — fire the postback</span>
+$trackingCode = $_SESSION['affiliate_tracking_code'];
+if ($trackingCode) {
+    Http::post('https://dealsintel.com/api/postback', [
+        'tracking_code'    => $trackingCode,
+        'token'            => 'YOUR_OFFER_POSTBACK_SECRET', <span class="text-gray-500">// From offer settings</span>
+        'conversion_value' => $order->total,
+        'transaction_id'   => $order->id,
+    ]);
+}
                                             </div>
                                         </div>
 
@@ -532,20 +535,23 @@ $response = Http::post('https://dealsintel.com/api/postback', [
                                         <div class="mb-4">
                                             <div class="bg-green-100 px-3 py-1 rounded-t font-semibold text-green-900">Node.js (Express, Next.js, etc.)</div>
                                             <div class="bg-gray-900 text-gray-100 p-4 rounded-b font-mono text-xs overflow-x-auto">
-<span class="text-gray-500">// When order is completed:</span>
-const clickId = req.session.affiliateClickId; <span class="text-gray-500">// You saved this earlier</span>
+<span class="text-gray-500">// Step 1: On landing page — save the tracking code from the URL</span>
+req.session.affiliateTrackingCode = req.query.tracking_code || null;
 
-await fetch('https://dealsintel.com/api/postback', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    click_id: clickId,
-    transaction_id: order.id,
-    amount: order.total,
-    currency: 'NGN',
-    status: 'approved'
-  })
-});
+<span class="text-gray-500">// Step 2: When order is completed — fire the postback</span>
+const trackingCode = req.session.affiliateTrackingCode;
+if (trackingCode) {
+  await fetch('https://dealsintel.com/api/postback', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      tracking_code:    trackingCode,
+      token:            'YOUR_OFFER_POSTBACK_SECRET', <span class="text-gray-500">// From offer settings</span>
+      conversion_value: order.total,
+      transaction_id:   order.id,
+    })
+  });
+}
                                             </div>
                                         </div>
 
@@ -553,18 +559,19 @@ await fetch('https://dealsintel.com/api/postback', {
                                         <div class="mb-4">
                                             <div class="bg-blue-100 px-3 py-1 rounded-t font-semibold text-blue-900">Python (Django, Flask, etc.)</div>
                                             <div class="bg-gray-900 text-gray-100 p-4 rounded-b font-mono text-xs overflow-x-auto">
-<span class="text-gray-500"># When order is completed:</span>
-import requests
+<span class="text-gray-500"># Step 1: On landing page — save the tracking code from the URL</span>
+request.session['affiliate_tracking_code'] = request.GET.get('tracking_code')
 
-click_id = request.session.get('affiliate_click_id')  <span class="text-gray-500"># You saved this earlier</span>
-
-requests.post('https://dealsintel.com/api/postback', json={
-    'click_id': click_id,
-    'transaction_id': order.id,
-    'amount': order.total,
-    'currency': 'NGN',
-    'status': 'approved'
-})
+<span class="text-gray-500"># Step 2: When order is completed — fire the postback</span>
+import requests as http_client
+tracking_code = request.session.get('affiliate_tracking_code')
+if tracking_code:
+    http_client.post('https://dealsintel.com/api/postback', json={
+        'tracking_code':    tracking_code,
+        'token':            'YOUR_OFFER_POSTBACK_SECRET',  <span class="text-gray-500"># From offer settings</span>
+        'conversion_value': order.total,
+        'transaction_id':   order.id,
+    })
                                             </div>
                                         </div>
                                     </div>
@@ -577,16 +584,14 @@ requests.post('https://dealsintel.com/api/postback', json={
                                         <ol class="text-sm text-gray-700 space-y-2 list-decimal list-inside">
                                             <li>Create a test affiliate link in your dashboard</li>
                                             <li>Click it yourself (use incognito mode)</li>
-                                            <li>Notice the <code class="bg-gray-200 px-1">?cid=...</code> in your URL</li>
-                                            <li>Make a test purchase on your site</li>
+                                            <li>Notice the <code class="bg-gray-200 px-1">?tracking_code=...</code> in your URL — save this value</li>
+                                            <li>Make a test purchase on your site, then fire the postback</li>
                                             <li>Check your DealsIntel dashboard—you should see the conversion! 🎉</li>
                                         </ol>
                                     </div>
                                 </div>
                             </details>
                         </div>
-
-                        <!-- Discount Parameter Handling -->
                         <div class="mb-8 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-400 rounded-lg p-6">
                             <h4 class="text-2xl font-bold mb-4 flex items-center text-green-800">
                                 <span class="text-3xl mr-3">💰</span>
@@ -1261,9 +1266,9 @@ requests.post('https://dealsintel.com/api/postback', json={
                                 <div class="border border-gray-200 rounded-lg p-4">
                                     <div class="font-semibold text-gray-800 mb-1">Step 3 — Payment Setup</div>
                                     <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
-                                        <li><strong>Paystack</strong> — Enter your Paystack public &amp; secret keys</li>
-                                        <li><strong>Flutterwave</strong> — Enter your Flutterwave public &amp; secret keys</li>
-                                        <li>All stores use direct API integration for secure in-store checkout</li>
+                                        <li><strong>Direct mode</strong> — Enter your own Paystack/Flutterwave API keys. Funds go directly into your payment account.</li>
+                                        <li><strong>Platform-Managed mode</strong> — The platform collects payments on your behalf using its own Paystack account. Your net earnings (after platform fee) are credited to your sales wallet for withdrawal. Requires a plan with Platform Fee set.</li>
+                                        <li>You can switch between modes from <strong>Store Settings</strong> as long as no orders have been placed yet.</li>
                                     </ul>
                                 </div>
                                 <div class="border border-gray-200 rounded-lg p-4">
@@ -1275,7 +1280,7 @@ requests.post('https://dealsintel.com/api/postback', json={
                                 </div>
                             </div>
                             <div class="bg-blue-50 border-l-4 border-blue-400 p-3 rounded-r text-sm text-blue-800">
-                                <strong>Tip:</strong> After setup, configure your payment gateway webhooks so orders are automatically marked as paid when customers complete payment. See the <a href="#webhook-setup" class="underline font-semibold">Webhook Setup</a> section below.
+                                <strong>Tip:</strong> For Direct mode stores, configure your payment gateway webhooks so orders are marked paid automatically — see the <a href="#webhook-setup" class="underline font-semibold">Webhook Setup</a> section. For Platform-Managed mode, see the <a href="#platform-payments" class="underline font-semibold">Platform-Managed Payments</a> section — no webhook configuration is needed.
                             </div>
                         </div>
 
@@ -1450,6 +1455,261 @@ requests.post('https://dealsintel.com/api/postback', json={
                                 <li>Click <strong>Publish Store</strong> from the Store Dashboard</li>
                             </ol>
                             <p class="text-sm text-gray-600 mt-3">If your subscription lapses, your store enters preview-only mode — only you can see it. Customers will see a "Store Unavailable" message until you renew.</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Platform-Managed Payments -->
+                <div id="platform-payments" class="bg-white overflow-hidden shadow-xl sm:rounded-lg mb-6">
+                    <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-emerald-50 to-teal-50">
+                        <h3 class="text-2xl font-bold text-gray-800">💳 Platform-Managed Store Payments</h3>
+                        <p class="text-gray-600 mt-1">Let the platform collect payments on your behalf, automatically split the revenue, and track affiliate-driven sales.</p>
+                    </div>
+                    <div class="p-6 space-y-6">
+
+                        <!-- What is it -->
+                        <div class="grid md:grid-cols-2 gap-5">
+                            <div class="border-2 border-gray-300 rounded-xl p-5">
+                                <h4 class="font-bold text-gray-800 mb-2">🔑 Direct Mode (Default)</h4>
+                                <p class="text-sm text-gray-600 mb-3">You provide your own Paystack or Flutterwave API keys. Customers pay directly into your payment gateway account. You manage your own funds.</p>
+                                <ul class="text-sm text-gray-700 space-y-1">
+                                    <li class="flex items-start gap-2"><span class="text-green-600 mt-0.5">✓</span><span>Full control of your payment account</span></li>
+                                    <li class="flex items-start gap-2"><span class="text-green-600 mt-0.5">✓</span><span>Works with Paystack and Flutterwave</span></li>
+                                    <li class="flex items-start gap-2"><span class="text-red-500 mt-0.5">✗</span><span>No automatic affiliate commission tracking through store checkout</span></li>
+                                    <li class="flex items-start gap-2"><span class="text-red-500 mt-0.5">✗</span><span>Manual refund management via your gateway dashboard</span></li>
+                                </ul>
+                            </div>
+                            <div class="border-2 border-emerald-500 bg-emerald-50 rounded-xl p-5">
+                                <h4 class="font-bold text-emerald-800 mb-2">🏦 Platform-Managed Mode</h4>
+                                <p class="text-sm text-gray-600 mb-3">The platform uses its own Paystack account to collect payments. After each sale, revenue is automatically split and credited to your sales wallet.</p>
+                                <ul class="text-sm text-gray-700 space-y-1">
+                                    <li class="flex items-start gap-2"><span class="text-green-600 mt-0.5">✓</span><span>Automatic affiliate commission on store purchases</span></li>
+                                    <li class="flex items-start gap-2"><span class="text-green-600 mt-0.5">✓</span><span>Revenue credited to your sales wallet</span></li>
+                                    <li class="flex items-start gap-2"><span class="text-green-600 mt-0.5">✓</span><span>Refund requests managed through dashboard</span></li>
+                                    <li class="flex items-start gap-2"><span class="text-green-600 mt-0.5">✓</span><span>No need to set up your own payment keys</span></li>
+                                    <li class="flex items-start gap-2"><span class="text-yellow-600 mt-0.5">!</span><span>Platform fee deducted from each sale (set by your plan)</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- How the split works -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-3">How Revenue Is Split</h4>
+                            <p class="text-sm text-gray-600 mb-4">When a customer purchases from your platform-managed store, the payment is received by the platform. Here's how the amount is distributed:</p>
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-5">
+                                <div class="space-y-3 text-sm">
+                                    <div class="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-3">
+                                        <span class="font-medium text-gray-700">Gross Sale Amount</span>
+                                        <span class="font-bold text-gray-900">₦10,000</span>
+                                    </div>
+                                    <div class="flex items-center justify-between bg-red-50 border border-red-200 rounded-lg p-3">
+                                        <span class="font-medium text-red-700">− Platform Fee (e.g. 5%)</span>
+                                        <span class="font-bold text-red-700">− ₦500</span>
+                                    </div>
+                                    <div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                        <span class="font-medium text-blue-700">− Affiliate Commission (if applicable)</span>
+                                        <span class="font-bold text-blue-700">− ₦1,000</span>
+                                    </div>
+                                    <div class="flex items-center justify-between bg-emerald-50 border border-emerald-300 rounded-lg p-3">
+                                        <span class="font-semibold text-emerald-800">= Your Net Earnings (credited to sales wallet)</span>
+                                        <span class="font-bold text-emerald-800">₦8,500</span>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-3">Affiliate commission is only deducted if the customer arrived through a tracked affiliate link with an active offer for that product.</p>
+                            </div>
+                        </div>
+
+                        <!-- How to enable -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-3">How to Enable Platform-Managed Mode</h4>
+                            <ol class="space-y-3 text-gray-700 text-sm">
+                                <li class="flex gap-3"><span class="font-bold text-emerald-600 shrink-0">1.</span><span>Ensure your current plan has a <strong>Platform Fee</strong> configured (shown in your plan details). Contact support or upgrade your plan if not available.</span></li>
+                                <li class="flex gap-3"><span class="font-bold text-emerald-600 shrink-0">2.</span><span>Go to <strong>My Store → Edit Settings → Payment Configuration</strong>.</span></li>
+                                <li class="flex gap-3"><span class="font-bold text-emerald-600 shrink-0">3.</span><span>Under <strong>Payment Collection Mode</strong>, select <strong>Platform-Managed</strong>.</span></li>
+                                <li class="flex gap-3"><span class="font-bold text-emerald-600 shrink-0">4.</span><span>Save settings. The platform will now use its Paystack account for all new checkout sessions.</span></li>
+                            </ol>
+                            <div class="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800">
+                                <strong>⚠️ Important:</strong> Once your store has processed its first order, the payment mode is <strong>locked</strong> and cannot be changed. Choose before going live.
+                            </div>
+                        </div>
+
+                        <!-- Affiliate link + store offer -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-3">Linking Products to Affiliate Offers</h4>
+                            <p class="text-sm text-gray-600 mb-3">For affiliate commissions to be tracked on platform-managed store sales, each product must have an associated <strong>active affiliate offer</strong>.</p>
+                            <ol class="space-y-3 text-sm text-gray-700">
+                                <li class="flex gap-3"><span class="font-bold text-blue-600 shrink-0">1.</span><span>Go to <strong>My Store → Products</strong>.</span></li>
+                                <li class="flex gap-3"><span class="font-bold text-blue-600 shrink-0">2.</span><span>Find the product and click <strong>Add Offer</strong> in the Offer Status column.</span></li>
+                                <li class="flex gap-3"><span class="font-bold text-blue-600 shrink-0">3.</span><span>The offer creation form is pre-filled with the product's details. Set the commission rate and submit for approval.</span></li>
+                                <li class="flex gap-3"><span class="font-bold text-blue-600 shrink-0">4.</span><span>Once the offer is approved, affiliates can generate tracking links. When a customer arrives via a tracking link and completes a platform-managed checkout, the affiliate automatically receives their commission.</span></li>
+                            </ol>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Sales Payouts -->
+                <div id="sales-payouts" class="bg-white overflow-hidden shadow-xl sm:rounded-lg mb-6">
+                    <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                        <h3 class="text-2xl font-bold text-gray-800">💸 Sales Payouts (Withdrawals)</h3>
+                        <p class="text-gray-600 mt-1">How to withdraw your platform-managed store earnings to your bank account.</p>
+                    </div>
+                    <div class="p-6 space-y-5">
+
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r text-sm text-blue-800">
+                            <strong>Only applies to Platform-Managed mode.</strong> If your store uses Direct mode, funds go straight to your Paystack/Flutterwave account — use those dashboards for withdrawals.
+                        </div>
+
+                        <!-- Balance & Withdrawal flow -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-3">How It Works</h4>
+                            <div class="flex flex-col md:flex-row gap-3 items-stretch text-sm">
+                                <div class="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+                                    <div class="text-2xl mb-1">🛒</div>
+                                    <div class="font-semibold">Customer Pays</div>
+                                    <p class="text-xs text-gray-500 mt-1">Order placed &amp; payment verified</p>
+                                </div>
+                                <div class="text-gray-400 font-bold self-center hidden md:block">→</div>
+                                <div class="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+                                    <div class="text-2xl mb-1">⚡</div>
+                                    <div class="font-semibold">Instant Split</div>
+                                    <p class="text-xs text-gray-500 mt-1">Platform fee &amp; affiliate commission deducted</p>
+                                </div>
+                                <div class="text-gray-400 font-bold self-center hidden md:block">→</div>
+                                <div class="flex-1 bg-emerald-50 border border-emerald-200 rounded-lg p-4 text-center">
+                                    <div class="text-2xl mb-1">💰</div>
+                                    <div class="font-semibold">Credited to Wallet</div>
+                                    <p class="text-xs text-gray-500 mt-1">Net amount added to your sales balance</p>
+                                </div>
+                                <div class="text-gray-400 font-bold self-center hidden md:block">→</div>
+                                <div class="flex-1 bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                                    <div class="text-2xl mb-1">🏦</div>
+                                    <div class="font-semibold">Request Withdrawal</div>
+                                    <p class="text-xs text-gray-500 mt-1">Submit bank details &amp; amount</p>
+                                </div>
+                                <div class="text-gray-400 font-bold self-center hidden md:block">→</div>
+                                <div class="flex-1 bg-green-50 border border-green-300 rounded-lg p-4 text-center">
+                                    <div class="text-2xl mb-1">✅</div>
+                                    <div class="font-semibold">Paid Out</div>
+                                    <p class="text-xs text-gray-500 mt-1">Admin approves &amp; transfers to your bank</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- How to withdraw -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-3">How to Request a Withdrawal</h4>
+                            <ol class="space-y-3 text-sm text-gray-700">
+                                <li class="flex gap-3"><span class="font-bold text-blue-600 shrink-0">1.</span><span>Go to <strong>Sales Payouts</strong> from the main navigation.</span></li>
+                                <li class="flex gap-3"><span class="font-bold text-blue-600 shrink-0">2.</span><span>Your current available balance is shown at the top. The minimum withdrawal amount is <strong>₦500</strong>.</span></li>
+                                <li class="flex gap-3"><span class="font-bold text-blue-600 shrink-0">3.</span><span>Fill in the withdrawal form: amount, bank name, account number (10 digits), and account name.</span></li>
+                                <li class="flex gap-3"><span class="font-bold text-blue-600 shrink-0">4.</span><span>Submit. A <strong>pending</strong> payout request is created and your balance is held until the request is processed.</span></li>
+                                <li class="flex gap-3"><span class="font-bold text-blue-600 shrink-0">5.</span><span>The admin reviews and approves the transfer. You'll see the status update to <strong>completed</strong> when done.</span></li>
+                            </ol>
+                        </div>
+
+                        <!-- Payout statuses -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-3">Payout Statuses</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm text-center">
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                    <span class="inline-flex px-2 py-0.5 text-xs rounded-full font-medium bg-yellow-100 text-yellow-700">pending</span>
+                                    <p class="text-xs text-gray-600 mt-2">Submitted, awaiting admin review</p>
+                                </div>
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                    <span class="inline-flex px-2 py-0.5 text-xs rounded-full font-medium bg-blue-100 text-blue-700">processing</span>
+                                    <p class="text-xs text-gray-600 mt-2">Admin is processing the bank transfer</p>
+                                </div>
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                    <span class="inline-flex px-2 py-0.5 text-xs rounded-full font-medium bg-green-100 text-green-700">completed</span>
+                                    <p class="text-xs text-gray-600 mt-2">Transfer sent to your bank account</p>
+                                </div>
+                                <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+                                    <span class="inline-flex px-2 py-0.5 text-xs rounded-full font-medium bg-red-100 text-red-700">rejected</span>
+                                    <p class="text-xs text-gray-600 mt-2">Rejected (see notes). Balance refunded.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800">
+                            <strong>Note:</strong> You can only have one active pending withdrawal at a time. Cancel a pending request if you need to submit a different amount.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Store Refunds -->
+                <div id="store-refunds" class="bg-white overflow-hidden shadow-xl sm:rounded-lg mb-6">
+                    <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-rose-50 to-red-50">
+                        <h3 class="text-2xl font-bold text-gray-800">↩️ Store Refunds</h3>
+                        <p class="text-gray-600 mt-1">How to request a refund for a platform-managed store order.</p>
+                    </div>
+                    <div class="p-6 space-y-5">
+
+                        <div class="bg-rose-50 border-l-4 border-rose-400 p-4 rounded-r text-sm text-rose-800">
+                            <strong>Only applies to Platform-Managed mode.</strong> For Direct mode stores, process refunds directly through your Paystack or Flutterwave dashboard.
+                        </div>
+
+                        <!-- When to request -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-3">When Can I Request a Refund?</h4>
+                            <p class="text-sm text-gray-600 mb-3">A refund can be requested for a paid platform-managed order as long as:</p>
+                            <ul class="text-sm text-gray-700 space-y-2 list-disc list-inside">
+                                <li>The order status is <strong>paid</strong> (not shipped or delivered)</li>
+                                <li>No refund has already been requested or processed for this order</li>
+                            </ul>
+                        </div>
+
+                        <!-- How to request -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-3">How to Request a Refund</h4>
+                            <ol class="space-y-3 text-sm text-gray-700">
+                                <li class="flex gap-3"><span class="font-bold text-rose-600 shrink-0">1.</span><span>Go to <strong>My Store → Orders</strong>.</span></li>
+                                <li class="flex gap-3"><span class="font-bold text-rose-600 shrink-0">2.</span><span>Find the order and click <strong>Request Refund</strong>.</span></li>
+                                <li class="flex gap-3"><span class="font-bold text-rose-600 shrink-0">3.</span><span>Enter a note explaining why the refund is needed (required).</span></li>
+                                <li class="flex gap-3"><span class="font-bold text-rose-600 shrink-0">4.</span><span>Submit. The request enters <strong>requested</strong> status and is reviewed by the platform admin.</span></li>
+                            </ol>
+                        </div>
+
+                        <!-- What happens -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-3">What Happens When a Refund is Approved?</h4>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex items-start gap-3 bg-gray-50 border border-gray-200 rounded-lg p-3">
+                                    <span class="text-red-500 font-bold shrink-0">1.</span>
+                                    <span>Your <strong>sales wallet balance</strong> is debited by the advertiser net amount (the amount originally credited to your wallet).</span>
+                                </div>
+                                <div class="flex items-start gap-3 bg-gray-50 border border-gray-200 rounded-lg p-3">
+                                    <span class="text-red-500 font-bold shrink-0">2.</span>
+                                    <span>If an affiliate was credited a commission for this order, their <strong>balance is clawed back</strong> (up to what they have available).</span>
+                                </div>
+                                <div class="flex items-start gap-3 bg-gray-50 border border-gray-200 rounded-lg p-3">
+                                    <span class="text-red-500 font-bold shrink-0">3.</span>
+                                    <span>The platform attempts a <strong>Paystack refund</strong> to the customer's original payment method for the full order amount.</span>
+                                </div>
+                            </div>
+                            <div class="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
+                                <strong>Note:</strong> Ensure your sales wallet has enough balance to cover the refund debit. If your balance is insufficient, the refund request may be rejected.
+                            </div>
+                        </div>
+
+                        <!-- Refund statuses -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-3">Refund Statuses</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-center">
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                    <span class="inline-flex px-2 py-0.5 text-xs rounded-full font-medium bg-yellow-100 text-yellow-700">requested</span>
+                                    <p class="text-xs text-gray-600 mt-2">Submitted, awaiting admin review</p>
+                                </div>
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                    <span class="inline-flex px-2 py-0.5 text-xs rounded-full font-medium bg-green-100 text-green-700">approved</span>
+                                    <p class="text-xs text-gray-600 mt-2">Approved — balances reversed &amp; Paystack refund initiated</p>
+                                </div>
+                                <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+                                    <span class="inline-flex px-2 py-0.5 text-xs rounded-full font-medium bg-red-100 text-red-700">rejected</span>
+                                    <p class="text-xs text-gray-600 mt-2">Rejected — no changes to balances</p>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -1633,6 +1893,9 @@ const sections = [
     { id: 'fraud-prevention', title: 'Fraud Prevention', description: 'Built-in protection', icon: '🛡️' },
     { id: 'best-practices', title: 'Best Practices', description: 'Tips for success', icon: '⭐' },
     { id: 'store-builder', title: 'Store Builder', description: 'Build & manage your storefront', icon: '🏪' },
+    { id: 'platform-payments', title: 'Platform-Managed Payments', description: 'Let the platform collect & split sales', icon: '💳' },
+    { id: 'sales-payouts', title: 'Sales Payouts', description: 'Withdraw your store earnings', icon: '💸' },
+    { id: 'store-refunds', title: 'Store Refunds', description: 'Requesting & managing refunds', icon: '↩️' },
     { id: 'webhook-setup', title: 'Webhook Setup', description: 'Configure payment notifications', icon: '🔗' },
     { id: 'faqs', title: 'FAQs', description: 'Common questions', icon: '❓' },
 ];
@@ -1677,6 +1940,26 @@ const faqs = [
     {
         question: 'What if the tracking pixel doesn\'t fire?',
         answer: 'Double-check: 1) Pixel is on thank-you page, 2) Page actually loads after purchase, 3) Transaction ID is unique, 4) Amount is passed correctly. Contact support if still having issues.'
+    },
+    {
+        question: 'What is Platform-Managed payment mode?',
+        answer: 'In Platform-Managed mode the platform collects store payments using its own Paystack account, automatically deducts the platform fee and any affiliate commission, and credits your net earnings to your sales wallet. This enables automatic affiliate commission tracking on store sales.'
+    },
+    {
+        question: 'Can I switch between Direct and Platform-Managed payment modes?',
+        answer: 'Yes, but only before your store processes its first order. Once any order has been placed the payment mode is locked to protect existing order records. Plan ahead before going live.'
+    },
+    {
+        question: 'How long does a sales payout take?',
+        answer: 'Payout requests are reviewed manually by the admin team, typically within 1-3 business days. You will see the status update to \'processing\' and then \'completed\' when the bank transfer is sent.'
+    },
+    {
+        question: 'What if my refund request is rejected?',
+        answer: 'If an admin rejects your refund request, no balances are changed — your sales wallet and the affiliate\'s balance stay the same. You can review the rejection note provided and contact support if you believe it was rejected in error.'
+    },
+    {
+        question: 'Do affiliates earn commission on platform-managed store orders?',
+        answer: 'Yes, automatically! When a customer arrives through an affiliate tracking link, makes a purchase in your platform-managed store, and the product has an active affiliated offer, the commission is calculated and credited to the affiliate\'s balance instantly after payment verification.'
     }
 ];
 

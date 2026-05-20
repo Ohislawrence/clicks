@@ -102,8 +102,8 @@ class StoreController extends Controller
         try {
             // Calculate subscription dates (temporary - will be updated after payment)
             $subscriptionStart = now();
-            $subscriptionEnd = $validated['billing_cycle'] === 'monthly' 
-                ? now()->addMonth() 
+            $subscriptionEnd = $validated['billing_cycle'] === 'monthly'
+                ? now()->addMonth()
                 : now()->addYear();
 
             // Encrypt payment secret key if provided
@@ -316,6 +316,7 @@ class StoreController extends Controller
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string',
             'meta_keywords' => 'nullable|string',
+            'payment_mode' => 'nullable|in:direct,platform',
             'payment_provider' => 'nullable|in:paystack,flutterwave',
             'payment_public_key' => 'nullable|string',
             'payment_secret_key' => 'nullable|string',
@@ -348,6 +349,11 @@ class StoreController extends Controller
         }
         if (!empty($validated['payment_webhook_secret'])) {
             $updateData['payment_webhook_secret'] = Crypt::encryptString($validated['payment_webhook_secret']);
+        }
+
+        // Only allow changing payment_mode if no platform orders have been placed yet
+        if (!empty($validated['payment_mode']) && !$store->has_orders) {
+            $updateData['payment_mode'] = $validated['payment_mode'];
         }
 
         $store->update($updateData);
@@ -510,5 +516,32 @@ class StoreController extends Controller
         ]);
 
         return back()->with('success', 'Theme updated successfully!');
+    }
+
+    /**
+     * Redirect to offer creation pre-filled with a product's details.
+     * This makes it easy to create a CPS offer tied to a specific store product.
+     */
+    public function createOfferForProduct($storeId, $productId)
+    {
+        $user = auth()->user();
+        $store = $user->stores()->with('plan')->findOrFail($storeId);
+        $product = \App\Models\StoreProduct::where('store_id', $store->id)
+            ->where('id', $productId)
+            ->firstOrFail();
+
+        $query = http_build_query([
+            'prefill' => [
+                'name'           => $product->name,
+                'description'    => \Illuminate\Support\Str::limit(strip_tags($product->description ?? ''), 200),
+                'pricing_model'  => 'CPS',
+                'product_id'     => $product->id,
+                'store_id'       => $store->id,
+            ],
+        ]);
+
+        $url = route('advertiser.offers.create') . '?' . $query;
+
+        return redirect($url);
     }
 }

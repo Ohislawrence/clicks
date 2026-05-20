@@ -7,7 +7,9 @@ use App\Models\Offer;
 use App\Models\OfferCategory;
 use App\Models\OfferCreative;
 use App\Models\StoreProduct;
+use App\Models\WalletTransaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -77,12 +79,30 @@ class OfferController extends Controller
             'whatsapp_number' => 'required_if:enable_whatsapp_tracking,true|nullable|string|max:20',
             'whatsapp_message_template' => 'nullable|string|max:500',
             'is_active' => 'boolean',
+            // Budget & caps
+            'budget'               => 'nullable|numeric|min:0',
+            'daily_conversion_cap' => 'nullable|integer|min:1',
+            'monthly_conversion_cap' => 'nullable|integer|min:1',
             'creatives' => 'nullable|array',
             'creatives.*.type' => 'required|in:banner,image,text,video',
             'creatives.*.name' => 'required|string|max:255',
             'creatives.*.file' => 'nullable|file|mimes:jpg,jpeg,png,gif,mp4,mov|max:10240',
             'creatives.*.content' => 'nullable|string',
+            // Sales forecast & wallet
+            'expected_sales'          => 'nullable|integer|min:0',
+            'product_cost'            => 'nullable|numeric|min:0',
+            'minimum_wallet_required' => 'nullable|numeric|min:0',
         ]);
+
+        // Validate budget against wallet balance before creating the offer
+        $budget = isset($validated['budget']) ? (float) $validated['budget'] : 0;
+        if ($budget > 0 && $request->user()->advertiser_balance < $budget) {
+            return back()->withErrors([
+                'budget' => 'Insufficient wallet balance (₦' .
+                    number_format($request->user()->advertiser_balance, 2) .
+                    ' available). Please top up your wallet first.',
+            ])->withInput();
+        }
 
         // If linked to a store product, verify the advertiser owns it
         if (!empty($validated['store_product_id'])) {
@@ -109,7 +129,49 @@ class OfferController extends Controller
             'whatsapp_message_template' => $validated['whatsapp_message_template'] ?? null,
             'is_active' => $validated['is_active'] ?? true,
             'approval_status' => 'pending', // Requires admin approval
+            'expected_sales'          => $validated['expected_sales'] ?? null,
+            'product_cost'            => $validated['product_cost'] ?? null,
+            'minimum_wallet_required' => $validated['minimum_wallet_required'] ?? null,
         ]);
+
+        // Allocate budget from advertiser wallet if provided
+        if ($budget > 0) {
+            // Auto-calculate conversion cap: budget ÷ CPA rate
+            $rate = (float) $validated['commission_rate'];
+            $conversionCap = ($rate > 0) ? (int) floor($budget / $rate) : null;
+
+            $offer->update([
+                'budget_limit'         => $budget,
+                'spent_budget'         => 0,
+                'total_conversion_cap' => $conversionCap,
+                'daily_conversion_cap' => $validated['daily_conversion_cap'] ?? null,
+                'monthly_conversion_cap' => $validated['monthly_conversion_cap'] ?? null,
+                'auto_pause_on_cap'    => true,
+            ]);
+
+            DB::transaction(function () use ($request, $offer, $budget) {
+                // Deduct from wallet (funds are now locked to this offer)
+                $request->user()->decrement('advertiser_balance', $budget);
+
+                WalletTransaction::create([
+                    'user_id'     => $request->user()->id,
+                    'amount'      => $budget,
+                    'type'        => 'offer_allocation',
+                    'status'      => 'success',
+                    'offer_id'    => $offer->id,
+                    'description' => "Budget allocated for offer: {$offer->name}",
+                ]);
+            });
+        } else {
+            // Still apply optional caps if provided, but no wallet deduction
+            $capData = array_filter([
+                'daily_conversion_cap'   => $validated['daily_conversion_cap'] ?? null,
+                'monthly_conversion_cap' => $validated['monthly_conversion_cap'] ?? null,
+            ]);
+            if ($capData) {
+                $offer->update(array_merge($capData, ['auto_pause_on_cap' => true]));
+            }
+        }
 
         // Process creatives if provided
         if (!empty($validated['creatives'])) {
@@ -125,15 +187,31 @@ class OfferController extends Controller
                 // Handle file upload
                 if ($request->hasFile("creatives.{$index}.file")) {
                     $file = $request->file("creatives.{$index}.file");
-                    $path = $file->store('creatives', 'public');
+
+                    if (!$file->isValid()) {
+                        continue;
+                    }
+
+                    $extension = $file->guessExtension() ?? $file->getClientOriginalExtension() ?? '';
+                    $filename  = Str::random(40) . ($extension !== '' ? '.' . $extension : '');
+                    $destDir   = storage_path('app/public/creatives');
+
+                    if (!is_dir($destDir)) {
+                        mkdir($destDir, 0755, true);
+                    }
+
+                    $file->move($destDir, $filename);
+                    $path = 'creatives/' . $filename;
 
                     $creativesData['file_path'] = $path;
-                    $creativesData['size'] = $this->formatFileSize($file->getSize());
-                    $creativesData['format'] = strtoupper($file->getClientOriginalExtension());
+                    $creativesData['size'] = $this->formatFileSize(
+                        file_exists($destDir . '/' . $filename) ? filesize($destDir . '/' . $filename) : 0
+                    );
+                    $creativesData['format'] = strtoupper($extension);
 
                     // Get image dimensions if it's an image
                     if (in_array($creativeData['type'], ['banner', 'image'])) {
-                        $imagePath = storage_path('app/public/' . $path);
+                        $imagePath = $destDir . '/' . $filename;
                         if (file_exists($imagePath)) {
                             $imageInfo = getimagesize($imagePath);
                             if ($imageInfo) {
@@ -232,6 +310,10 @@ class OfferController extends Controller
             'whatsapp_number' => 'required_if:enable_whatsapp_tracking,true|nullable|string|max:20',
             'whatsapp_message_template' => 'nullable|string|max:500',
             'is_active' => 'boolean',
+            // Sales forecast & wallet
+            'expected_sales'          => 'nullable|integer|min:0',
+            'product_cost'            => 'nullable|numeric|min:0',
+            'minimum_wallet_required' => 'nullable|numeric|min:0',
         ]);
 
         $offer->update($validated);
@@ -265,5 +347,16 @@ class OfferController extends Controller
         ]);
 
         return back()->with('success', 'Offer status updated successfully!');
+    }
+
+    public function regeneratePostbackSecret(Offer $offer)
+    {
+        if ($offer->advertiser_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $offer->update(['postback_secret' => Str::random(48)]);
+
+        return back()->with('success', 'Postback secret regenerated. Update your postback URL with the new token.');
     }
 }

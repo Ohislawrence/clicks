@@ -100,7 +100,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'payment_details' => 'array',
+            'payment_details' => 'encrypted:array',
             'balance' => 'decimal:2',
             'pending_balance' => 'decimal:2',
             'lifetime_earnings' => 'decimal:2',

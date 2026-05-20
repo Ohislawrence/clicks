@@ -150,6 +150,34 @@
                         <h3 class="text-xl font-semibold text-gray-900 mb-1">Payment Configuration</h3>
                         <p class="text-sm text-gray-500 mb-5">Update your Paystack or Flutterwave API keys. Leave fields blank to keep existing values.</p>
 
+                        <!-- Payment Mode Selector -->
+                        <div class="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                            <h4 class="text-sm font-semibold text-gray-700 mb-3">Payment Collection Mode</h4>
+                            <div v-if="store.has_orders" class="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-3">
+                                <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                                Mode is locked because orders have already been placed. Contact support to change it.
+                            </div>
+                            <div class="flex gap-3">
+                                <label :class="['flex-1 flex items-start gap-3 p-3 border-2 rounded-lg cursor-pointer transition', form.payment_mode === 'direct' ? 'border-blue-500 bg-blue-50' : 'border-gray-200', store.has_orders ? 'opacity-60 cursor-not-allowed' : '']">
+                                    <input type="radio" v-model="form.payment_mode" value="direct" class="mt-0.5" :disabled="store.has_orders">
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-800">Direct (Own Keys)</p>
+                                        <p class="text-xs text-gray-500 mt-0.5">Customers pay directly to your Paystack/Flutterwave account. You manage all funds yourself.</p>
+                                    </div>
+                                </label>
+                                <label :class="['flex-1 flex items-start gap-3 p-3 border-2 rounded-lg cursor-pointer transition', form.payment_mode === 'platform' ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200', store.has_orders ? 'opacity-60 cursor-not-allowed' : '', !store.plan?.platform_fee_percentage ? 'opacity-50 pointer-events-none' : '']">
+                                    <input type="radio" v-model="form.payment_mode" value="platform" class="mt-0.5" :disabled="store.has_orders || !store.plan?.platform_fee_percentage">
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-800">Platform-Managed</p>
+                                        <p class="text-xs text-gray-500 mt-0.5">The platform collects payments on your behalf, deducts a fee ({{ store.plan?.platform_fee_percentage ?? '–' }}%), and credits your wallet. Enables affiliate tracking &amp; refund management.</p>
+                                        <p v-if="!store.plan?.platform_fee_percentage" class="text-xs text-orange-500 mt-1">Not available on your current plan.</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Direct mode keys (only show when direct mode selected) -->
+                        <template v-if="form.payment_mode === 'direct'">
                         <!-- Current status indicator -->
                         <div v-if="!store.payment_provider" class="mb-4 flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2">
                             <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
@@ -223,6 +251,7 @@
                                 </div>
                             </div>
                         </div>
+                    </template>
                     </div>
 
                     <!-- Actions -->
@@ -271,6 +300,7 @@ const form = useForm({
     meta_description: props.store.meta_description || '',
     meta_keywords: props.store.meta_keywords || '',
     payment_provider: props.store.payment_provider || 'paystack',
+    payment_mode: props.store.payment_mode || 'direct',
     payment_public_key: '',
     payment_secret_key: '',
     payment_webhook_secret: '',

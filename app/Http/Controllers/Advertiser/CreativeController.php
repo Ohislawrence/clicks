@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Advertiser;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessImageJob;
 use App\Models\Offer;
 use App\Models\OfferCreative;
 use Illuminate\Http\Request;
@@ -78,15 +79,31 @@ class CreativeController extends Controller
         // Handle file upload
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $path = $file->store('creatives', 'public');
+
+            if (!$file->isValid()) {
+                return redirect()->back()->withErrors(['file' => 'The uploaded file is invalid or incomplete. Please try again.']);
+            }
+
+            $extension = $file->guessExtension() ?? $file->getClientOriginalExtension() ?? '';
+            $filename  = \Illuminate\Support\Str::random(40) . ($extension !== '' ? '.' . $extension : '');
+            $destDir   = storage_path('app/public/creatives');
+
+            if (!is_dir($destDir)) {
+                mkdir($destDir, 0755, true);
+            }
+
+            $file->move($destDir, $filename);
+            $path = 'creatives/' . $filename;
 
             $creativesData['file_path'] = $path;
-            $creativesData['size'] = $this->formatFileSize($file->getSize());
-            $creativesData['format'] = strtoupper($file->getClientOriginalExtension());
+            $creativesData['size'] = $this->formatFileSize(
+                file_exists($destDir . '/' . $filename) ? filesize($destDir . '/' . $filename) : 0
+            );
+            $creativesData['format'] = strtoupper($extension);
 
             // Get image dimensions if it's an image
             if (in_array($validated['type'], ['banner', 'image'])) {
-                $imagePath = storage_path('app/public/' . $path);
+                $imagePath = $destDir . '/' . $filename;
                 if (file_exists($imagePath)) {
                     $imageInfo = getimagesize($imagePath);
                     if ($imageInfo) {

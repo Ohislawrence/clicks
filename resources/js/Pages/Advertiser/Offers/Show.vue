@@ -245,6 +245,63 @@
                                 <p class="text-gray-900 break-all font-mono text-sm">{{ offer.postback_url }}</p>
                             </div>
 
+                            <!-- S2S Postback Secret -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    S2S Postback Endpoint &amp; Secret Token
+                                </label>
+                                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3">
+                                    <p class="text-xs text-gray-500">
+                                        Use this endpoint and token to send server-to-server conversion postbacks.
+                                        Include the <code class="bg-gray-200 px-1 rounded">token</code> parameter in every postback request.
+                                    </p>
+                                    <div>
+                                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Example Postback URL</p>
+                                        <div class="flex items-start gap-2">
+                                            <code class="flex-1 block bg-white border border-gray-200 rounded px-3 py-2 text-xs font-mono break-all text-gray-700 leading-relaxed">
+                                                {{ postbackExampleUrl }}
+                                            </code>
+                                            <button
+                                                @click="copyToClipboard(postbackExampleUrl)"
+                                                class="flex-shrink-0 px-2 py-1.5 text-xs bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                                                title="Copy"
+                                            >
+                                                {{ copied === 'url' ? '✓' : 'Copy' }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Your Secret Token</p>
+                                        <div class="flex items-center gap-2">
+                                            <code class="flex-1 block bg-white border border-gray-200 rounded px-3 py-2 text-xs font-mono text-gray-700 break-all">
+                                                {{ showSecret ? offer.postback_secret : '•'.repeat(24) }}
+                                            </code>
+                                            <button
+                                                @click="showSecret = !showSecret"
+                                                class="flex-shrink-0 px-2 py-1.5 text-xs bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                                            >
+                                                {{ showSecret ? 'Hide' : 'Show' }}
+                                            </button>
+                                            <button
+                                                @click="copyToClipboard(offer.postback_secret, 'secret')"
+                                                class="flex-shrink-0 px-2 py-1.5 text-xs bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                                            >
+                                                {{ copied === 'secret' ? '✓' : 'Copy' }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="pt-1 border-t border-gray-200">
+                                        <button
+                                            @click="showRegenerateConfirm = true"
+                                            class="text-xs text-red-600 hover:text-red-700 font-medium"
+                                        >
+                                            Regenerate secret token
+                                        </button>
+                                        <span class="text-xs text-gray-400 ml-2">— invalidates the old token immediately</span>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div v-if="offer.terms_and_conditions" class="md:col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Terms & Conditions</label>
                                 <p class="text-gray-900 whitespace-pre-wrap">{{ offer.terms_and_conditions }}</p>
@@ -327,35 +384,39 @@
 
         <!-- Delete Confirmation Modal -->
         <DialogModal :show="showDeleteModal" @close="showDeleteModal = false">
-            <template #title>
-                Delete Offer
-            </template>
-
+            <template #title>Delete Offer</template>
             <template #content>
                 Are you sure you want to delete this offer? This action cannot be undone and will remove all associated data.
             </template>
-
             <template #footer>
-                <SecondaryButton @click="showDeleteModal = false">
-                    Cancel
-                </SecondaryButton>
-
-                <DangerButton
-                    class="ml-3"
-                    @click="deleteOffer"
-                    :disabled="deleteForm.processing"
-                >
+                <SecondaryButton @click="showDeleteModal = false">Cancel</SecondaryButton>
+                <DangerButton class="ml-3" @click="deleteOffer" :disabled="deleteForm.processing">
                     <span v-if="deleteForm.processing">Deleting...</span>
                     <span v-else>Delete Offer</span>
                 </DangerButton>
+            </template>
+        </DialogModal>
+
+        <!-- Regenerate Postback Secret Confirmation -->
+        <DialogModal :show="showRegenerateConfirm" @close="showRegenerateConfirm = false">
+            <template #title>Regenerate Postback Secret</template>
+            <template #content>
+                <p class="text-sm text-gray-600">
+                    This will immediately invalidate your current secret token. Any postback URLs on your advertiser server that use the old token will stop working until you update them.
+                </p>
+                <p class="mt-2 text-sm font-semibold text-red-600">Are you sure you want to continue?</p>
+            </template>
+            <template #footer>
+                <SecondaryButton @click="showRegenerateConfirm = false">Cancel</SecondaryButton>
+                <DangerButton class="ml-3" @click="regenerateSecret">Regenerate</DangerButton>
             </template>
         </DialogModal>
     </AppLayout>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { Link, useForm } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
+import { Link, useForm, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DialogModal from '@/Components/DialogModal.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
@@ -368,6 +429,29 @@ const props = defineProps({
 
 const showDeleteModal = ref(false);
 const deleteForm = useForm({});
+
+// Postback secret UI state
+const showSecret = ref(false);
+const showRegenerateConfirm = ref(false);
+const copied = ref(null);
+
+const postbackExampleUrl = computed(() => {
+    const base = window.location.origin + '/api/postback';
+    return `${base}?tracking_code={TRACKING_CODE}&conversion_value={VALUE}&transaction_id={TXN_ID}&token=${props.offer.postback_secret}`;
+});
+
+const copyToClipboard = (text, key = 'url') => {
+    navigator.clipboard.writeText(text).then(() => {
+        copied.value = key;
+        setTimeout(() => { copied.value = null; }, 2000);
+    });
+};
+
+const regenerateSecret = () => {
+    router.post(route('advertiser.offers.regenerate-postback-secret', props.offer.id), {}, {
+        onSuccess: () => { showRegenerateConfirm.value = false; },
+    });
+};
 
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-NG', {

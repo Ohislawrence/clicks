@@ -1,4 +1,4 @@
-@extends('layouts.front')
+﻿@extends('layouts.front')
 
 @section('title', 'Frequently Asked Questions (FAQ) | ' . config('app.name'))
 @section('meta_description', 'Find answers to common questions about ' . config('app.name') . '. Learn about payments, offers, tracking, fraud protection, and how to get started as an affiliate or advertiser.')
@@ -34,7 +34,7 @@
       "name": "What is the minimum payout?",
       "acceptedAnswer": {
         "@@type": "Answer",
-        "text": "The minimum payout threshold is typically $100 USD, but this may vary based on your payment method."
+        "text": "The minimum payout threshold is ₦5,000, but this may vary based on your payment method."
       }
     }
   ]
@@ -44,75 +44,33 @@
 
 @push('styles')
 <style>
-    .faq-category {
-        scroll-margin-top: 80px;
+    :root {
+        --ink: #0a0c0b; --ink-2: #111410; --ink-3: #181c16; --ink-4: #1e231b;
+        --em: #10b981; --em-l: #34d399; --em-dim: #064e3b;
+        --snow: #f0f5f1; --ash: #9aab9e; --stone: #566b5b;
+        --wire: rgba(16,185,129,0.12); --wire-s: rgba(16,185,129,0.22);
+        --fd: 'Inter', sans-serif; --fb: 'Inter', sans-serif;
     }
-
-    .faq-item {
-        background: #171717;
-        border: 1px solid #262626;
-        border-radius: 16px;
-        transition: all 0.2s ease;
-    }
-    .faq-item:hover {
-        border-color: #333333;
-        background: #1c1c1c;
-    }
-
-    .faq-question {
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .faq-answer {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .faq-item.open .faq-answer {
-        max-height: 500px;
-    }
-    .faq-item.open .chevron-icon {
-        transform: rotate(180deg);
-    }
-
-    .chevron-icon {
-        transition: transform 0.2s ease;
-    }
-
-    .category-tab {
-        background: #171717;
-        border: 1px solid #262626;
-        transition: all 0.2s ease;
-    }
-    .category-tab:hover {
-        border-color: #404040;
-        background: #1f1f1f;
-    }
-    .category-tab.active {
-        background: #10b981;
-        border-color: #10b981;
-        color: white;
-    }
-    .category-tab.active .tab-icon {
-        color: white;
-    }
-
-    .info-box {
-        background: #171717;
-        border: 1px solid #262626;
-        border-radius: 16px;
-    }
-
-    .fade-up {
-        opacity: 0;
-        transform: translateY(24px);
-        transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-    }
-    .fade-up.visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    body::before { content:''; position:fixed; inset:0;
+        background-image: linear-gradient(rgba(16,185,129,0.025) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(16,185,129,0.025) 1px, transparent 1px);
+        background-size: 52px 52px; pointer-events:none; z-index:0; }
+    .reveal { opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease; }
+    .reveal.in-view { opacity:1; transform:translateY(0); }
+    .faq-category { scroll-margin-top:80px; }
+    .faq-item { background:var(--ink-2); border:1px solid var(--wire); border-radius:16px;
+        transition:border-color .2s ease; }
+    .faq-item:hover { border-color:var(--wire-s); }
+    .faq-question { cursor:pointer; transition:all .2s ease; }
+    .faq-answer { max-height:0; overflow:hidden; transition:max-height .3s cubic-bezier(.4,0,.2,1); }
+    .faq-item.open .faq-answer { max-height:500px; }
+    .faq-item.open .chevron-icon { transform:rotate(180deg); }
+    .chevron-icon { transition:transform .2s ease; }
+    .category-tab { background:var(--ink-2); border:1px solid var(--wire); border-radius:8px;
+        color:#a3a3a3; transition:background .2s ease, border-color .2s ease, color .2s ease; }
+    .category-tab:hover { border-color:var(--wire-s); color:var(--snow); }
+    .category-tab.active { background:var(--em); border-color:var(--em); color:white; }
+    .info-box { background:var(--ink-2); border:1px solid var(--wire); border-radius:16px; }
 </style>
 @endpush
 
@@ -290,9 +248,9 @@
                             We offer multiple payment methods including:
                         </p>
                         <ul class="list-disc list-inside text-neutral-400 space-y-1 ml-2">
-                            <li>Bank Transfer / Wire</li>
-                            <li>PayPal</li>
-                            <li>Other payment processors (varies by region)</li>
+                            <li>Bank Transfer (Nigerian banks)</li>
+                            <li>Paystack</li>
+                            <li>Flutterwave</li>
                         </ul>
                         <p class="text-neutral-400 leading-relaxed mt-3">
                             Payment schedules vary by offer but typically range from weekly to monthly payouts once you reach the minimum threshold.
@@ -309,7 +267,7 @@
                     </div>
                     <div class="faq-answer px-5 pb-5">
                         <p class="text-neutral-400 leading-relaxed">
-                            The minimum payout threshold is typically $100 USD, but this may vary based on your payment method and account settings.
+                            The minimum payout threshold is ₦5,000. This may vary slightly based on your payment method and account settings.
                         </p>
                     </div>
                 </div>
@@ -512,7 +470,7 @@
         </div>
 
         <!-- Support CTA -->
-        <div class="info-box p-8 text-center fade-up" data-animate>
+        <div class="info-box p-8 text-center reveal">
             <div class="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <svg class="w-7 h-7 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
@@ -597,22 +555,16 @@
         updateActiveTab();
     })();
 
-    // Intersection Observer for fade-up animations
-    (function() {
-        const observerOptions = { threshold: 0.15, rootMargin: '0px 0px -20px 0px' };
-
-        const elements = document.querySelectorAll('[data-animate]');
-        elements.forEach((el) => {
-            const obs = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        obs.unobserve(entry.target);
-                    }
-                });
-            }, observerOptions);
-            obs.observe(el);
-        });
+    // Scroll reveal
+    (function () {
+        var reveals = document.querySelectorAll('.reveal');
+        if (!reveals.length) return;
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+                if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+        reveals.forEach(function (r) { io.observe(r); });
     })();
 </script>
 @endpush

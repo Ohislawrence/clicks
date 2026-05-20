@@ -119,7 +119,7 @@
                                         </template>
                                         <template v-else>
                                             <Link
-                                                :href="route('advertiser.offers.create', { product_id: product.id })"
+                                                :href="route('advertiser.store.products.create-offer', { store: store.id, product: product.id })"
                                                 class="inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full font-medium bg-gray-100 text-gray-500 hover:bg-indigo-100 hover:text-indigo-700 transition-colors"
                                                 title="Create an affiliate offer for this product"
                                             >

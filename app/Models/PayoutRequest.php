@@ -25,7 +25,7 @@ class PayoutRequest extends Model
 
     protected $casts = [
         'amount' => 'decimal:2',
-        'payment_details' => 'array',
+        'payment_details' => 'encrypted:array',
         'processed_at' => 'datetime',
         'completed_at' => 'datetime',
     ];

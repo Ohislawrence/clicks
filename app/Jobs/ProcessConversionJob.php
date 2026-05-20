@@ -78,8 +78,13 @@ class ProcessConversionJob implements ShouldQueue
 
             // Calculate commission based on pricing model
             if ($offer->pricing_model === 'spread') {
-                // Spread model: Use affiliate payout directly (platform margin already built in)
-                $commissionAmount = $offer->affiliate_payout ?? 0;
+                if ($offer->commission_model === 'revshare') {
+                    // For revshare + spread, affiliate_payout is a percentage rate (e.g. 30 = 30%)
+                    $commissionAmount = ($this->conversionValue * ($offer->affiliate_payout ?? 0)) / 100;
+                } else {
+                    // For fixed models (pps/ppl), affiliate_payout is a currency amount
+                    $commissionAmount = $offer->affiliate_payout ?? 0;
+                }
             } else {
                 // Legacy flat_fee model: Calculate from commission rate
                 $commissionAmount = $this->calculateCommission(
@@ -120,7 +125,12 @@ class ProcessConversionJob implements ShouldQueue
             $platformMargin = 0;
 
             if ($offer->pricing_model === 'spread') {
-                $advertiserPayout = $offer->advertiser_payout;
+                if ($offer->commission_model === 'revshare') {
+                    // For revshare, advertiser_payout is a percentage rate (e.g. 33 = 33%)
+                    $advertiserPayout = ($this->conversionValue * ($offer->advertiser_payout ?? 0)) / 100;
+                } else {
+                    $advertiserPayout = $offer->advertiser_payout;
+                }
                 // Platform margin = advertiser pays - affiliate receives
                 $platformMargin = $advertiserPayout - $finalCommission;
             }

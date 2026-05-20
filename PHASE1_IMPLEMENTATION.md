@@ -56,16 +56,20 @@ Created three job classes for background processing:
 3. Dispatch `ProcessClickJob` to queue
 4. Redirect user immediately
 
-#### **Postback Endpoint** (`POST /postback`)
+#### **Postback Endpoint** (`POST /api/postback`)
 - ✅ **S2S conversion tracking** - Server-to-server postbacks
-- ✅ **Instant response** - Returns success immediately
+- ✅ **Token authentication** - Per-offer shared secret required
+- ✅ **Rate limited** - 60 requests/minute per IP
+- ✅ **Replay protection** - Duplicate `transaction_id` rejected within 30 days
 - ✅ **Background processing** - Conversion processed in queue
 
 **Parameters:**
 - `tracking_code` (required) - Affiliate link tracking code
-- `transaction_id` (optional) - Unique transaction identifier
-- `conversion_value` (required) - Sale/lead value in currency
-- `postback` (optional) - Additional postback data (array)
+- `token` (required) - Per-offer postback secret (found in advertiser offer settings)
+- `conversion_value` (required) - Sale/lead value in currency (max: 999999)
+- `transaction_id` (optional, recommended) - Unique transaction identifier for deduplication
+
+> **⚠️ Breaking change from v1:** The route moved from `POST /postback` (web, CSRF-protected) to `POST /api/postback` (stateless). The `token` parameter is now required. The old `postback` array parameter has been removed.
 
 #### **Pixel Endpoint** (`GET /pixel`)
 - ✅ **Conversion pixel tracking** - 1x1 transparent GIF
@@ -154,10 +158,12 @@ curl -L "http://dealsintel.test/track/{tracking_code}"
 
 #### **Postback Method (S2S):**
 ```bash
-curl -X POST http://dealsintel.test/postback \
+# Get your postback_secret from the offer settings page in the advertiser dashboard
+curl -X POST https://dealsintel.com/api/postback \
   -H "Content-Type: application/json" \
   -d '{
     "tracking_code": "YOUR_TRACKING_CODE",
+    "token": "YOUR_OFFER_POSTBACK_SECRET",
     "transaction_id": "ORDER123",
     "conversion_value": 100.00
   }'

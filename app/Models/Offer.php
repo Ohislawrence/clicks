@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Offer extends Model
 {
@@ -36,6 +37,7 @@ class Offer extends Model
         'reviewed_by',
         'reviewed_at',
         'postback_url',
+        'postback_secret',
         'conversion_pixel',
         'enable_whatsapp_tracking',
         'whatsapp_number',
@@ -48,6 +50,9 @@ class Offer extends Model
         'total_conversion_cap',
         'budget_limit',
         'spent_budget',
+        'expected_sales',
+        'product_cost',
+        'minimum_wallet_required',
         'today_conversions',
         'month_conversions',
         'last_cap_reset_date',
@@ -72,6 +77,9 @@ class Offer extends Model
         'total_conversion_cap' => 'integer',
         'budget_limit' => 'decimal:2',
         'spent_budget' => 'decimal:2',
+        'expected_sales' => 'integer',
+        'product_cost' => 'decimal:2',
+        'minimum_wallet_required' => 'decimal:2',
         'today_conversions' => 'integer',
         'month_conversions' => 'integer',
         'last_cap_reset_date' => 'date',
@@ -84,6 +92,15 @@ class Offer extends Model
         'platform_margin',
         'margin_percentage',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (Offer $offer) {
+            if (empty($offer->postback_secret)) {
+                $offer->postback_secret = Str::random(48);
+            }
+        });
+    }
 
     public function advertiser(): BelongsTo
     {
@@ -190,6 +207,10 @@ class Offer extends Model
     {
         // If payouts are set (admin approved with spread), use affiliate_payout
         if ($this->affiliate_payout) {
+            // For revshare, affiliate_payout stores a percentage rate (e.g. 30 = 30%)
+            if ($this->commission_model === 'revshare') {
+                return ($conversionValue * $this->affiliate_payout) / 100;
+            }
             return $this->affiliate_payout;
         }
 
@@ -210,6 +231,10 @@ class Offer extends Model
     {
         // If advertiser_payout is set (admin approved with spread), use it
         if ($this->advertiser_payout) {
+            // For revshare, advertiser_payout stores a percentage rate (e.g. 33 = 33%)
+            if ($this->commission_model === 'revshare') {
+                return ($conversionValue * $this->advertiser_payout) / 100;
+            }
             return $this->advertiser_payout;
         }
 
@@ -239,5 +264,41 @@ class Offer extends Model
     public function scopeRejected($query)
     {
         return $query->where('approval_status', 'rejected');
+    }
+
+    /**
+     * Check whether the advertiser's wallet balance is below the offer's minimum.
+     * Requires the `advertiser` relation to be loaded.
+     */
+    public function advertiserHasInsufficientBalance(): bool
+    {
+        if (!$this->minimum_wallet_required || $this->minimum_wallet_required <= 0) {
+            return false;
+        }
+
+        $balance = $this->advertiser?->advertiser_balance ?? 0;
+        return $balance < $this->minimum_wallet_required;
+    }
+
+    /**
+     * Find the best fallback offer for traffic diversion:
+     * same category, approved, active, and advertiser wallet is sufficient.
+     */
+    public function findFallbackOffer(): ?self
+    {
+        return self::join('users', 'users.id', '=', 'offers.advertiser_id')
+            ->select('offers.*')
+            ->where('offers.category_id', $this->category_id)
+            ->where('offers.id', '!=', $this->id)
+            ->where('offers.approval_status', 'approved')
+            ->where('offers.is_active', true)
+            ->where(function ($q) {
+                // Advertiser balance meets the offer's own minimum, or no minimum is set
+                $q->whereNull('offers.minimum_wallet_required')
+                  ->orWhere('offers.minimum_wallet_required', '<=', 0)
+                  ->orWhereRaw('users.advertiser_balance >= offers.minimum_wallet_required');
+            })
+            ->inRandomOrder()
+            ->first();
     }
 }

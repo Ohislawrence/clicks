@@ -66,8 +66,8 @@
                         <div class="text-xl font-bold text-white mt-2">Single + Multi Product</div>
                     </div>
                     <div class="feature-panel p-5">
-                        <div class="text-sm text-neutral-500 uppercase tracking-wide">Payment</div>
-                        <div class="text-xl font-bold text-white mt-2">Paystack / Flutterwave</div>
+                        <div class="text-sm text-neutral-500 uppercase tracking-wide">Payment Mode</div>
+                        <div class="text-xl font-bold text-white mt-2">Direct or Platform-Managed</div>
                     </div>
                     <div class="feature-panel p-5">
                         <div class="text-sm text-neutral-500 uppercase tracking-wide">Pricing</div>
@@ -116,13 +116,82 @@
             </div>
             <div class="plan-card p-8">
                 <div class="text-sm uppercase tracking-wide text-emerald-400 mb-4">Secure Checkout</div>
-                <h3 class="text-2xl font-semibold text-white mb-3">Local payment support</h3>
-                <p class="text-neutral-400 leading-relaxed">Accept payments directly with Paystack or Flutterwave using your own account keys, or connect payment links.</p>
+                <h3 class="text-2xl font-semibold text-white mb-3">Two payment modes</h3>
+                <p class="text-neutral-400 leading-relaxed"><strong class="text-white">Direct mode</strong> — Use your own Paystack or Flutterwave API keys; funds go straight to your payment account.<br><br><strong class="text-white">Platform-Managed mode</strong> — The platform collects payments on your behalf, deducts its fee, and credits your net earnings to your sales wallet automatically.</p>
             </div>
             <div class="plan-card p-8">
                 <div class="text-sm uppercase tracking-wide text-emerald-400 mb-4">Order Management</div>
                 <h3 class="text-2xl font-semibold text-white mb-3">Simple operations</h3>
                 <p class="text-neutral-400 leading-relaxed">Track orders, update fulfillment status, and manage products from the same advertiser dashboard you already use.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Platform-Managed Payments -->
+<section class="py-20 bg-neutral-950 border-b border-neutral-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-14">
+            <div class="inline-flex items-center gap-2 bg-neutral-900 border border-neutral-800 rounded-full px-4 py-1.5 mb-4">
+                <span class="text-xs font-semibold uppercase tracking-wider text-emerald-400">New Feature</span>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-bold text-white">Platform-Managed Payments</h2>
+            <p class="text-lg text-neutral-400 mt-4">
+                Don't want to manage your own payment gateway? Let the platform handle it. Choose Platform-Managed mode and we'll collect payments, split the revenue, and credit your wallet automatically.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            <!-- Direct vs Platform comparison -->
+            <div class="space-y-4">
+                <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
+                    <div class="text-sm font-semibold uppercase tracking-wider text-neutral-400 mb-3">&#128273; Direct Mode (Default)</div>
+                    <ul class="space-y-2 text-sm text-neutral-400">
+                        <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">&#10003;</span><span>Use your own Paystack or Flutterwave API keys</span></li>
+                        <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">&#10003;</span><span>Funds go directly into your payment account</span></li>
+                        <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">&#10003;</span><span>Works with Paystack and Flutterwave</span></li>
+                        <li class="flex items-start gap-2"><span class="text-neutral-500 mt-0.5">&#8212;</span><span class="text-neutral-500">Manual affiliate commission management</span></li>
+                    </ul>
+                </div>
+                <div class="bg-emerald-950/40 border border-emerald-800/60 rounded-2xl p-6">
+                    <div class="text-sm font-semibold uppercase tracking-wider text-emerald-400 mb-3">&#127974; Platform-Managed Mode</div>
+                    <ul class="space-y-2 text-sm text-neutral-300">
+                        <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">&#10003;</span><span>No payment gateway setup required</span></li>
+                        <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">&#10003;</span><span>Revenue split automatically after each sale</span></li>
+                        <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">&#10003;</span><span>Affiliate commissions tracked &amp; credited automatically</span></li>
+                        <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">&#10003;</span><span>Net earnings credited to your sales wallet</span></li>
+                        <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">&#10003;</span><span>Withdraw earnings to your bank any time</span></li>
+                        <li class="flex items-start gap-2"><span class="text-yellow-500 mt-0.5">!</span><span class="text-neutral-400">Platform fee deducted (set per plan by admin)</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Revenue split example -->
+            <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
+                <div class="text-sm uppercase tracking-wider text-emerald-400 font-semibold mb-4">Revenue Split Example</div>
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between items-center bg-neutral-800 rounded-xl p-3">
+                        <span class="text-neutral-300">Customer pays</span>
+                        <span class="font-bold text-white">&#8358;10,000</span>
+                    </div>
+                    <div class="flex justify-between items-center bg-red-900/30 border border-red-800/40 rounded-xl p-3">
+                        <span class="text-red-300">&#8722; Platform fee (5%)</span>
+                        <span class="font-bold text-red-300">&#8722; &#8358;500</span>
+                    </div>
+                    <div class="flex justify-between items-center bg-blue-900/30 border border-blue-800/40 rounded-xl p-3">
+                        <span class="text-blue-300">&#8722; Affiliate commission (if applicable)</span>
+                        <span class="font-bold text-blue-300">&#8722; &#8358;1,000</span>
+                    </div>
+                    <div class="flex justify-between items-center bg-emerald-900/40 border border-emerald-700/60 rounded-xl p-3">
+                        <span class="text-emerald-300 font-semibold">= Your earnings (added to wallet)</span>
+                        <span class="font-bold text-emerald-400 text-base">&#8358;8,500</span>
+                    </div>
+                </div>
+                <p class="text-xs text-neutral-500 mt-4">All splits happen automatically when payment is verified. Affiliate commission only applies if the customer came via a tracked affiliate link.</p>
+                <div class="mt-4 pt-4 border-t border-neutral-800">
+                    <div class="text-sm font-semibold text-white mb-2">Your Earnings Wallet</div>
+                    <p class="text-xs text-neutral-400">Earnings accumulate in your <strong class="text-neutral-300">Sales Wallet</strong>. Request a withdrawal any time &mdash; minimum &#8358;500 &mdash; to any Nigerian bank account from your advertiser portal.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -214,7 +283,7 @@
             <div class="feature-box p-6">
                 <div class="text-3xl mb-4">3</div>
                 <h3 class="font-semibold text-white mb-2">Connect payments</h3>
-                <p class="text-neutral-400 text-sm">Use your Paystack/Flutterwave keys or payment link for checkout.</p>
+                <p class="text-neutral-400 text-sm">Choose Direct mode (your own Paystack/Flutterwave keys) or Platform-Managed mode (platform collects &amp; splits revenue).</p>
             </div>
             <div class="feature-box p-6">
                 <div class="text-3xl mb-4">4</div>

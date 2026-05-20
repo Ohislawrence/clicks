@@ -237,7 +237,7 @@
                             <li>Use bots, scripts, or automated tools to manipulate tracking</li>
                             <li>Engage in cookie stuffing, forced clicks, or incentivized traffic (unless approved)</li>
                             <li>Use misleading or deceptive advertising practices</li>
-                            <li>Violate any applicable laws, including CAN-SPAM, GDPR, and CCPA</li>
+                            <li>Violate any applicable laws, including the Nigeria Data Protection Regulation (NDPR), CAN-SPAM, and any other applicable Nigerian or international laws</li>
                             <li>Infringe on intellectual property rights</li>
                             <li>Reverse engineer or attempt to access our systems unauthorized</li>
                             <li>Share account credentials or transfer accounts without approval</li>
@@ -359,8 +359,10 @@
                         <!-- Section 14 -->
                         <h2 id="law">14. Governing Law</h2>
                         <p>
-                            These Terms are governed by the laws of the State of Delaware, without regard to conflict of law
-                            principles. Any legal actions must be brought in the courts of Wilmington, Delaware.
+                            These Terms are governed by and construed in accordance with the laws of the Federal Republic
+                            of Nigeria, including the Nigeria Data Protection Regulation (NDPR) 2019 and the Nigeria Data
+                            Protection Act 2023. Any disputes arising under these Terms shall be subject to the exclusive
+                            jurisdiction of the courts of Nigeria.
                         </p>
 
                         <!-- Section 15 -->
@@ -388,7 +390,7 @@
                                 <a href="mailto:legal@clicksintel.com" class="text-emerald-400 hover:text-emerald-300">legal@clicksintel.com</a>
                             </p>
                             <p class="text-neutral-400">
-                                <span class="text-neutral-500">Address:</span> 123 Performance Way, Suite 500, Wilmington, DE 19801
+                                <span class="text-neutral-500">Address:</span> Lagos, Nigeria
                             </p>
                         </div>
                     </div>
@@ -397,7 +399,7 @@
                 <!-- Last Updated Note -->
                 <div class="mt-6 text-center">
                     <p class="text-xs text-neutral-600">
-                        These Terms of Service were last updated on {{ date('F d, Y') }}. Previous versions are available upon request.
+                        These Terms of Service were last updated on May 18, 2026. Previous versions are available upon request.
                     </p>
                 </div>
             </div>

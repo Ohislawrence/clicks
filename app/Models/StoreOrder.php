@@ -20,9 +20,20 @@ class StoreOrder extends Model
         'total',
         'payment_reference',
         'payment_status',
+        'payment_mode',
+        'platform_fee_amount',
+        'affiliate_commission_amount',
+        'advertiser_net_amount',
+        'affiliate_id',
+        'affiliate_link_id',
+        'conversion_id',
         'paid_at',
         'fulfillment_status',
         'notes',
+        'refund_status',
+        'refund_requested_at',
+        'refund_approved_at',
+        'refund_note',
     ];
 
     protected $casts = [
@@ -30,30 +41,56 @@ class StoreOrder extends Model
         'subtotal' => 'decimal:2',
         'shipping_fee' => 'decimal:2',
         'total' => 'decimal:2',
+        'platform_fee_amount' => 'decimal:2',
+        'affiliate_commission_amount' => 'decimal:2',
+        'advertiser_net_amount' => 'decimal:2',
         'paid_at' => 'datetime',
+        'refund_requested_at' => 'datetime',
+        'refund_approved_at' => 'datetime',
     ];
 
-    /**
-     * Get the store this order belongs to.
-     */
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class);
     }
 
-    /**
-     * Generate unique order number.
-     */
+    public function affiliate(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'affiliate_id');
+    }
+
+    public function affiliateLink(): BelongsTo
+    {
+        return $this->belongsTo(AffiliateLink::class, 'affiliate_link_id');
+    }
+
+    public function conversion(): BelongsTo
+    {
+        return $this->belongsTo(Conversion::class, 'conversion_id');
+    }
+
     public static function generateOrderNumber(): string
     {
         return 'ORD-' . strtoupper(uniqid());
     }
 
-    /**
-     * Check if order is paid.
-     */
     public function isPaid(): bool
     {
         return $this->payment_status === 'paid';
+    }
+
+    public function isPlatformManaged(): bool
+    {
+        return $this->payment_mode === 'platform';
+    }
+
+    /**
+     * An order is refundable if it's paid, platform-managed, and no refund is already in progress.
+     */
+    public function isRefundable(): bool
+    {
+        return $this->isPaid()
+            && $this->isPlatformManaged()
+            && $this->refund_status === 'none';
     }
 }

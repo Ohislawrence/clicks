@@ -1,8 +1,8 @@
 @extends('layouts.front')
 
 @section('title', 'Privacy Policy | ' . config('app.name'))
-@section('meta_description', 'Read our privacy policy to understand how ' . config('app.name') . ' collects, uses, and protects your personal information. GDPR and CCPA compliant.')
-@section('meta_keywords', 'privacy policy, data protection, GDPR, CCPA, personal information, data security')
+@section('meta_description', 'Read our privacy policy to understand how ' . config('app.name') . ' collects, uses, and protects your personal information. NDPR compliant.')
+@section('meta_keywords', 'privacy policy, data protection, NDPR, Nigeria Data Protection Regulation, NITDA, personal information, data security')
 @section('meta_robots', 'noindex, follow')
 
 @push('styles')
@@ -103,9 +103,9 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
         <div class="max-w-3xl">
             <div class="flex flex-wrap gap-3 mb-6">
-                <span class="badge-gdpr">Updated: {{ date('F d, Y') }}</span>
-                <span class="badge-gdpr">GDPR Compliant</span>
-                <span class="badge-gdpr">CCPA Compliant</span>
+                <span class="badge-gdpr">Updated: May 18, 2026</span>
+                <span class="badge-gdpr">NDPR Compliant</span>
+                <span class="badge-gdpr">NITDA Registered</span>
             </div>
             <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-5">
                 Privacy Policy
@@ -144,7 +144,8 @@
                         <a href="#children" class="policy-sidebar-link">9. Children's Privacy</a>
                         <a href="#thirdparty" class="policy-sidebar-link">10. Third-Party Links</a>
                         <a href="#changes" class="policy-sidebar-link">11. Changes to This Policy</a>
-                        <a href="#contact" class="policy-sidebar-link">12. Contact Us</a>
+                        <a href="#dpo" class="policy-sidebar-link">12. Data Protection Officer</a>
+                        <a href="#contact" class="policy-sidebar-link">13. Contact &amp; NITDA</a>
                     </nav>
                 </div>
             </div>
@@ -243,11 +244,16 @@
 
                         <!-- Section 5 -->
                         <h2 id="retention">5. Data Retention</h2>
+                        <p>We retain your personal data only for as long as necessary for the stated purpose and in accordance with the Nigeria Data Protection Regulation (NDPR) 2019. Our specific retention periods are:</p>
+                        <ul>
+                            <li><strong>Account information:</strong> Retained while your account is active, then 5 years for legal and audit obligations</li>
+                            <li><strong>Financial / payment records:</strong> 7 years to comply with Nigerian financial regulations (FIRS)</li>
+                            <li><strong>Click &amp; conversion tracking data:</strong> 2 years for fraud prevention and reporting</li>
+                            <li><strong>Session logs &amp; IP addresses:</strong> 90 days, then anonymised</li>
+                            <li><strong>Marketing communications:</strong> Until you withdraw consent or unsubscribe</li>
+                        </ul>
                         <p>
-                            We retain your information for as long as necessary to fulfill the purposes outlined in this
-                            Privacy Policy, unless a longer retention period is required by law. Account information is
-                            retained while your account is active and for a reasonable period thereafter for legal and
-                            operational purposes.
+                            Account information is retained while your account is active. After account closure, data subject to legal obligations will be retained for the periods above and then securely deleted or anonymised.
                         </p>
 
                         <!-- Section 6 -->
@@ -282,10 +288,12 @@
                         <!-- Section 8 -->
                         <h2 id="transfers">8. International Data Transfers</h2>
                         <p>
-                            Your information may be transferred to and processed in countries other than your country of
-                            residence. We ensure appropriate safeguards are in place to protect your information in accordance
-                            with this Privacy Policy and applicable laws.
+                            Your information is primarily stored and processed in Nigeria. Where we transfer personal data
+                            outside Nigeria, we do so only in compliance with the NDPR 2019 (Article 2.11) and only to
+                            countries that provide an adequate level of data protection, or under Standard Contractual
+                            Clauses approved by NITDA/NDPC, or with your explicit prior consent.
                         </p>
+                        <p>Our cloud infrastructure and email service providers are bound by Data Processing Agreements (DPAs) that incorporate NDPR-equivalent protections.</p>
 
                         <!-- Section 9 -->
                         <h2 id="children">9. Children's Privacy</h2>
@@ -311,19 +319,53 @@
                         </p>
 
                         <!-- Section 12 -->
-                        <h2 id="contact">12. Contact Us</h2>
+                        <h2 id="dpo">12. Data Protection Officer (DPO)</h2>
                         <p>
-                            If you have questions or concerns about this Privacy Policy, please contact us:
+                            In compliance with the Nigeria Data Protection Regulation (NDPR) 2019, we have appointed a Data
+                            Protection Officer (DPO) who is responsible for overseeing questions in relation to this Privacy
+                            Policy and our data protection practices.
+                        </p>
+                        <div class="info-box p-6 mt-4 mb-6">
+                            <p class="font-semibold text-white mb-3">Data Protection Officer</p>
+                            <p class="text-neutral-400 mb-2">
+                                <span class="text-neutral-500">Email:</span>
+                                <a href="mailto:dpo@clicksintel.com" class="text-emerald-400 hover:text-emerald-300">dpo@clicksintel.com</a>
+                            </p>
+                            <p class="text-neutral-400">
+                                <span class="text-neutral-500">Address:</span> {{ config('app.name') }}, Lagos, Nigeria
+                            </p>
+                        </div>
+
+                        <!-- Section 13 -->
+                        <h2 id="contact">13. Contact Us &amp; Regulatory Authority</h2>
+                        <p>
+                            If you have questions or concerns about this Privacy Policy, or wish to exercise your data subject
+                            rights, please contact us:
                         </p>
 
-                        <div class="info-box p-6 mt-4">
+                        <div class="info-box p-6 mt-4 mb-6">
                             <p class="font-semibold text-white mb-3">{{ config('app.name') }}</p>
                             <p class="text-neutral-400 mb-2">
                                 <span class="text-neutral-500">Email:</span>
                                 <a href="mailto:privacy@clicksintel.com" class="text-emerald-400 hover:text-emerald-300">privacy@clicksintel.com</a>
                             </p>
                             <p class="text-neutral-400">
-                                <span class="text-neutral-500">Address:</span> 123 Performance Way, Suite 500, San Francisco, CA 94105
+                                <span class="text-neutral-500">Address:</span> Lagos, Nigeria
+                            </p>
+                        </div>
+
+                        <p>
+                            You also have the right to lodge a complaint with Nigeria's data protection regulator:
+                        </p>
+                        <div class="info-box p-6 mt-4">
+                            <p class="font-semibold text-white mb-2">Nigeria Data Protection Commission (NDPC)</p>
+                            <p class="text-neutral-400 mb-1">Formerly the National Information Technology Development Agency (NITDA) Data Protection Bureau</p>
+                            <p class="text-neutral-400 mb-2">
+                                <span class="text-neutral-500">Website:</span>
+                                <a href="https://ndpc.gov.ng" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300">ndpc.gov.ng</a>
+                            </p>
+                            <p class="text-neutral-400">
+                                <span class="text-neutral-500">Email:</span> info@ndpc.gov.ng
                             </p>
                         </div>
                     </div>
@@ -332,7 +374,8 @@
                 <!-- Last Updated Note -->
                 <div class="mt-6 text-center">
                     <p class="text-xs text-neutral-600">
-                        This Privacy Policy was last updated on {{ date('F d, Y') }}. Previous versions are available upon request.
+                        This Privacy Policy was last updated on May 18, 2026. Previous versions are available upon request.
+                        This policy is governed by the Nigeria Data Protection Regulation (NDPR) 2019.
                     </p>
                 </div>
             </div>

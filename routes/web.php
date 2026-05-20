@@ -5,6 +5,7 @@ use App\Http\Controllers\Affiliate\DashboardController;
 use App\Http\Controllers\Affiliate\OfferController;
 use App\Http\Controllers\Affiliate\PayoutController;
 use App\Http\Controllers\Affiliate\DocumentationController as AffiliateDocumentationController;
+use App\Http\Controllers\Advertiser\WalletController as AdvertiserWalletController;
 use App\Http\Controllers\Advertiser\DashboardController as AdvertiserDashboardController;
 use App\Http\Controllers\Advertiser\OfferController as AdvertiserOfferController;
 use App\Http\Controllers\Advertiser\ConversionController;
@@ -13,7 +14,9 @@ use App\Http\Controllers\Advertiser\DocumentationController as AdvertiserDocumen
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\PayoutController as AdminPayoutController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\WalletController as AdminWalletController;
 use App\Http\Controllers\Admin\OfferController as AdminOfferController;
+use App\Http\Controllers\Admin\CreativeController as AdminCreativeController;
 use App\Http\Controllers\Admin\ConversionController as AdminConversionController;
 use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -23,13 +26,13 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\Admin\BlogController as AdminBlogController;
 use App\Http\Controllers\PaymentDetailsController;
+use App\Http\Controllers\DataSubjectRightsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 // Tracking Routes (Public)
 Route::get('/track/{trackingCode}', [TrackingController::class, 'track'])->name('track');
-Route::post('/postback', [TrackingController::class, 'postback'])->name('postback');
 Route::get('/pixel', [TrackingController::class, 'pixel'])->name('pixel');
 
 // SEO Routes
@@ -84,6 +87,10 @@ Route::middleware([
 
     // Payment Details Route
     Route::put('/user/payment-details', [PaymentDetailsController::class, 'update'])->name('user.payment-details.update');
+
+    // NDPR Data Subject Rights
+    Route::get('/user/data-export', [DataSubjectRightsController::class, 'export'])->name('user.data-export');
+    Route::post('/user/erasure-request', [DataSubjectRightsController::class, 'requestErasure'])->name('user.erasure-request');
 });
 
 // Affiliate Routes
@@ -129,6 +136,12 @@ Route::middleware([
 ])->prefix('advertiser')->name('advertiser.')->group(function () {
     Route::get('/dashboard', [AdvertiserDashboardController::class, 'index'])->name('dashboard');
 
+    // Wallet
+    Route::get('/wallet', [AdvertiserWalletController::class, 'index'])->name('wallet.index');
+    Route::post('/wallet/deposit', [AdvertiserWalletController::class, 'initiateDeposit'])->name('wallet.deposit');
+    Route::get('/wallet/verify', [AdvertiserWalletController::class, 'verifyDeposit'])->name('wallet.verify');
+    Route::post('/offers/{offer}/topup', [AdvertiserWalletController::class, 'topUpOffer'])->name('offers.topup');
+
     // Offers Management
     Route::get('/offers', [AdvertiserOfferController::class, 'index'])->name('offers.index');
     Route::get('/offers/create', [AdvertiserOfferController::class, 'create'])->name('offers.create');
@@ -138,6 +151,7 @@ Route::middleware([
     Route::put('/offers/{offer}', [AdvertiserOfferController::class, 'update'])->name('offers.update');
     Route::delete('/offers/{offer}', [AdvertiserOfferController::class, 'destroy'])->name('offers.destroy');
     Route::patch('/offers/{offer}/toggle', [AdvertiserOfferController::class, 'toggle'])->name('offers.toggle');
+    Route::post('/offers/{offer}/regenerate-postback-secret', [AdvertiserOfferController::class, 'regeneratePostbackSecret'])->name('offers.regenerate-postback-secret');
 
     // Creatives Management
     Route::get('/offers/{offer}/creatives', [\App\Http\Controllers\Advertiser\CreativeController::class, 'index'])->name('creatives.index');
@@ -220,6 +234,15 @@ Route::middleware([
     Route::get('/store/{store}/orders/{order}', [\App\Http\Controllers\Advertiser\StoreOrderController::class, 'show'])->name('store.orders.show');
     Route::patch('/store/{store}/orders/{order}/status', [\App\Http\Controllers\Advertiser\StoreOrderController::class, 'updateStatus'])->name('store.orders.update-status');
     Route::patch('/store/{store}/orders/{order}/mark-paid', [\App\Http\Controllers\Advertiser\StoreOrderController::class, 'markAsPaid'])->name('store.orders.mark-paid');
+    Route::patch('/store/{store}/orders/{order}/request-refund', [\App\Http\Controllers\Advertiser\StoreOrderController::class, 'requestRefund'])->name('store.orders.request-refund');
+
+    // Store Products → Create Offer
+    Route::get('/store/{store}/products/{product}/create-offer', [\App\Http\Controllers\Advertiser\StoreController::class, 'createOfferForProduct'])->name('store.products.create-offer');
+
+    // Advertiser Payouts (sales withdrawals)
+    Route::get('/payouts/sales', [\App\Http\Controllers\Advertiser\AdvertiserPayoutController::class, 'index'])->name('payouts.sales.index');
+    Route::post('/payouts/sales', [\App\Http\Controllers\Advertiser\AdvertiserPayoutController::class, 'store'])->name('payouts.sales.store');
+    Route::post('/payouts/sales/{payout}/cancel', [\App\Http\Controllers\Advertiser\AdvertiserPayoutController::class, 'cancel'])->name('payouts.sales.cancel');
 
     // Store Analytics
     Route::get('/store/{store}/analytics', [\App\Http\Controllers\Advertiser\StoreAnalyticsController::class, 'index'])->name('store.analytics');
@@ -250,6 +273,13 @@ Route::middleware([
     Route::post('/users/{user}/reject-advertiser', [AdminUserController::class, 'rejectAdvertiser'])->name('users.reject-advertiser');
     Route::put('/users/{user}/referral-cap', [AdminUserController::class, 'updateReferralCap'])->name('users.update-referral-cap');
 
+    // Advertiser Wallet Management
+    Route::get('/wallets', [AdminWalletController::class, 'index'])->name('wallets.index');
+    Route::get('/wallets/{user}', [AdminWalletController::class, 'show'])->name('wallets.show');
+    Route::post('/wallets/{user}/credit', [AdminWalletController::class, 'credit'])->name('wallets.credit');
+    Route::post('/wallets/{user}/debit', [AdminWalletController::class, 'debit'])->name('wallets.debit');
+    Route::post('/wallets/deposits/{transaction}/fail', [AdminWalletController::class, 'failDeposit'])->name('wallets.deposits.fail');
+
     // Offer Management
     Route::get('/offers', [AdminOfferController::class, 'index'])->name('offers.index');
     Route::get('/offers/{offer}', [AdminOfferController::class, 'show'])->name('offers.show');
@@ -258,6 +288,9 @@ Route::middleware([
     Route::post('/offers/{offer}/featured', [AdminOfferController::class, 'featured'])->name('offers.featured');
     Route::post('/offers/{offer}/approve', [AdminOfferController::class, 'approve'])->name('offers.approve');
     Route::post('/offers/{offer}/reject', [AdminOfferController::class, 'reject'])->name('offers.reject');
+    Route::post('/offers/{offer}/verify-integration', [AdminOfferController::class, 'verifyIntegration'])->name('offers.verify-integration');
+    Route::patch('/offers/{offer}/creatives/{creative}/toggle', [AdminCreativeController::class, 'toggle'])->name('offers.creatives.toggle');
+    Route::delete('/offers/{offer}/creatives/{creative}', [AdminCreativeController::class, 'destroy'])->name('offers.creatives.destroy');
 
     // Conversion Management
     Route::get('/conversions', [AdminConversionController::class, 'index'])->name('conversions.index');
@@ -337,6 +370,16 @@ Route::middleware([
 
     // Store Analytics (Platform-wide)
     Route::get('/store-analytics', [\App\Http\Controllers\Admin\StoreAnalyticsController::class, 'index'])->name('store-analytics');
+
+    // Advertiser Payout Management
+    Route::get('/advertiser-payouts', [\App\Http\Controllers\Admin\AdvertiserPayoutController::class, 'index'])->name('advertiser-payouts.index');
+    Route::post('/advertiser-payouts/{payout}/approve', [\App\Http\Controllers\Admin\AdvertiserPayoutController::class, 'approve'])->name('advertiser-payouts.approve');
+    Route::post('/advertiser-payouts/{payout}/reject', [\App\Http\Controllers\Admin\AdvertiserPayoutController::class, 'reject'])->name('advertiser-payouts.reject');
+
+    // Store Refund Management
+    Route::get('/store-refunds', [\App\Http\Controllers\Admin\StoreRefundController::class, 'index'])->name('store-refunds.index');
+    Route::post('/store-refunds/{order}/approve', [\App\Http\Controllers\Admin\StoreRefundController::class, 'approve'])->name('store-refunds.approve');
+    Route::post('/store-refunds/{order}/reject', [\App\Http\Controllers\Admin\StoreRefundController::class, 'reject'])->name('store-refunds.reject');
 });
 
 // ============================================================================

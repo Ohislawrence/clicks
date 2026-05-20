@@ -11,6 +11,7 @@ use App\Models\StoreSubscription;
 use App\Notifications\StoreOrderConfirmationNotification;
 use App\Notifications\StoreOrderReceivedNotification;
 use App\Services\StorePaymentService;
+use App\Services\StorePaymentSplitService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -23,10 +24,12 @@ use Inertia\Inertia;
 class StorefrontController extends Controller
 {
     protected $paymentService;
+    protected $splitService;
 
-    public function __construct(StorePaymentService $paymentService)
+    public function __construct(StorePaymentService $paymentService, StorePaymentSplitService $splitService)
     {
         $this->paymentService = $paymentService;
+        $this->splitService = $splitService;
     }
 
     private function getStates(): array
@@ -52,7 +55,7 @@ class StorefrontController extends Controller
 
         // Check if current user is the store owner
         $isOwner = auth()->check() && auth()->id() === $store->user_id;
-        
+
         // If NOT owner, enforce active + active subscription requirements
         if (!$isOwner && (!$store->is_active || !$store->isSubscriptionActive())) {
             return Inertia::render('Storefront/Unavailable', [
@@ -60,10 +63,10 @@ class StorefrontController extends Controller
                 'message' => 'This store is currently unavailable. Please check back later.',
             ]);
         }
-        
+
         // Check if subscription is active
         $subscriptionActive = $store->isSubscriptionActive();
-        
+
         // If subscription is not active and user is NOT the owner, show unavailable
         if (!$subscriptionActive && !$isOwner) {
             return Inertia::render('Storefront/Unavailable', [
@@ -71,7 +74,7 @@ class StorefrontController extends Controller
                 'message' => 'This store is currently unavailable. Please check back later.',
             ]);
         }
-        
+
         // Owner can see store even if subscription expired/unpaid (with preview notice)
         $previewMode = $isOwner && (!$store->is_active || !$subscriptionActive);
 
@@ -336,7 +339,7 @@ class StorefrontController extends Controller
 
         // Check if current user is the store owner
         $isOwner = auth()->check() && auth()->id() === $store->user_id;
-        
+
         // If NOT owner, enforce active + active subscription requirements
         if (!$isOwner && (!$store->is_active || !$store->isSubscriptionActive())) {
             return Inertia::render('Storefront/Unavailable', [
@@ -344,10 +347,10 @@ class StorefrontController extends Controller
                 'message' => 'This store is currently unavailable.',
             ]);
         }
-        
+
         // Check subscription status
         $subscriptionActive = $store->isSubscriptionActive();
-        
+
         // If subscription is not active and user is NOT the owner, show unavailable
         if (!$subscriptionActive && !$isOwner) {
             return Inertia::render('Storefront/Unavailable', [
@@ -355,7 +358,7 @@ class StorefrontController extends Controller
                 'message' => 'This store is currently unavailable.',
             ]);
         }
-        
+
         // Owner can see product even if subscription expired/unpaid (with preview notice)
         $previewMode = $isOwner && (!$store->is_active || !$subscriptionActive);
 
@@ -510,6 +513,7 @@ class StorefrontController extends Controller
                 'total' => $total,
                 'payment_reference' => $orderNumber,
                 'payment_status' => 'pending',
+                'payment_mode' => $store->payment_mode,
                 'fulfillment_status' => 'pending',
             ]);
 
@@ -531,10 +535,41 @@ class StorefrontController extends Controller
     }
 
     /**
-     * Initialize payment with Paystack or Flutterwave
+     * Initialize payment with Paystack or Flutterwave.
+     * Platform mode uses the platform's own Paystack key; direct mode uses the store's key.
      */
     private function initializePayment(Store $store, StoreOrder $order): string
     {
+        if ($store->hasPlatformMode()) {
+            // Use platform Paystack key
+            $platformKey = config('services.paystack.secret_key');
+            if (!$platformKey) {
+                throw new \Exception('Platform payment not configured. Contact support.');
+            }
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $platformKey,
+                'Content-Type'  => 'application/json',
+            ])->post('https://api.paystack.co/transaction/initialize', [
+                'email'        => $order->customer_email,
+                'amount'       => (int) ($order->total * 100),
+                'reference'    => $order->payment_reference,
+                'callback_url' => route('storefront.checkout.verify', ['slug' => $store->slug]),
+                'metadata'     => [
+                    'order_id' => $order->id,
+                    'store_id' => $store->id,
+                    'mode'     => 'platform',
+                ],
+            ]);
+
+            if ($response->successful() && $response->json('status') && $response->json('data.authorization_url')) {
+                return $response->json('data.authorization_url');
+            }
+
+            throw new \Exception('Failed to initialize platform payment: ' . $response->json('message', 'Unknown error'));
+        }
+
+        // Direct mode — use store's own keys via StorePaymentService
         $paymentData = $this->paymentService->initializeOrderPayment($order, $store);
 
         if (!$paymentData || !isset($paymentData['payment_url'])) {
@@ -572,9 +607,15 @@ class StorefrontController extends Controller
         DB::beginTransaction();
         try {
             $verified = false;
-            $verificationData = null;
 
-            if ($store->payment_provider === 'paystack') {
+            if ($store->hasPlatformMode()) {
+                // Verify against platform's own Paystack key
+                $platformKey = config('services.paystack.secret_key');
+                if ($platformKey) {
+                    $verificationData = $this->paymentService->verifyPaystackPayment($reference, $platformKey);
+                    $verified = $verificationData && $verificationData['success'];
+                }
+            } elseif ($store->payment_provider === 'paystack') {
                 $verificationData = $this->paymentService->verifyPaystackPayment($reference, $store->payment_secret_key);
                 $verified = $verificationData && $verificationData['success'];
             } elseif ($store->payment_provider === 'flutterwave') {
@@ -602,6 +643,12 @@ class StorefrontController extends Controller
 
                 DB::commit();
 
+                // For platform mode: resolve affiliate attribution from cookie and settle split
+                if ($store->hasPlatformMode()) {
+                    $affiliateLink = $this->resolveAffiliateLinkFromCookie($request, $store);
+                    $this->splitService->settle($order, $affiliateLink);
+                }
+
                 // Send notifications
                 $this->sendOrderNotifications($order);
 
@@ -623,6 +670,47 @@ class StorefrontController extends Controller
             return redirect()->route('storefront.show', $slug)
                 ->with('error', 'Error verifying payment: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Resolve the AffiliateLink from the tracking cookie for affiliate attribution.
+     * Returns null if no valid tracking cookie is present or offer doesn't match the store.
+     */
+    private function resolveAffiliateLinkFromCookie(Request $request, Store $store): ?\App\Models\AffiliateLink
+    {
+        $cookieRaw = $request->cookie('dealsintel_tracking');
+        if (!$cookieRaw) {
+            return null;
+        }
+
+        $cookieData = json_decode($cookieRaw, true);
+        if (!$cookieData || empty($cookieData['tracking_code'])) {
+            return null;
+        }
+
+        $link = \App\Models\AffiliateLink::with('offer')
+            ->where('tracking_code', $cookieData['tracking_code'])
+            ->where('is_active', true)
+            ->first();
+
+        if (!$link || !$link->offer) {
+            return null;
+        }
+
+        // Only attribute if the offer is linked to this store
+        if ($link->offer->store_product_id) {
+            $product = \App\Models\StoreProduct::find($link->offer->store_product_id);
+            if (!$product || $product->store_id !== $store->id) {
+                return null;
+            }
+        } else {
+            // Offer has no specific product — still allow if same advertiser owns the store
+            if ($link->offer->advertiser_id !== $store->user_id) {
+                return null;
+            }
+        }
+
+        return $link;
     }
 
     /**

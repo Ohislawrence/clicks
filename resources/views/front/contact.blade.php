@@ -1,4 +1,4 @@
-@extends('layouts.front')
+﻿@extends('layouts.front')
 
 @section('title', 'Contact Us - Get in Touch | ' . config('app.name'))
 @section('meta_description', 'Contact ' . config('app.name') . ' support team. Get help with your account, campaigns, or general inquiries. Available Monday-Sunday with 24-hour response time.')
@@ -28,36 +28,26 @@
 
 @push('styles')
 <style>
-    .contact-card {
-        background: #171717;
-        border: 1px solid #262626;
-        transition: all 0.2s ease;
+    :root {
+        --ink: #0a0c0b; --ink-2: #111410; --ink-3: #181c16; --ink-4: #1e231b;
+        --em: #10b981; --em-l: #34d399; --em-dim: #064e3b;
+        --snow: #f0f5f1; --ash: #9aab9e; --stone: #566b5b;
+        --wire: rgba(16,185,129,0.12); --wire-s: rgba(16,185,129,0.22);
+        --fd: 'Inter', sans-serif; --fb: 'Inter', sans-serif;
     }
-    .contact-card:hover {
-        border-color: #333333;
-        background: #1c1c1c;
-    }
-
-    .input-dark {
-        background: #171717;
-        border: 1px solid #2c2c2c;
-        transition: all 0.2s ease;
-    }
-    .input-dark:focus {
-        border-color: #10b981;
-        outline: none;
-        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
-    }
-
-    .fade-up {
-        opacity: 0;
-        transform: translateY(24px);
-        transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-    }
-    .fade-up.visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    body::before { content:''; position:fixed; inset:0;
+        background-image: linear-gradient(rgba(16,185,129,0.025) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(16,185,129,0.025) 1px, transparent 1px);
+        background-size: 52px 52px; pointer-events:none; z-index:0; }
+    .reveal { opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease; }
+    .reveal.in-view { opacity:1; transform:translateY(0); }
+    .contact-card { background:var(--ink-2); border:1px solid var(--wire); border-radius:12px;
+        transition:border-color .2s ease; }
+    .contact-card:hover { border-color:var(--wire-s); }
+    .input-dark { background:var(--ink-2); border:1px solid rgba(16,185,129,.15);
+        transition:border-color .2s ease; }
+    .input-dark:focus { border-color:var(--em); outline:none;
+        box-shadow:0 0 0 2px rgba(16,185,129,.15); }
 </style>
 @endpush
 
@@ -89,7 +79,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
 
             <!-- Contact Form -->
-            <div class="fade-up" data-animate>
+            <div class="reveal">
                 <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 md:p-8">
                     <h2 class="text-2xl font-bold text-white mb-2">Send us a Message</h2>
                     <p class="text-neutral-400 mb-6">Fill out the form and we'll get back to you within 24 hours.</p>
@@ -194,7 +184,7 @@
 
             <!-- Contact Information -->
             <div class="space-y-6">
-                <div class="fade-up" data-animate data-delay="100">
+                <div class="reveal">
                     <h2 class="text-2xl font-bold text-white mb-6">Get in Touch</h2>
 
                     <div class="space-y-5">
@@ -226,8 +216,8 @@
                                 </div>
                                 <div>
                                     <h3 class="text-base font-semibold text-white mb-1">Support Hours</h3>
-                                    <p class="text-neutral-400">Monday - Friday: 9:00 AM - 6:00 PM EST</p>
-                                    <p class="text-neutral-500 text-sm mt-1">Saturday - Sunday: 10:00 AM - 4:00 PM EST</p>
+                                    <p class="text-neutral-400">Monday - Friday: 9:00 AM - 6:00 PM WAT</p>
+                                    <p class="text-neutral-500 text-sm mt-1">Saturday - Sunday: 10:00 AM - 4:00 PM WAT</p>
                                 </div>
                             </div>
                         </div>
@@ -243,9 +233,9 @@
                                 <div>
                                     <h3 class="text-base font-semibold text-white mb-1">Quick Resources</h3>
                                     <div class="space-y-1">
-                                        <a href="#" class="block text-neutral-400 hover:text-emerald-400 text-sm transition-colors">Help Center & Documentation →</a>
-                                        <a href="#" class="block text-neutral-400 hover:text-emerald-400 text-sm transition-colors">API Documentation →</a>
-                                        <a href="{{ route('front.faq') }}" class="block text-neutral-400 hover:text-emerald-400 text-sm transition-colors">Frequently Asked Questions →</a>
+                                        <a href="#" class="block text-neutral-400 hover:text-emerald-400 text-sm transition-colors">Help Center & Documentation â†’</a>
+                                        <a href="#" class="block text-neutral-400 hover:text-emerald-400 text-sm transition-colors">API Documentation â†’</a>
+                                        <a href="{{ route('front.faq') }}" class="block text-neutral-400 hover:text-emerald-400 text-sm transition-colors">Frequently Asked Questions â†’</a>
                                     </div>
                                 </div>
                             </div>
@@ -285,7 +275,7 @@
                 </div>
 
                 <!-- Help Center Card -->
-                <div class="fade-up" data-animate data-delay="200">
+                <div class="reveal">
                     <div class="bg-neutral-900 border border-neutral-800 rounded-xl p-6">
                         <div class="flex items-start gap-4">
                             <div class="w-10 h-10 bg-emerald-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -317,7 +307,7 @@
 <section class="py-16 bg-neutral-900 border-t border-neutral-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div class="fade-up" data-animate>
+            <div class="reveal">
                 <div class="inline-flex items-center gap-2 bg-neutral-800/50 rounded-full px-4 py-1.5 mb-4">
                     <span class="text-xs font-semibold uppercase tracking-wider text-emerald-400">Our Location</span>
                 </div>
@@ -330,18 +320,18 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                         </svg>
-                        <span>123 Performance Way, Suite 500<br />San Francisco, CA 94105</span>
+                        <span>14 Admiralty Way, Lekki Phase 1<br />Lagos, Nigeria</span>
                     </p>
                     <p class="flex items-start gap-3">
                         <svg class="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.362-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
                         </svg>
-                        <span>+1 (555) 123-4567</span>
+                        <span>+234 901 234 5678</span>
                     </p>
                 </div>
             </div>
 
-            <div class="fade-up" data-animate data-delay="100">
+            <div class="reveal">
                 <div class="bg-neutral-800/30 rounded-2xl p-4 border border-neutral-800">
                     <div class="bg-neutral-800 rounded-xl h-48 flex items-center justify-center">
                         <div class="text-center">
@@ -349,7 +339,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                             </svg>
-                            <p class="text-neutral-500 text-sm">Map View — San Francisco, CA</p>
+                            <p class="text-neutral-500 text-sm">Map View — Lagos, Nigeria</p>
                         </div>
                     </div>
                 </div>
@@ -362,27 +352,15 @@
 
 @push('scripts')
 <script>
-    // Intersection Observer for fade-up animations
-    (function() {
-        const observerOptions = { threshold: 0.15, rootMargin: '0px 0px -20px 0px' };
-
-        const elements = document.querySelectorAll('[data-animate]');
-        elements.forEach((el) => {
-            const delay = el.getAttribute('data-delay');
-            if (delay) {
-                el.style.transitionDelay = delay + 'ms';
-            }
-
-            const obs = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        obs.unobserve(entry.target);
-                    }
-                });
-            }, observerOptions);
-            obs.observe(el);
+(function () {
+    var reveals = document.querySelectorAll('.reveal');
+    if (!reveals.length) return;
+    var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+            if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); }
         });
-    })();
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(function (r) { io.observe(r); });
+})();
 </script>
 @endpush

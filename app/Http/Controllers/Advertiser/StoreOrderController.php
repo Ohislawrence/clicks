@@ -139,4 +139,33 @@ class StoreOrderController extends Controller
 
         return back()->with('success', 'Order #' . $order->order_number . ' marked as paid.');
     }
+
+    /**
+     * Request a refund for a platform-managed paid order.
+     */
+    public function requestRefund(Request $request, $storeId, StoreOrder $order)
+    {
+        $user = auth()->user();
+        $store = $user->stores()->findOrFail($storeId);
+
+        if ($order->store_id !== $store->id) {
+            abort(403, 'Unauthorized');
+        }
+
+        if (!$order->isRefundable()) {
+            return back()->withErrors(['error' => 'This order is not eligible for a refund.']);
+        }
+
+        $validated = $request->validate([
+            'refund_note' => 'required|string|max:500',
+        ]);
+
+        $order->update([
+            'refund_status'      => 'requested',
+            'refund_requested_at' => now(),
+            'refund_note'        => $validated['refund_note'],
+        ]);
+
+        return back()->with('success', 'Refund request submitted. Our team will review it within 1-2 business days.');
+    }
 }

@@ -33,6 +33,7 @@ class Store extends Model
         'store_theme_id',
         'theme_customization',
         'payment_method',
+        'payment_mode',
         'payment_provider',
         'payment_link',
         'payment_public_key',
@@ -42,12 +43,14 @@ class Store extends Model
         'meta_description',
         'meta_image',
         'is_active',
+        'has_orders',
         'published_at',
     ];
 
     protected $casts = [
         'theme_customization' => 'array',
         'is_active' => 'boolean',
+        'has_orders' => 'boolean',
         'expiry_reminder_sent' => 'boolean',
         'subscription_start_date' => 'date',
         'subscription_end_date' => 'date',
@@ -199,6 +202,14 @@ class Store extends Model
     {
         return $this->subscription_status === 'active'
             && $this->subscription_end_date >= now()->toDateString();
+    }
+
+    /**
+     * True when store uses platform-managed payment collection.
+     */
+    public function hasPlatformMode(): bool
+    {
+        return $this->payment_mode === 'platform';
     }
 
     /**

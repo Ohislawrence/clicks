@@ -151,6 +151,88 @@ class PaystackService
     }
 
     /**
+     * Initialize a payment transaction (for collecting money from a customer).
+     *
+     * @param  string  $email     Customer email
+     * @param  float   $amount    Amount in Naira (will be converted to kobo)
+     * @param  string  $reference Unique transaction reference
+     * @param  string  $callbackUrl URL Paystack redirects to after payment
+     * @param  array   $metadata  Optional extra data to attach to the transaction
+     */
+    public function initializePayment(string $email, float $amount, string $reference, string $callbackUrl, array $metadata = []): array
+    {
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->secretKey,
+                'Content-Type'  => 'application/json',
+            ])->post($this->baseUrl . '/transaction/initialize', [
+                'email'        => $email,
+                'amount'       => (int) round($amount * 100), // kobo
+                'reference'    => $reference,
+                'callback_url' => $callbackUrl,
+                'metadata'     => $metadata,
+            ]);
+
+            if ($response->successful() && ($response->json()['status'] ?? false)) {
+                return [
+                    'success'           => true,
+                    'authorization_url' => $response->json()['data']['authorization_url'],
+                    'reference'         => $response->json()['data']['reference'],
+                ];
+            }
+
+            Log::error('Paystack Initialize Payment Error', $response->json());
+            return [
+                'success' => false,
+                'message' => $response->json()['message'] ?? 'Failed to initialize payment',
+            ];
+        } catch (\Exception $e) {
+            Log::error('Paystack Exception', ['message' => $e->getMessage()]);
+            return [
+                'success' => false,
+                'message' => 'An error occurred while initializing payment',
+            ];
+        }
+    }
+
+    /**
+     * Verify a payment transaction by reference.
+     */
+    public function verifyPayment(string $reference): array
+    {
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->secretKey,
+            ])->get($this->baseUrl . '/transaction/verify/' . $reference);
+
+            if ($response->successful() && ($response->json()['status'] ?? false)) {
+                $data   = $response->json()['data'];
+                $status = $data['status'] ?? '';
+
+                return [
+                    'success' => true,
+                    'paid'    => $status === 'success',
+                    'data'    => $data,
+                ];
+            }
+
+            Log::error('Paystack Verify Payment Error', $response->json());
+            return [
+                'success' => false,
+                'paid'    => false,
+                'message' => $response->json()['message'] ?? 'Failed to verify payment',
+            ];
+        } catch (\Exception $e) {
+            Log::error('Paystack Exception', ['message' => $e->getMessage()]);
+            return [
+                'success' => false,
+                'paid'    => false,
+                'message' => 'An error occurred while verifying payment',
+            ];
+        }
+    }
+
+    /**
      * Resolve account number
      */
     public function resolveAccount($accountNumber, $bankCode)

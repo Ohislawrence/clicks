@@ -326,6 +326,61 @@
                         </div>
                     </div>
 
+                    <!-- Sales Forecast & Wallet -->
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-1">Sales Forecast & Wallet</h3>
+                        <p class="text-sm text-gray-500 mb-6">Help us ensure your offer runs smoothly. We'll use this to show you the minimum wallet balance you should maintain.</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Expected Sales / Conversions</label>
+                                <input
+                                    v-model="form.expected_sales"
+                                    type="number"
+                                    min="0"
+                                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                    placeholder="e.g. 100"
+                                />
+                                <p class="mt-1 text-xs text-gray-500">How many conversions do you expect?</p>
+                                <p v-if="form.errors.expected_sales" class="mt-1 text-sm text-red-600">{{ form.errors.expected_sales }}</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Product / Service Cost (₦)</label>
+                                <input
+                                    v-model="form.product_cost"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                    placeholder="e.g. 15000"
+                                />
+                                <p class="mt-1 text-xs text-gray-500">The retail price / value of your product or service</p>
+                                <p v-if="form.errors.product_cost" class="mt-1 text-sm text-red-600">{{ form.errors.product_cost }}</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Minimum Wallet Balance Required (₦)</label>
+                                <input
+                                    v-model="form.minimum_wallet_required"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                    placeholder="Auto-calculated"
+                                />
+                                <p class="mt-1 text-xs text-gray-500">
+                                    If your wallet drops below this, your offer pauses and traffic is redirected to another offer.
+                                    <span class="text-blue-600">
+                                        Auto-calculated:
+                                        <template v-if="form.commission_model === 'revshare'">expected sales × product cost × rate %</template>
+                                        <template v-else>expected sales × commission rate (₦)</template>
+                                    </span>
+                                </p>
+                                <p v-if="form.errors.minimum_wallet_required" class="mt-1 text-sm text-red-600">{{ form.errors.minimum_wallet_required }}</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Creatives (Optional) - Only for new offers -->
                     <div v-if="!isEditing" class="bg-white rounded-xl shadow-sm p-6">
                         <div class="flex items-center justify-between mb-6">
@@ -457,7 +512,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, watchEffect } from 'vue';
 import { Link, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
@@ -492,8 +547,31 @@ const form = useForm({
     whatsapp_number: props.offer?.whatsapp_number || props.prefill?.whatsapp_number || '',
     whatsapp_message_template: props.offer?.whatsapp_message_template || '',
     is_active: props.offer?.is_active ?? true,
+    expected_sales: props.offer?.expected_sales || '',
+    product_cost: props.offer?.product_cost || '',
+    minimum_wallet_required: props.offer?.minimum_wallet_required || '',
     creatives: [],
 });
+
+// Auto-calculate minimum wallet required when relevant fields change
+const recalcMinWallet = () => {
+    const sales = parseFloat(form.expected_sales);
+    const rate  = parseFloat(form.commission_rate);
+    const cost  = parseFloat(form.product_cost);
+
+    if (!(sales > 0 && rate > 0)) return;
+
+    if (form.commission_model === 'revshare') {
+        // Rate is a %, cost per conversion = product_cost × rate/100
+        if (!(cost > 0)) return;
+        form.minimum_wallet_required = (sales * cost * (rate / 100)).toFixed(2);
+    } else {
+        // pps / ppl: rate is a fixed NGN amount per conversion
+        form.minimum_wallet_required = (sales * rate).toFixed(2);
+    }
+};
+
+watchEffect(recalcMinWallet);
 
 const addCreativeSlot = () => {
     form.creatives.push({

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Offer;
 use App\Notifications\OfferBudgetWarningNotification;
 use App\Notifications\OfferCapWarningNotification;
+use App\Notifications\OfferPausedNotification;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -71,12 +72,18 @@ class OfferCapService
 
         if ($reason) {
             $offer->update([
-                'is_active' => false,
+                'is_active'    => false,
                 'pause_reason' => $reason,
             ]);
 
             // Clear offer cache
             Cache::forget("offer:{$offer->id}");
+
+            // Notify the advertiser
+            $advertiser = $offer->advertiser;
+            if ($advertiser) {
+                $advertiser->notify(new OfferPausedNotification($offer, $reason));
+            }
 
             return true;
         }
@@ -185,9 +192,9 @@ class OfferCapService
         }
 
         // Check budget warnings
-        if ($offer->budget && $offer->total_spent > 0) {
-            $budgetPercentage = ($offer->total_spent / $offer->budget) * 100;
-            
+        if ($offer->budget_limit && $offer->spent_budget > 0) {
+            $budgetPercentage = ($offer->spent_budget / $offer->budget_limit) * 100;
+
             // Send warning at 75%, 90%, and 95%
             if ($budgetPercentage >= 95 && !$this->hasRecentWarning($offer, 'budget', 95)) {
                 $advertiser->notify(new OfferBudgetWarningNotification($offer, $budgetPercentage, '95%'));
@@ -204,7 +211,7 @@ class OfferCapService
         // Check daily cap warnings
         if ($offer->daily_conversion_cap && $offer->today_conversions > 0) {
             $dailyPercentage = ($offer->today_conversions / $offer->daily_conversion_cap) * 100;
-            
+
             if ($dailyPercentage >= 90 && !$this->hasRecentWarning($offer, 'daily_cap', 90)) {
                 $advertiser->notify(new OfferCapWarningNotification($offer, 'daily', $offer->today_conversions, $offer->daily_conversion_cap));
                 $this->markWarningAsSent($offer, 'daily_cap', 90);
@@ -217,7 +224,7 @@ class OfferCapService
         // Check total cap warnings
         if ($offer->total_conversion_cap && $offer->total_conversions > 0) {
             $totalPercentage = ($offer->total_conversions / $offer->total_conversion_cap) * 100;
-            
+
             if ($totalPercentage >= 90 && !$this->hasRecentWarning($offer, 'total_cap', 90)) {
                 $advertiser->notify(new OfferCapWarningNotification($offer, 'total', $offer->total_conversions, $offer->total_conversion_cap));
                 $this->markWarningAsSent($offer, 'total_cap', 90);

@@ -215,6 +215,23 @@
                                 />
                                 <p class="mt-1 text-xs text-gray-500">Lower numbers appear first</p>
                             </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Platform Fee (%)
+                                </label>
+                                <input
+                                    v-model.number="form.platform_fee_percentage"
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    step="0.01"
+                                    class="w-full rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
+                                    placeholder="e.g. 5 for 5%"
+                                />
+                                <p class="mt-1 text-xs text-gray-500">Percentage deducted from each sale in platform-managed stores using this plan. Leave blank to disable platform payment mode.</p>
+                                <p v-if="form.errors.platform_fee_percentage" class="mt-1 text-sm text-red-600">{{ form.errors.platform_fee_percentage }}</p>
+                            </div>
                         </div>
                     </div>
 
@@ -253,6 +270,7 @@ const form = useForm({
     monthly_price: null,
     yearly_price: null,
     yearly_discount_percent: null,
+    platform_fee_percentage: null,
     features: [],
     is_active: true,
     sort_order: 0,
