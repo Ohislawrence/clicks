@@ -8,7 +8,7 @@
             leave-from-class="opacity-100"
             leave-to-class="opacity-0"
         >
-            <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div v-if="show" class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4">
                 <!-- Backdrop -->
                 <div class="absolute inset-0 bg-gray-900/70 backdrop-blur-sm"></div>
 
@@ -21,7 +21,7 @@
                     leave-from-class="opacity-100 scale-100 translate-y-0"
                     leave-to-class="opacity-0 scale-95 translate-y-4"
                 >
-                    <div v-if="show" class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden">
+                    <div v-if="show" class="relative w-full max-w-lg max-h-[calc(100vh-3rem)] bg-white rounded-2xl shadow-2xl overflow-y-auto">
                         <!-- Header -->
                         <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-5">
                             <div class="flex items-center gap-3">

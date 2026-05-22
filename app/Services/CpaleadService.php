@@ -20,12 +20,12 @@ class CpaleadService
 
     public function __construct()
     {
-        $this->apiKey = config('services.cpalead.api_key');
+        $this->apiKey = config('services.cpalead.api_key', '');
         $this->baseUrl = rtrim(config('services.cpalead.base_url', ''), '/');
         $this->defaultCookieDuration = (int) config('services.cpalead.default_cookie_duration', 30);
         $this->platformSpreadPercentage = (float) config('services.cpalead.platform_spread_percentage', 10);
         $this->autoApprove = filter_var(config('services.cpalead.auto_approve', true), FILTER_VALIDATE_BOOLEAN);
-        $this->advertiserId = (int) config('services.cpalead.advertiser_id');
+        $this->advertiserId = (int) config('services.cpalead.advertiser_id', 0);
         $this->disableMissingOffers = filter_var(config('services.cpalead.disable_missing_offers', false), FILTER_VALIDATE_BOOLEAN);
     }
 
