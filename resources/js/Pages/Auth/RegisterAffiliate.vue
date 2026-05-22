@@ -14,7 +14,7 @@ const form = useForm({
     bio: '',
     country: '',
     traffic_sources: [
-        { type: 'instagram', name: '', url: '', followers: '' }
+        { type: 'instagram', name: '', url: '', followers: null }
     ],
     terms: false,
     role: 'affiliate',
@@ -32,7 +32,7 @@ const trafficSourceTypes = [
 ];
 
 const addTrafficSource = () => {
-    form.traffic_sources.push({ type: 'instagram', name: '', url: '', followers: '' });
+    form.traffic_sources.push({ type: 'instagram', name: '', url: '', followers: null });
 };
 
 const removeTrafficSource = (index) => {
