@@ -2,6 +2,9 @@
     <AppLayout title="Account Pending Approval">
         <div class="min-h-screen bg-gray-50 flex items-center justify-center py-16 px-4">
             <div class="max-w-lg w-full">
+                <div v-if="$page.props.flash?.success" class="mb-6 rounded-2xl border border-green-200 bg-green-50 p-4 text-green-800">
+                    {{ $page.props.flash.success }}
+                </div>
 
                 <!-- Step 1: Email not verified yet -->
                 <div v-if="!emailVerified" class="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -82,14 +85,14 @@
                                 <span class="text-green-500 mr-3 mt-0.5">📚</span>
                                 <div>
                                     <p class="text-sm font-medium text-green-900">Use this time wisely</p>
-                                    <p class="text-xs text-green-700">Read our affiliate documentation to prepare your promotion strategy while you wait.</p>
+                                    <p class="text-xs text-green-700">Read the relevant documentation to prepare while you wait for account approval.</p>
                                 </div>
                             </div>
                         </div>
 
                         <div class="flex gap-3">
                             <Link
-                                :href="route('affiliate.documentation.index')"
+                                :href="userRole === 'advertiser' ? route('advertiser.documentation.index') : route('affiliate.documentation.index')"
                                 class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition text-sm"
                             >
                                 📖 Read Documentation
@@ -114,5 +117,6 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 
 defineProps({
     emailVerified: Boolean,
+    userRole: String,
 });
 </script>

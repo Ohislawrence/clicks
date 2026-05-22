@@ -152,6 +152,26 @@
         @yield('content')
     </main>
 
+    @php
+        $whatsappSupportNumber = Cache::get('whatsapp_support_number', '');
+        $whatsappSupportPhone = preg_replace('/[^0-9]/', '', $whatsappSupportNumber);
+    @endphp
+    @if(!empty($whatsappSupportPhone))
+        <a
+            href="https://wa.me/{{ $whatsappSupportPhone }}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="fixed bottom-6 right-6 z-50 inline-flex items-center gap-3 rounded-full bg-[#25D366] px-4 py-3 shadow-2xl shadow-slate-900/20 text-white text-sm font-semibold transition hover:bg-[#1ebe5c]"
+            aria-label="Chat with us on WhatsApp"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M20.52 3.48a11.29 11.29 0 00-16 0A11.29 11.29 0 003.48 19.5L2 22l2.48-.86A11.29 11.29 0 0012 22.75a11.33 11.33 0 006.38-1.93 11.29 11.29 0 004.14-8.92 11.33 11.33 0 00-1.99-6.42zM12 20.5a8.74 8.74 0 01-4.62-1.26l-.33-.2-2.67.92.9-2.6-.22-.34A8.78 8.78 0 013.25 12 8.75 8.75 0 0112 3.25 8.75 8.75 0 0120.75 12 8.78 8.78 0 0112 20.5z" />
+                <path d="M15.74 14.55c-.24-.12-1.44-.71-1.66-.79-.22-.08-.38-.12-.54.12-.15.24-.62.79-.76.95-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.93-1.19-.71-.63-1.18-1.39-1.32-1.63-.14-.24-.02-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.41-.54-.42h-.46c-.16 0-.42.06-.64.3s-.84.82-.84 2 .86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.65.58.25 1.03.4 1.38.52.58.2 1.11.17 1.53.1.47-.08 1.44-.59 1.64-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28z" />
+            </svg>
+            <span class="hidden sm:inline">WhatsApp Support</span>
+        </a>
+    @endif
+
     <!-- Footer -->
     <footer class="bg-slate-50">
         <!-- Top CTA Section -->

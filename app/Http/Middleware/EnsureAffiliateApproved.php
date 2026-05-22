@@ -21,7 +21,7 @@ class EnsureAffiliateApproved
                 return response()->json(['message' => 'Your account is pending admin approval.'], 403);
             }
 
-            return redirect()->route('affiliate.pending-approval');
+            return redirect()->route('pending-approval');
         }
 
         return $next($request);

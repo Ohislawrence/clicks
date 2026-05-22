@@ -4,6 +4,7 @@ use App\Http\Controllers\Affiliate\AffiliateLinkController;
 use App\Http\Controllers\Affiliate\DashboardController;
 use App\Http\Controllers\Affiliate\OfferController;
 use App\Http\Controllers\Affiliate\PayoutController;
+use App\Http\Controllers\Affiliate\PendingApprovalController;
 use App\Http\Controllers\Affiliate\DocumentationController as AffiliateDocumentationController;
 use App\Http\Controllers\Advertiser\WalletController as AdvertiserWalletController;
 use App\Http\Controllers\Advertiser\DashboardController as AdvertiserDashboardController;
@@ -93,8 +94,11 @@ Route::middleware([
     Route::post('/user/erasure-request', [DataSubjectRightsController::class, 'requestErasure'])->name('user.erasure-request');
 });
 
+Route::middleware(['auth:sanctum', config('jetstream.auth_session')])->group(function () {
+    Route::get('/pending-approval', [PendingApprovalController::class, 'index'])->name('pending-approval');
+});
+
 // Affiliate Routes
-use App\Http\Controllers\Affiliate\PendingApprovalController;
 
 Route::middleware([
     'auth:sanctum',
@@ -104,9 +108,6 @@ Route::middleware([
 ])->prefix('affiliate')->name('affiliate.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/agree-to-terms', [DashboardController::class, 'agreeToTerms'])->name('agree-to-terms');
-
-    // Pending approval page (accessible before admin approval)
-    Route::get('/pending-approval', [PendingApprovalController::class, 'index'])->name('pending-approval');
 
     // Routes below require admin approval (is_verified = true)
     Route::middleware('affiliate.approved')->group(function () {

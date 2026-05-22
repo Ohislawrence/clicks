@@ -23,6 +23,7 @@ class SettingsController extends Controller
             'fraud_detection_enabled' => Cache::get('fraud_detection_enabled', true),
             'max_clicks_per_ip' => Cache::get('max_clicks_per_ip', 5),
             'platform_fee_percentage' => Cache::get('platform_fee_percentage', 0),
+            'whatsapp_support_number' => Cache::get('whatsapp_support_number', ''),
         ];
 
         return Inertia::render('Admin/Settings/Index', [
@@ -43,6 +44,7 @@ class SettingsController extends Controller
             'fraud_detection_enabled' => 'boolean',
             'max_clicks_per_ip' => 'required|integer|min:1',
             'platform_fee_percentage' => 'required|numeric|min:0|max:100',
+            'whatsapp_support_number' => ['nullable', 'string', 'max:25', 'regex:/^\+?[0-9 ]+$/'],
         ]);
 
         foreach ($validated as $key => $value) {

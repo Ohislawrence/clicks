@@ -289,6 +289,7 @@ const form = useForm({
     fraud_detection_enabled: props.settings.fraud_detection_enabled,
     max_clicks_per_ip: props.settings.max_clicks_per_ip,
     platform_fee_percentage: props.settings.platform_fee_percentage,
+    whatsapp_support_number: props.settings.whatsapp_support_number,
 });
 
 const saveSettings = () => {

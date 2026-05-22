@@ -34,7 +34,7 @@
                             You'll receive an email notification once approved.
                         </p>
                     </div>
-                    <Link :href="route('affiliate.pending-approval')" class="shrink-0 text-sm text-amber-700 hover:text-amber-900 underline font-medium">
+                    <Link :href="route('pending-approval')" class="shrink-0 text-sm text-amber-700 hover:text-amber-900 underline font-medium">
                         View status →
                     </Link>
                 </div>

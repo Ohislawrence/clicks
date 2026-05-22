@@ -8,6 +8,7 @@ use App\Models\TrafficSource;
 use App\Notifications\WelcomeAffiliateNotification;
 use App\Notifications\WelcomeAdvertiserNotification;
 use App\Notifications\NewAffiliateAccountNotification;
+use App\Notifications\NewAdvertiserAccountNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -112,7 +113,7 @@ class RegisterController extends Controller
 
             Auth::login($user);
 
-            return redirect()->route('affiliate.dashboard')->with('success', 'Welcome! Your affiliate account has been created. Please verify your email and wait for admin approval before promoting offers.');
+            return redirect()->route('pending-approval')->with('success', 'Welcome! Your affiliate account has been created. Please verify your email and wait for admin approval.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -176,7 +177,7 @@ class RegisterController extends Controller
 
             Auth::login($user);
 
-            return redirect()->route('advertiser.dashboard')->with('success', 'Welcome! Your advertiser account has been created. It will be reviewed by our team.');
+            return redirect()->route('pending-approval')->with('success', 'Welcome! Your advertiser account has been created and is under review. You will receive an email once approved.');
 
         } catch (\Exception $e) {
             DB::rollBack();

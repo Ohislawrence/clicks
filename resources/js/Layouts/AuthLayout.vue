@@ -21,6 +21,14 @@ defineProps({
                 <h2 v-if="title" class="text-center text-3xl font-bold tracking-tight text-slate-900">
                     {{ title }}
                 </h2>
+
+                <div v-if="$page.props.flash?.success" class="mt-6 rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800 sm:mt-8">
+                    {{ $page.props.flash.success }}
+                </div>
+
+                <div v-if="$page.props.flash?.error" class="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 sm:mt-8">
+                    {{ $page.props.flash.error }}
+                </div>
             </div>
 
             <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">

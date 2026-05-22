@@ -11,13 +11,22 @@ class PendingApprovalController extends Controller
     {
         $user = auth()->user();
 
-        // If already approved, redirect to dashboard
+        // If already approved, redirect to the appropriate dashboard
         if ($user->is_verified) {
-            return redirect()->route('affiliate.dashboard');
+            if ($user->hasRole('affiliate')) {
+                return redirect()->route('affiliate.dashboard');
+            }
+
+            if ($user->hasRole('advertiser')) {
+                return redirect()->route('advertiser.dashboard');
+            }
+
+            return redirect()->route('dashboard');
         }
 
         return Inertia::render('Affiliate/PendingApproval', [
             'emailVerified' => $user->hasVerifiedEmail(),
+            'userRole' => $user->roles->first()?->name ?? 'user',
         ]);
     }
 }
