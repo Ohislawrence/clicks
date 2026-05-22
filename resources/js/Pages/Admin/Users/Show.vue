@@ -74,6 +74,47 @@
                             </div>
                         </div>
 
+                        <!-- Affiliate Details -->
+                        <div v-if="hasRole('affiliate')" class="bg-white rounded-xl shadow-sm p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Affiliate Details</h3>
+
+                            <div class="grid grid-cols-1 gap-4">
+                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                    <p class="text-sm text-gray-500 mb-2">Country</p>
+                                    <p class="text-base font-medium text-gray-900">{{ user.country || 'Not provided' }}</p>
+                                </div>
+
+                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                    <p class="text-sm text-gray-500 mb-2">Bio</p>
+                                    <p class="text-base font-medium text-gray-900">{{ user.bio || 'Not provided' }}</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-6">
+                                <h4 class="text-sm font-semibold text-gray-900 mb-3">Traffic Sources</h4>
+                                <div v-if="user.trafficSources?.length" class="space-y-3">
+                                    <div
+                                        v-for="source in user.trafficSources"
+                                        :key="source.id"
+                                        class="rounded-xl border border-gray-200 p-4 bg-white"
+                                    >
+                                        <div class="flex flex-wrap gap-3 items-center mb-3">
+                                            <span class="inline-flex items-center rounded-full bg-blue-50 text-blue-700 px-3 py-1 text-xs font-semibold">
+                                                {{ source.type.charAt(0).toUpperCase() + source.type.slice(1) }}
+                                            </span>
+                                            <span class="text-sm text-gray-500">{{ source.is_primary ? 'Primary' : 'Secondary' }}</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-1"><strong>Name:</strong> {{ source.name }}</p>
+                                        <p class="text-sm text-gray-600 mb-1"><strong>URL:</strong> <a :href="source.url" target="_blank" class="text-blue-600 hover:underline">{{ source.url }}</a></p>
+                                        <p class="text-sm text-gray-600"><strong>Followers:</strong> {{ source.followers ?? 'Not provided' }}</p>
+                                    </div>
+                                </div>
+                                <div v-else class="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4 text-sm text-gray-600">
+                                    No traffic sources available for this affiliate.
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Referral Cap Management (Affiliates Only) -->
                         <div v-if="hasRole('affiliate') && referralCapData" class="bg-white rounded-xl shadow-sm p-6">
                             <h3 class="text-lg font-semibold text-gray-900 mb-4">Referral Commission Cap Settings</h3>

@@ -55,7 +55,7 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        $user->load('roles', 'offers', 'affiliateLinks', 'conversions');
+        $user->load('roles', 'offers', 'affiliateLinks', 'conversions', 'trafficSources');
 
         // Get user stats
         $stats = [

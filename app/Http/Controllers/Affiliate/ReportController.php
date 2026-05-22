@@ -103,7 +103,7 @@ class ReportController extends Controller
                 'referral_code' => $user->referral_code,
                 'total_referrals' => $user->referral_count ?? 0,
                 'active_referrals' => \App\Models\User::where('parent_affiliate_id', $user->id)
-                    ->where('status', 'active')
+                    ->where('is_active', true)
                     ->count(),
                 'total_earnings' => $user->referral_earnings ?? 0,
             ];
@@ -131,7 +131,7 @@ class ReportController extends Controller
             'referral_code' => $user->referral_code,
             'total_referrals' => $user->referral_count ?? 0,
             'active_referrals' => \App\Models\User::where('parent_affiliate_id', $user->id)
-                ->where('status', 'active')
+                ->where('is_active', true)
                 ->count(),
             'total_earnings' => $user->referral_earnings ?? 0,
         ];
