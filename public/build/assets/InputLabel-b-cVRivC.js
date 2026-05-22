@@ -1,0 +1,1 @@
+import{F as e,L as t,Q as n,S as r}from"./index.esm-CneLIe1t.js";var i={class:`block font-medium text-sm text-gray-700`},a={key:0},o={key:1},s={__name:`InputLabel`,props:{value:String},setup(s){return(c,l)=>(e(),r(`label`,i,[s.value?(e(),r(`span`,a,n(s.value),1)):(e(),r(`span`,o,[t(c.$slots,`default`)]))]))}};export{s as t};

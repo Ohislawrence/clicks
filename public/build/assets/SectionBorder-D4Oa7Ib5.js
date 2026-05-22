@@ -1,0 +1,1 @@
+import{F as e,S as t,y as n}from"./index.esm-CneLIe1t.js";import{t as r}from"./_plugin-vue_export-helper-BOai-rQB.js";var i={},a={class:`hidden sm:block`};function o(r,i){return e(),t(`div`,a,[...i[0]||=[n(`div`,{class:`py-8`},[n(`div`,{class:`border-t border-gray-200`})],-1)]])}var s=r(i,[[`render`,o]]);export{s as t};
