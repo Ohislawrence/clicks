@@ -10,7 +10,12 @@
                     </Link>
                     <div>
                         <h2 class="text-2xl font-bold text-gray-900">{{ offer.name }}</h2>
-                        <p class="mt-1 text-sm text-gray-600">{{ offer.category?.name }}</p>
+                        <div class="mt-1 flex flex-wrap items-center gap-2 text-sm text-gray-600">
+                            <span>{{ offer.category?.name }}</span>
+                            <span v-if="offer.is_cpalead" class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">
+                                CPAlead Offer
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -73,6 +78,31 @@
                             <div class="flex items-center justify-between text-sm opacity-90 mt-2">
                                 <span>Cookie Duration:</span>
                                 <span class="font-semibold">{{ offer.cookie_duration }} days</span>
+                            </div>
+
+                            <!-- Conversion Goal -->
+                            <div class="mt-4 pt-4 border-t border-white border-opacity-30">
+                                <p class="text-xs opacity-75 mb-2 uppercase tracking-wide">Your Conversion Goal</p>
+                                <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                                    <template v-if="offer.commission_model === 'ppl'">
+                                        <p class="text-sm font-bold">📋 Drive a Lead</p>
+                                        <p class="text-xs opacity-90 mt-1">
+                                            You earn <strong>{{ formatCurrency(offer.commission_rate) }}</strong> each time someone completes the required action (form fill, sign up, free trial, etc.) — <strong>no purchase needed</strong>.
+                                        </p>
+                                    </template>
+                                    <template v-else-if="offer.commission_model === 'pps'">
+                                        <p class="text-sm font-bold">🛒 Drive a Sale</p>
+                                        <p class="text-xs opacity-90 mt-1">
+                                            You earn <strong>{{ formatCurrency(offer.commission_rate) }}</strong> each time someone clicks your link and completes a purchase.
+                                        </p>
+                                    </template>
+                                    <template v-else-if="offer.commission_model === 'revshare'">
+                                        <p class="text-sm font-bold">📊 Drive a Sale</p>
+                                        <p class="text-xs opacity-90 mt-1">
+                                            You earn <strong>{{ offer.commission_rate }}%</strong> of the sale amount. The higher the sale value, the more you earn.
+                                        </p>
+                                    </template>
+                                </div>
                             </div>
                         </div>
 
@@ -298,8 +328,29 @@ const generateLink = () => {
 };
 
 const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text).then(() => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Link copied to clipboard!');
+        }).catch(() => fallbackCopy(text));
+    } else {
+        fallbackCopy(text);
+    }
+};
+
+const fallbackCopy = (text) => {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.setAttribute('readonly', '');
+    el.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
+    document.body.appendChild(el);
+    el.select();
+    try {
+        document.execCommand('copy');
         alert('Link copied to clipboard!');
-    });
+    } catch {
+        prompt('Copy this link:', text);
+    } finally {
+        document.body.removeChild(el);
+    }
 };
 </script>

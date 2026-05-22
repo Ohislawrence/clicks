@@ -94,6 +94,8 @@ Route::middleware([
 });
 
 // Affiliate Routes
+use App\Http\Controllers\Affiliate\PendingApprovalController;
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -101,30 +103,38 @@ Route::middleware([
     'role:affiliate',
 ])->prefix('affiliate')->name('affiliate.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/agree-to-terms', [DashboardController::class, 'agreeToTerms'])->name('agree-to-terms');
 
-    // Offers
-    Route::get('/offers', [OfferController::class, 'index'])->name('offers.index');
-    Route::get('/offers/{offer}', [OfferController::class, 'show'])->name('offers.show');
-    Route::post('/offers/{offer}/request-access', [OfferController::class, 'requestAccess'])->name('offers.request-access');
+    // Pending approval page (accessible before admin approval)
+    Route::get('/pending-approval', [PendingApprovalController::class, 'index'])->name('pending-approval');
 
-    // Affiliate Links
-    Route::get('/links', [AffiliateLinkController::class, 'index'])->name('links.index');
-    Route::post('/links', [AffiliateLinkController::class, 'store'])->name('links.store');
-    Route::patch('/links/{affiliateLink}/toggle', [AffiliateLinkController::class, 'toggle'])->name('links.toggle');
-    Route::delete('/links/{affiliateLink}', [AffiliateLinkController::class, 'destroy'])->name('links.destroy');
-    Route::post('/links/{affiliateLink}/whatsapp', [AffiliateLinkController::class, 'generateWhatsApp'])->name('links.whatsapp');
+    // Routes below require admin approval (is_verified = true)
+    Route::middleware('affiliate.approved')->group(function () {
+        // Offers
+        Route::get('/offers', [OfferController::class, 'index'])->name('offers.index');
+        Route::get('/offers/{offer}', [OfferController::class, 'show'])->name('offers.show');
+        Route::post('/offers/{offer}/request-access', [OfferController::class, 'requestAccess'])->name('offers.request-access');
 
-    // Reports
-    Route::get('/reports', [\App\Http\Controllers\Affiliate\ReportController::class, 'index'])->name('reports.index');
+        // Affiliate Links
+        Route::get('/links', [AffiliateLinkController::class, 'index'])->name('links.index');
+        Route::post('/links', [AffiliateLinkController::class, 'store'])->name('links.store');
+        Route::patch('/links/{affiliateLink}/toggle', [AffiliateLinkController::class, 'toggle'])->name('links.toggle');
+        Route::delete('/links/{affiliateLink}', [AffiliateLinkController::class, 'destroy'])->name('links.destroy');
+        Route::post('/links/{affiliateLink}/whatsapp', [AffiliateLinkController::class, 'generateWhatsApp'])->name('links.whatsapp');
 
-    // Documentation
+        // Reports
+        Route::get('/reports', [\App\Http\Controllers\Affiliate\ReportController::class, 'index'])->name('reports.index');
+        Route::get('/referrals', [\App\Http\Controllers\Affiliate\ReportController::class, 'referrals'])->name('referrals.index');
+
+        // Payouts
+        Route::get('/payouts', [PayoutController::class, 'index'])->name('payouts.index');
+        Route::get('/payouts/create', [PayoutController::class, 'create'])->name('payouts.create');
+        Route::post('/payouts', [PayoutController::class, 'store'])->name('payouts.store');
+        Route::delete('/payouts/{payout}/cancel', [PayoutController::class, 'cancel'])->name('payouts.cancel');
+    });
+
+    // Documentation (accessible even while pending)
     Route::get('/documentation', [AffiliateDocumentationController::class, 'index'])->name('documentation.index');
-
-    // Payouts
-    Route::get('/payouts', [PayoutController::class, 'index'])->name('payouts.index');
-    Route::get('/payouts/create', [PayoutController::class, 'create'])->name('payouts.create');
-    Route::post('/payouts', [PayoutController::class, 'store'])->name('payouts.store');
-    Route::delete('/payouts/{payout}/cancel', [PayoutController::class, 'cancel'])->name('payouts.cancel');
 });
 
 // Advertiser Routes
@@ -271,6 +281,8 @@ Route::middleware([
     Route::post('/stop-impersonating', [AdminUserController::class, 'stopImpersonating'])->name('stop-impersonating');
     Route::post('/users/{user}/approve-advertiser', [AdminUserController::class, 'approveAdvertiser'])->name('users.approve-advertiser');
     Route::post('/users/{user}/reject-advertiser', [AdminUserController::class, 'rejectAdvertiser'])->name('users.reject-advertiser');
+    Route::post('/users/{user}/approve-affiliate', [AdminUserController::class, 'approveAffiliate'])->name('users.approve-affiliate');
+    Route::post('/users/{user}/reject-affiliate', [AdminUserController::class, 'rejectAffiliate'])->name('users.reject-affiliate');
     Route::put('/users/{user}/referral-cap', [AdminUserController::class, 'updateReferralCap'])->name('users.update-referral-cap');
 
     // Advertiser Wallet Management
@@ -282,6 +294,9 @@ Route::middleware([
 
     // Offer Management
     Route::get('/offers', [AdminOfferController::class, 'index'])->name('offers.index');
+    Route::get('/offers/create', [AdminOfferController::class, 'create'])->name('offers.create');
+    Route::post('/offers', [AdminOfferController::class, 'store'])->name('offers.store');
+    Route::post('/offers/sync-cpalead', [AdminOfferController::class, 'syncCpalead'])->name('offers.sync-cpalead');
     Route::get('/offers/{offer}', [AdminOfferController::class, 'show'])->name('offers.show');
     Route::post('/offers/{offer}/toggle', [AdminOfferController::class, 'toggle'])->name('offers.toggle');
     Route::delete('/offers/{offer}', [AdminOfferController::class, 'destroy'])->name('offers.destroy');
@@ -403,4 +418,10 @@ Route::prefix('store')->name('storefront.')->group(function () {
 
     // Order Confirmation
     Route::get('/{slug}/order/{orderNumber}/thank-you', [\App\Http\Controllers\StorefrontController::class, 'thankYou'])->name('thank-you');
+});
+
+// Admin Offer Management
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('offers/{offer}/edit', [AdminOfferController::class, 'edit'])->name('offers.edit');
+    Route::put('offers/{offer}', [AdminOfferController::class, 'update'])->name('offers.update');
 });

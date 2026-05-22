@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Notifications\AdvertiserAccountApprovedNotification;
 use App\Notifications\AdvertiserAccountRejectedNotification;
+use App\Notifications\AffiliateAccountApprovedNotification;
+use App\Notifications\AffiliateAccountRejectedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
@@ -210,6 +212,52 @@ class UserController extends Controller
         $user->notify(new AdvertiserAccountRejectedNotification($validated['rejection_reason'] ?? null));
 
         return back()->with('success', 'Advertiser account rejected.');
+    }
+
+    /**
+     * Approve affiliate account
+     */
+    public function approveAffiliate(User $user)
+    {
+        if (!$user->hasRole('affiliate')) {
+            return back()->with('error', 'User is not an affiliate.');
+        }
+
+        if ($user->is_verified) {
+            return back()->with('info', 'Affiliate account is already approved.');
+        }
+
+        $user->update([
+            'is_verified' => true,
+            'verified_at' => now(),
+        ]);
+
+        $user->notify(new AffiliateAccountApprovedNotification());
+
+        return back()->with('success', 'Affiliate account approved successfully!');
+    }
+
+    /**
+     * Reject affiliate account
+     */
+    public function rejectAffiliate(Request $request, User $user)
+    {
+        if (!$user->hasRole('affiliate')) {
+            return back()->with('error', 'User is not an affiliate.');
+        }
+
+        $validated = $request->validate([
+            'rejection_reason' => 'nullable|string|max:500',
+        ]);
+
+        $user->update([
+            'is_verified' => false,
+            'is_active' => false,
+        ]);
+
+        $user->notify(new AffiliateAccountRejectedNotification($validated['rejection_reason'] ?? null));
+
+        return back()->with('success', 'Affiliate account rejected.');
     }
 
     /**

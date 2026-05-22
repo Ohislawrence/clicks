@@ -28,7 +28,7 @@ class ReportController extends Controller
         $user = $request->user();
         $range = $request->input('range', '7days');
         $dateRange = $this->getDateRange($range);
-        
+
         $filters = [
             'date_from' => $dateRange['from'],
             'date_to' => $dateRange['to'],
@@ -119,6 +119,29 @@ class ReportController extends Controller
         ]);
     }
 
+    public function referrals(Request $request)
+    {
+        $user = $request->user();
+        if (!$user->referral_code) {
+            $this->tierService->generateReferralCode($user);
+            $user->refresh();
+        }
+
+        $referralStats = [
+            'referral_code' => $user->referral_code,
+            'total_referrals' => $user->referral_count ?? 0,
+            'active_referrals' => \App\Models\User::where('parent_affiliate_id', $user->id)
+                ->where('status', 'active')
+                ->count(),
+            'total_earnings' => $user->referral_earnings ?? 0,
+        ];
+
+        return Inertia::render('Affiliate/Referrals/Index', [
+            'referralStats' => $referralStats,
+            'referralLink' => url('/register/affiliate?ref=' . $user->referral_code),
+        ]);
+    }
+
     protected function getDateRange($range)
     {
         $to = now();
@@ -146,7 +169,7 @@ class ReportController extends Controller
             default:
                 $from = now()->subDays(7);
         }
-        
+
         return [
             'from' => $from,
             'to' => $to,

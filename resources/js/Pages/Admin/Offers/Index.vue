@@ -1,9 +1,25 @@
 <template>
     <AppLayout title="Offer Management">
         <template #header>
-            <div>
-                <h2 class="text-2xl font-bold text-gray-900">Offer Management</h2>
-                <p class="mt-1 text-sm text-gray-600">Manage all platform offers across advertisers</p>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">Offer Management</h2>
+                    <p class="mt-1 text-sm text-gray-600">Manage all platform offers across advertisers</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <Link
+                        :href="route('admin.offers.create')"
+                        class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition"
+                    >
+                        Create Offer
+                    </Link>
+                    <button
+                        @click="syncCpalead"
+                        class="inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 transition"
+                    >
+                        Sync CPAlead Offers
+                    </button>
+                </div>
             </div>
         </template>
 
@@ -648,6 +664,13 @@ const rejectOffer = () => {
         onSuccess: () => {
             closeRejectModal();
         },
+        preserveScroll: true,
+    });
+};
+
+const syncCpalead = () => {
+    router.post(route('admin.offers.sync-cpalead'), {}, {
+        preserveState: true,
         preserveScroll: true,
     });
 };

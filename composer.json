@@ -15,6 +15,7 @@
         "laravel/telescope": "^5.20",
         "laravel/tinker": "^3.0",
         "spatie/laravel-permission": "^7.4",
+        "stevebauman/location": "^7.6",
         "tightenco/ziggy": "^2.0"
     },
     "require-dev": {

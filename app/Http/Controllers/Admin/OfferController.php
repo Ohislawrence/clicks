@@ -12,6 +12,7 @@ use App\Notifications\OfferAvailableNotification;
 use App\Notifications\OfferRejectedNotification;
 use App\Notifications\OfferRemovedNotification;
 use Illuminate\Http\Request;
+use App\Services\CpaleadService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -21,6 +22,167 @@ use Inertia\Inertia;
 
 class OfferController extends Controller
 {
+    /**
+     * Show the form for editing the specified offer.
+     */
+    public function create()
+    {
+        $categories = OfferCategory::all();
+        $advertisers = User::role('advertiser')->get(['id', 'name']);
+        return Inertia::render('Admin/Offers/Create', [
+            'categories' => $categories,
+            'advertisers' => $advertisers,
+            'offerChannels' => [
+                ['value' => 'platform', 'label' => 'Platform Advertiser'],
+                ['value' => 'cpalead', 'label' => 'CPAlead Network'],
+                ['value' => 'network', 'label' => 'Other Network'],
+            ],
+        ]);
+    }
+
+    public function edit(Offer $offer)
+    {
+        $categories = OfferCategory::all();
+        $advertisers = User::role('advertiser')->get(['id', 'name']);
+        // Convert targeting arrays to comma strings for editing
+        $offer->target_countries = $offer->target_countries ? implode(',', $offer->target_countries) : '';
+        $offer->target_devices = $offer->target_devices ? implode(',', $offer->target_devices) : '';
+        $offer->target_os = $offer->target_os ? implode(',', $offer->target_os) : '';
+        $offer->offer_channel = $offer->offer_channel ?: 'platform';
+        $offer->network_name = $offer->network_name ?: ($offer->is_cpalead ? 'cpalead' : null);
+        return Inertia::render('Admin/Offers/Edit', [
+            'offer' => $offer,
+            'categories' => $categories,
+            'advertisers' => $advertisers,
+            'offerChannels' => [
+                ['value' => 'platform', 'label' => 'Platform Advertiser'],
+                ['value' => 'cpalead', 'label' => 'CPAlead Network'],
+                ['value' => 'network', 'label' => 'Other Network'],
+            ],
+        ]);
+    }
+
+    /**
+     * Store a newly created offer in storage.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'category_id' => 'required|exists:offer_categories,id',
+            'advertiser_id' => 'required|exists:users,id',
+            'offer_channel' => 'required|in:platform,cpalead,network',
+            'network_name' => 'nullable|string|max:100',
+            'network_offer_id' => 'nullable|string|max:255',
+            'description' => 'required|string',
+            'commission_model' => 'required|in:pps,ppl,revshare',
+            'commission_rate' => 'required|numeric|min:0',
+            'offer_url' => 'nullable|url',
+            'product_image' => 'nullable|url',
+            'cpalead_offer_id' => 'nullable|string|max:255',
+            'is_cpalead' => 'boolean',
+            'target_countries' => 'nullable|string',
+            'target_devices' => 'nullable|string',
+            'target_os' => 'nullable|string',
+            'require_unique_ip' => 'boolean',
+            'terms_and_conditions' => 'nullable|string',
+            'daily_conversion_cap' => 'nullable|integer|min:0',
+            'monthly_conversion_cap' => 'nullable|integer|min:0',
+        ]);
+
+        $validated['target_countries'] = $validated['target_countries'] ? array_map('trim', explode(',', $validated['target_countries'])) : null;
+        $validated['target_devices'] = $validated['target_devices'] ? array_map('trim', explode(',', $validated['target_devices'])) : null;
+        $validated['target_os'] = $validated['target_os'] ? array_map('trim', explode(',', $validated['target_os'])) : null;
+        $validated['daily_conversion_cap'] = !empty($validated['daily_conversion_cap']) ? $validated['daily_conversion_cap'] : null;
+        $validated['monthly_conversion_cap'] = !empty($validated['monthly_conversion_cap']) ? $validated['monthly_conversion_cap'] : null;
+
+        $validated['is_cpalead'] = $validated['offer_channel'] === 'cpalead';
+        if ($validated['offer_channel'] === 'cpalead') {
+            $validated['network_name'] = 'cpalead';
+            $validated['network_offer_id'] = $validated['cpalead_offer_id'] ?? null;
+        }
+
+        $slugBase = Str::slug($validated['name']) ?: 'offer';
+        $slug = $slugBase;
+        $counter = 1;
+        while (Offer::where('slug', $slug)->exists()) {
+            $slug = "{$slugBase}-{$counter}";
+            $counter++;
+        }
+        $validated['slug'] = $slug;
+
+        $offer = Offer::create($validated);
+
+        return redirect()->route('admin.offers.show', $offer->id)->with('success', 'Offer created successfully.');
+    }
+
+    /**
+     * Update the specified offer in storage.
+     */
+    public function update(Request $request, Offer $offer)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'category_id' => 'required|exists:offer_categories,id',
+            'advertiser_id' => 'required|exists:users,id',
+            'offer_channel' => 'required|in:platform,cpalead,network',
+            'network_name' => 'nullable|string|max:100',
+            'network_offer_id' => 'nullable|string|max:255',
+            'description' => 'required|string',
+            'commission_model' => 'required|in:pps,ppl,revshare',
+            'commission_rate' => 'required|numeric|min:0',
+            'offer_url' => 'nullable|url',
+            'product_image' => 'nullable|url',
+            'cpalead_offer_id' => 'nullable|string|max:255',
+            'is_cpalead' => 'boolean',
+            'target_countries' => 'nullable|string',
+            'target_devices' => 'nullable|string',
+            'target_os' => 'nullable|string',
+            'require_unique_ip' => 'boolean',
+            'terms_and_conditions' => 'nullable|string',
+            'daily_conversion_cap' => 'nullable|integer|min:0',
+            'monthly_conversion_cap' => 'nullable|integer|min:0',
+        ]);
+
+        // Convert comma strings to arrays for JSON fields
+        $validated['target_countries'] = $validated['target_countries'] ? array_map('trim', explode(',', $validated['target_countries'])) : null;
+        $validated['target_devices'] = $validated['target_devices'] ? array_map('trim', explode(',', $validated['target_devices'])) : null;
+        $validated['target_os'] = $validated['target_os'] ? array_map('trim', explode(',', $validated['target_os'])) : null;
+        $validated['daily_conversion_cap'] = !empty($validated['daily_conversion_cap']) ? $validated['daily_conversion_cap'] : null;
+        $validated['monthly_conversion_cap'] = !empty($validated['monthly_conversion_cap']) ? $validated['monthly_conversion_cap'] : null;
+        $validated['is_cpalead'] = $validated['offer_channel'] === 'cpalead';
+        if ($validated['offer_channel'] === 'cpalead') {
+            $validated['network_name'] = 'cpalead';
+            $validated['network_offer_id'] = $validated['cpalead_offer_id'] ?? null;
+        }
+
+        $offer->update($validated);
+
+        return redirect()->route('admin.offers.show', $offer->id)->with('success', 'Offer updated successfully.');
+    }
+
+    public function syncCpalead(Request $request, CpaleadService $cpaleadService)
+    {
+        if (!$cpaleadService->isConfigured()) {
+            return back()->with('error', 'CPAlead integration is not configured. Please set the required environment values.');
+        }
+
+        if ($request->boolean('disable_missing')) {
+            config(['services.cpalead.disable_missing_offers' => true]);
+        }
+
+        $rawOffers = $cpaleadService->fetchOffers();
+        if (empty($rawOffers)) {
+            return back()->with('warning', 'No offers were returned from CPAlead. Check your configuration and API connectivity.');
+        }
+
+        $results = $cpaleadService->importOffers($rawOffers);
+        $created = collect($results)->where('status', 'created')->count();
+        $updated = collect($results)->where('status', 'updated')->count();
+
+        return back()->with('success', "CPAlead sync completed: {$created} new offers, {$updated} updated offers.");
+    }
+
     public function index(Request $request)
     {
         $offers = Offer::with(['advertiser', 'category'])
@@ -149,13 +311,24 @@ class OfferController extends Controller
             return back()->with('info', 'Offer is already approved.');
         }
 
-        // Validate platform spread percentage
+        // Validate platform spread percentage and optional RevShare recurring settings
         $validated = $request->validate([
-            'platform_spread_percentage' => 'required|numeric|min:0|max:100',
+            'platform_spread_percentage'  => 'required|numeric|min:0|max:100',
+            'revshare_type'               => 'nullable|in:once,recurring',
+            'revshare_recurring_duration' => 'nullable|integer|min:1',
+            'revshare_recurring_unit'     => 'nullable|in:month,year',
         ]);
 
         // Set the platform spread percentage
         $offer->platform_spread_percentage = $validated['platform_spread_percentage'];
+
+        // Apply RevShare recurring settings when applicable
+        if ($offer->commission_model === 'revshare') {
+            $offer->revshare_type = $validated['revshare_type'] ?? $offer->revshare_type ?? 'once';
+            $isRecurring = $offer->revshare_type === 'recurring';
+            $offer->revshare_recurring_duration = $isRecurring ? ($validated['revshare_recurring_duration'] ?: null) : null;
+            $offer->revshare_recurring_unit     = $isRecurring ? ($validated['revshare_recurring_unit'] ?? 'month') : null;
+        }
 
         // Calculate advertiser and affiliate payouts based on spread
         $offer->calculatePayoutsFromSpread();

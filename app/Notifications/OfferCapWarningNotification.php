@@ -49,7 +49,7 @@ class OfferCapWarningNotification extends Notification implements ShouldQueue
         $capTypeLabel = ucfirst($this->capType);
         $emoji = $this->percentageUsed >= 90 ? '🚨' : '⚠️';
         $remaining = $this->capLimit - $this->currentCount;
-        
+
         return (new MailMessage)
             ->subject($emoji . ' ' . $capTypeLabel . ' Cap Alert: ' . $offer->name)
             ->greeting('Hello, ' . $notifiable->name)
@@ -69,7 +69,7 @@ class OfferCapWarningNotification extends Notification implements ShouldQueue
             ->line('')
             ->line('**Action Required:**')
             ->line($this->getActionMessage())
-            ->action('Manage Offer Caps', route('advertiser.offers.edit', $offer->id))
+            ->action('View Offer', route('advertiser.offers.show', $offer->id))
             ->line('Keep your campaign running smoothly!');
     }
 
@@ -96,13 +96,13 @@ class OfferCapWarningNotification extends Notification implements ShouldQueue
     {
         $offer = $this->offer;
         $remaining = $this->capLimit - $this->currentCount;
-        
+
         return [
             'type' => 'cap_warning',
             'title' => ucfirst($this->capType) . ' Cap Alert',
             'message' => $offer->name . ' has used ' . number_format($this->percentageUsed, 1) . '% of its ' . $this->capType . ' cap. Remaining: ' . number_format($remaining) . ' conversions.',
-            'action_url' => route('advertiser.offers.edit', $offer->id),
-            'action_text' => 'Manage Caps',
+            'action_url' => route('advertiser.offers.show', $offer->id),
+            'action_text' => 'View Offer',
             'offer_id' => $offer->id,
             'offer_name' => $offer->name,
             'cap_type' => $this->capType,

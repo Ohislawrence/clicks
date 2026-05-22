@@ -12,6 +12,12 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-2">
+                                        <Link
+                                            :href="route('admin.offers.edit', offer.id)"
+                                            class="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                                        >
+                                            Edit
+                                        </Link>
                     <button
                         @click="toggleFeatured"
                         class="px-3 py-2 rounded-lg border text-sm font-medium transition-colors"
@@ -171,6 +177,20 @@
                                         <template v-else>—</template>
                                     </dd>
                                 </div>
+                                <div v-if="offer.commission_model === 'revshare'">
+                                    <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">RevShare Type</dt>
+                                    <dd class="mt-1 text-sm font-semibold text-gray-900">
+                                        {{ offer.revshare_type === 'recurring' ? '🔄 Recurring / Subscription' : '1️⃣ One-time' }}
+                                    </dd>
+                                </div>
+                                <div v-if="offer.commission_model === 'revshare' && offer.revshare_type === 'recurring'">
+                                    <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">Duration Cap</dt>
+                                    <dd class="mt-1 text-sm font-semibold text-gray-900">
+                                        {{ offer.revshare_recurring_duration
+                                            ? offer.revshare_recurring_duration + ' ' + offer.revshare_recurring_unit + '(s)'
+                                            : 'Unlimited (Lifetime)' }}
+                                    </dd>
+                                </div>
                                 <div>
                                     <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">Cookie Duration</dt>
                                     <dd class="mt-1 text-sm font-semibold text-gray-900">{{ offer.cookie_duration }} days</dd>
@@ -298,6 +318,48 @@
                                     <p class="mt-1 text-xs text-gray-500">The platform's cut on top of the advertiser's commission rate.</p>
                                     <p v-if="approveForm.errors.platform_spread_percentage" class="mt-1 text-xs text-red-600">{{ approveForm.errors.platform_spread_percentage }}</p>
                                 </div>
+
+                                <!-- RevShare recurring fields (only for revshare offers) -->
+                                <div v-if="offer.commission_model === 'revshare'" class="pt-2 border-t border-gray-100 space-y-3">
+                                    <p class="text-xs font-semibold text-purple-800">📊 RevShare Settings</p>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Commission Recurrence</label>
+                                        <div class="flex gap-2">
+                                            <label class="flex-1 flex items-center gap-2 cursor-pointer rounded-lg border p-2 text-xs"
+                                                :class="approveForm.revshare_type === 'once' ? 'border-purple-500 bg-purple-50' : 'border-gray-200'">
+                                                <input type="radio" v-model="approveForm.revshare_type" value="once" class="accent-purple-600" />
+                                                <span>One-time</span>
+                                            </label>
+                                            <label class="flex-1 flex items-center gap-2 cursor-pointer rounded-lg border p-2 text-xs"
+                                                :class="approveForm.revshare_type === 'recurring' ? 'border-purple-500 bg-purple-50' : 'border-gray-200'">
+                                                <input type="radio" v-model="approveForm.revshare_type" value="recurring" class="accent-purple-600" />
+                                                <span>Recurring</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div v-if="approveForm.revshare_type === 'recurring'" class="flex gap-2">
+                                        <div class="flex-1">
+                                            <label class="block text-xs font-medium text-gray-700 mb-1">Duration Cap</label>
+                                            <select v-model="approveForm.revshare_recurring_duration" class="w-full rounded-lg border-gray-300 text-xs focus:border-purple-500 focus:ring-purple-500">
+                                                <option value="">Unlimited</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="6">6</option>
+                                                <option value="12">12</option>
+                                                <option value="24">24</option>
+                                            </select>
+                                        </div>
+                                        <div class="flex-1">
+                                            <label class="block text-xs font-medium text-gray-700 mb-1">Unit</label>
+                                            <select v-model="approveForm.revshare_recurring_unit" class="w-full rounded-lg border-gray-300 text-xs focus:border-purple-500 focus:ring-purple-500">
+                                                <option value="month">Month(s)</option>
+                                                <option value="year">Year(s)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <button
                                     @click="approveOffer"
                                     :disabled="approveForm.processing || !approveForm.platform_spread_percentage"
@@ -349,6 +411,48 @@
                                         placeholder="e.g. 10"
                                     />
                                 </div>
+
+                                <!-- RevShare recurring fields (only for revshare offers) -->
+                                <div v-if="offer.commission_model === 'revshare'" class="pt-2 border-t border-gray-100 space-y-3">
+                                    <p class="text-xs font-semibold text-purple-800">📊 RevShare Settings</p>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Commission Recurrence</label>
+                                        <div class="flex gap-2">
+                                            <label class="flex-1 flex items-center gap-2 cursor-pointer rounded-lg border p-2 text-xs"
+                                                :class="approveForm.revshare_type === 'once' ? 'border-purple-500 bg-purple-50' : 'border-gray-200'">
+                                                <input type="radio" v-model="approveForm.revshare_type" value="once" class="accent-purple-600" />
+                                                <span>One-time</span>
+                                            </label>
+                                            <label class="flex-1 flex items-center gap-2 cursor-pointer rounded-lg border p-2 text-xs"
+                                                :class="approveForm.revshare_type === 'recurring' ? 'border-purple-500 bg-purple-50' : 'border-gray-200'">
+                                                <input type="radio" v-model="approveForm.revshare_type" value="recurring" class="accent-purple-600" />
+                                                <span>Recurring</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div v-if="approveForm.revshare_type === 'recurring'" class="flex gap-2">
+                                        <div class="flex-1">
+                                            <label class="block text-xs font-medium text-gray-700 mb-1">Duration Cap</label>
+                                            <select v-model="approveForm.revshare_recurring_duration" class="w-full rounded-lg border-gray-300 text-xs focus:border-purple-500 focus:ring-purple-500">
+                                                <option value="">Unlimited</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="6">6</option>
+                                                <option value="12">12</option>
+                                                <option value="24">24</option>
+                                            </select>
+                                        </div>
+                                        <div class="flex-1">
+                                            <label class="block text-xs font-medium text-gray-700 mb-1">Unit</label>
+                                            <select v-model="approveForm.revshare_recurring_unit" class="w-full rounded-lg border-gray-300 text-xs focus:border-purple-500 focus:ring-purple-500">
+                                                <option value="month">Month(s)</option>
+                                                <option value="year">Year(s)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <button
                                     @click="approveOffer"
                                     :disabled="approveForm.processing || !approveForm.platform_spread_percentage"
@@ -641,6 +745,9 @@ const integrationError   = ref(null);
 
 const approveForm = useForm({
     platform_spread_percentage: props.offer.platform_spread_percentage ?? '',
+    revshare_type: props.offer.revshare_type || 'once',
+    revshare_recurring_duration: props.offer.revshare_recurring_duration || '',
+    revshare_recurring_unit: props.offer.revshare_recurring_unit || 'month',
 });
 
 const rejectForm = useForm({

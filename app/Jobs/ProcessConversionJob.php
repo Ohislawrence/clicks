@@ -35,7 +35,8 @@ class ProcessConversionJob implements ShouldQueue
         public float $conversionValue,
         public ?array $postbackData = null,
         public string $ipAddress = '',
-        public string $trackingMethod = 'postback'
+        public string $trackingMethod = 'postback',
+        public ?string $customerId = null,
     ) {}
 
     /**
@@ -46,6 +47,18 @@ class ProcessConversionJob implements ShouldQueue
         DB::beginTransaction();
 
         try {
+            // --- Recurring RevShare renewal path ---
+            // When a subscription renews, the original click is already converted.
+            // We look up attribution from the initial conversion using customer_id.
+            if ($this->customerId) {
+                $recurringHandled = $this->handleRecurringIfApplicable();
+                if ($recurringHandled) {
+                    DB::commit();
+                    return;
+                }
+            }
+
+            // --- Normal (initial) conversion path ---
             $click = $this->findClick();
 
             if (!$click) {
@@ -53,12 +66,14 @@ class ProcessConversionJob implements ShouldQueue
                     'tracking_code' => $this->trackingCode,
                     'transaction_id' => $this->transactionId,
                 ]);
+                DB::rollBack();
                 return;
             }
 
             // Check if already converted
             if ($click->is_converted) {
                 Log::info('Click already converted', ['click_id' => $click->id]);
+                DB::rollBack();
                 return;
             }
 
@@ -73,6 +88,7 @@ class ProcessConversionJob implements ShouldQueue
                     'offer_id' => $offer->id,
                     'tracking_code' => $this->trackingCode,
                 ]);
+                DB::rollBack();
                 return;
             }
 
@@ -142,6 +158,8 @@ class ProcessConversionJob implements ShouldQueue
                 'offer_id' => $offer->id,
                 'affiliate_link_id' => $affiliateLink->id,
                 'transaction_id' => $this->transactionId ?? Str::uuid(),
+                'customer_id' => $this->customerId,
+                'recurring_occurrence' => 1,
                 'conversion_value' => $this->conversionValue,
                 'advertiser_payout' => $advertiserPayout,
                 'platform_margin' => $platformMargin,
@@ -291,5 +309,135 @@ class ProcessConversionJob implements ShouldQueue
             'revshare' => ($value * $rate) / 100, // Revenue Share - percentage
             default => 0,
         };
+    }
+
+    /**
+     * Handle a recurring RevShare renewal.
+     *
+     * Called when customer_id is present. Looks up the original conversion for
+     * this customer on this offer and creates a linked renewal conversion without
+     * requiring a new click (the customer is not re-clicking an affiliate link).
+     *
+     * @return bool true if the renewal was processed (caller should commit), false if not applicable
+     */
+    protected function handleRecurringIfApplicable(): bool
+    {
+        $affiliateLink = AffiliateLink::where('tracking_code', $this->trackingCode)
+            ->with('offer')
+            ->first();
+
+        if (!$affiliateLink) {
+            return false;
+        }
+
+        $offer = $affiliateLink->offer;
+
+        // Only applies to recurring RevShare offers
+        if ($offer->commission_model !== 'revshare' || $offer->revshare_type !== 'recurring') {
+            return false;
+        }
+
+        // Find the original (occurrence #1) conversion for this customer
+        $originalConversion = Conversion::where('offer_id', $offer->id)
+            ->where('customer_id', $this->customerId)
+            ->whereIn('status', ['pending', 'approved', 'paid'])
+            ->orderBy('id')
+            ->first();
+
+        // No previous conversion → fall through to normal initial-sale flow
+        if (!$originalConversion) {
+            return false;
+        }
+
+        // Count existing occurrences (already checked cap in TrackingController, but guard here too)
+        $occurrenceCount = Conversion::where('offer_id', $offer->id)
+            ->where('customer_id', $this->customerId)
+            ->whereIn('status', ['pending', 'approved', 'paid'])
+            ->count();
+
+        if ($offer->revshare_recurring_duration !== null && $occurrenceCount >= $offer->revshare_recurring_duration) {
+            Log::info('ProcessConversionJob: recurring duration cap reached', [
+                'offer_id'    => $offer->id,
+                'customer_id' => $this->customerId,
+            ]);
+            return true; // handled (by rejection) — do not fall through to normal path
+        }
+
+        // Re-use the original affiliate's link for attribution
+        $renewalAffiliateLink = $originalConversion->affiliateLink ?? $affiliateLink;
+        $affiliate = $renewalAffiliateLink->affiliate;
+
+        // Commission calculation
+        if ($offer->pricing_model === 'spread') {
+            $commissionAmount = ($this->conversionValue * ($offer->affiliate_payout ?? 0)) / 100;
+            $advertiserPayout = ($this->conversionValue * ($offer->advertiser_payout ?? 0)) / 100;
+            $platformMargin   = $advertiserPayout - $commissionAmount;
+        } else {
+            $commissionAmount = ($this->conversionValue * $offer->commission_rate) / 100;
+            $advertiserPayout = null;
+            $platformMargin   = 0;
+        }
+
+        // Tier bonus
+        $tierBonus = $affiliate->tier_commission_bonus ?? 0;
+        if ($tierBonus > 0) {
+            $commissionAmount += ($commissionAmount * $tierBonus) / 100;
+        }
+
+        $autoApprove     = Cache::get('settings.auto_approve_conversions', false);
+        $conversionStatus = $autoApprove ? 'approved' : 'pending';
+
+        $renewalConversion = Conversion::create([
+            'click_id'              => $originalConversion->click_id,
+            'affiliate_id'          => $originalConversion->affiliate_id,
+            'offer_id'              => $offer->id,
+            'affiliate_link_id'     => $originalConversion->affiliate_link_id,
+            'transaction_id'        => $this->transactionId ?? Str::uuid(),
+            'customer_id'           => $this->customerId,
+            'recurring_occurrence'  => $occurrenceCount + 1,
+            'parent_conversion_id'  => $originalConversion->id,
+            'conversion_value'      => $this->conversionValue,
+            'advertiser_payout'     => $advertiserPayout,
+            'platform_margin'       => $platformMargin,
+            'commission_amount'     => $commissionAmount,
+            'commission_model'      => $offer->commission_model,
+            'status'                => $conversionStatus,
+            'tracking_method'       => $this->trackingMethod,
+            'postback_data'         => $this->postbackData ? json_encode($this->postbackData) : null,
+        ]);
+
+        Commission::create([
+            'affiliate_id'  => $originalConversion->affiliate_id,
+            'conversion_id' => $renewalConversion->id,
+            'offer_id'      => $offer->id,
+            'amount'        => $commissionAmount,
+            'status'        => $conversionStatus,
+        ]);
+
+        // Update stats
+        $renewalAffiliateLink->increment('conversion_count');
+        $renewalAffiliateLink->increment('total_earnings', $commissionAmount);
+        $offer->increment('total_conversions');
+        $offer->increment('total_revenue', $this->conversionValue);
+
+        if ($autoApprove) {
+            DB::table('users')->where('id', $originalConversion->affiliate_id)->increment('balance', $commissionAmount);
+        } else {
+            DB::table('users')->where('id', $originalConversion->affiliate_id)->increment('pending_balance', $commissionAmount);
+        }
+
+        $affiliate->increment('lifetime_earnings', $commissionAmount);
+        $affiliate->increment('total_conversions');
+
+        $affiliate->notify(new NewConversionNotification($renewalConversion, 'affiliate'));
+
+        Log::info('Recurring RevShare renewal processed', [
+            'offer_id'             => $offer->id,
+            'customer_id'          => $this->customerId,
+            'recurring_occurrence' => $occurrenceCount + 1,
+            'commission'           => $commissionAmount,
+        ]);
+
+        return true;
     }
 }

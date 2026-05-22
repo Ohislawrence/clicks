@@ -59,8 +59,8 @@ class OfferRejectedNotification extends Notification implements ShouldQueue
 
         return $message
             ->line('')
-            ->line('You can edit your offer and resubmit it for review with the suggested changes.')
-            ->action('Edit Offer', url('/advertiser/offers/' . $this->offer->id . '/edit'))
+            ->line('Editing is no longer available from the advertiser dashboard. Please contact admin to make any changes or resubmit your offer.')
+            ->action('View Offer', url('/advertiser/offers/' . $this->offer->id))
             ->line('If you have questions, please contact our support team.');
     }
 

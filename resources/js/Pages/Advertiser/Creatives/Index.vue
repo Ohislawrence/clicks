@@ -66,7 +66,7 @@
                                 </svg>
                                 <p class="mt-2 text-sm text-gray-500">Text Ad</p>
                             </div>
-                            
+
                             <!-- Status Badge -->
                             <div class="absolute top-2 right-2">
                                 <span :class="[
@@ -88,7 +88,7 @@
                         <!-- Details -->
                         <div class="p-4">
                             <h3 class="font-semibold text-gray-900 mb-2">{{ creative.name }}</h3>
-                            
+
                             <!-- Info Grid -->
                             <div class="space-y-2 text-sm text-gray-600">
                                 <div v-if="creative.dimensions" class="flex items-center">
@@ -572,7 +572,21 @@ const deleteCreative = () => {
 };
 
 const copyUrl = (url) => {
-    navigator.clipboard.writeText(url);
-    alert('URL copied to clipboard!');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => alert('URL copied to clipboard!')).catch(() => fallbackCopy(url));
+    } else {
+        fallbackCopy(url);
+    }
+};
+
+const fallbackCopy = (text) => {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.setAttribute('readonly', '');
+    el.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
+    document.body.appendChild(el);
+    el.select();
+    try { document.execCommand('copy'); alert('URL copied to clipboard!'); } catch { prompt('Copy this URL:', text); }
+    document.body.removeChild(el);
 };
 </script>

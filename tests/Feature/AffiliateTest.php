@@ -9,6 +9,7 @@ use App\Models\OfferCategory;
 use App\Models\PayoutRequest;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Bus;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
@@ -198,6 +199,37 @@ class AffiliateTest extends TestCase
             'affiliate_id' => $this->affiliate->id,
             'offer_id'     => $this->openOffer->id,
         ]);
+    }
+
+    public function test_track_route_redirects_to_advertiser_destination_url_when_offer_url_set(): void
+    {
+        Bus::fake();
+
+        $offer = Offer::create([
+            'advertiser_id' => $this->advertiser->id,
+            'category_id' => $this->category->id,
+            'name' => 'Destination URL Offer',
+            'slug' => 'destination-url-offer',
+            'description' => 'Offer with explicit destination URL',
+            'commission_model' => 'pps',
+            'commission_rate' => 5.00,
+            'cookie_duration' => 30,
+            'access_type' => 'open',
+            'is_active' => true,
+            'approval_status' => 'approved',
+            'preview_url' => 'https://example.com/preview',
+            'offer_url' => 'https://advertiser.example.com/landing',
+        ]);
+
+        $link = AffiliateLink::create([
+            'affiliate_id' => $this->affiliate->id,
+            'offer_id' => $offer->id,
+            'is_active' => true,
+        ]);
+
+        $response = $this->get(route('track', $link->tracking_code));
+
+        $response->assertRedirect('https://advertiser.example.com/landing?tracking_code=' . urlencode($link->tracking_code));
     }
 
     public function test_affiliate_cannot_create_duplicate_link(): void

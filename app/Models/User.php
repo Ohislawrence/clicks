@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -12,7 +12,7 @@ use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens;
 
@@ -58,6 +58,7 @@ class User extends Authenticatable
         'total_conversions',
         'conversion_rate',
         'tier_updated_at',
+        'verified_at',
         'parent_affiliate_id',
         'referral_code',
         'referral_count',
@@ -67,6 +68,7 @@ class User extends Authenticatable
         'referral_cap_months',
         'referral_started_at',
         'referral_cap_reached_at',
+        'affiliate_agreement_agreed_at',
     ];
 
     /**
@@ -120,6 +122,7 @@ class User extends Authenticatable
             'referral_cap_months' => 'integer',
             'referral_started_at' => 'datetime',
             'referral_cap_reached_at' => 'datetime',
+            'affiliate_agreement_agreed_at' => 'datetime',
         ];
     }
 

@@ -1,5 +1,6 @@
 <template>
     <AppLayout title="Affiliate Dashboard">
+        <AffiliateAgreementModal :show="props.mustAgree" />
         <template #header>
             <div class="flex items-center justify-between">
                 <div>
@@ -22,6 +23,22 @@
 
         <div class="py-8">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                <!-- Pending Approval Banner -->
+                <div v-if="!page.props.auth.user.is_verified" class="mb-6 bg-amber-50 border border-amber-300 rounded-xl p-5 flex items-start gap-4">
+                    <span class="text-3xl">⏳</span>
+                    <div class="flex-1">
+                        <p class="font-semibold text-amber-900">Your account is pending admin approval</p>
+                        <p class="text-sm text-amber-700 mt-1">
+                            You can view your dashboard stats, but <strong>browsing offers and creating links is disabled</strong> until an admin approves your account.
+                            You'll receive an email notification once approved.
+                        </p>
+                    </div>
+                    <Link :href="route('affiliate.pending-approval')" class="shrink-0 text-sm text-amber-700 hover:text-amber-900 underline font-medium">
+                        View status →
+                    </Link>
+                </div>
+
                 <!-- Metric Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <MetricCard
@@ -319,10 +336,13 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { Link, router } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import MetricCard from '@/Components/MetricCard.vue';
 import ChartCard from '@/Components/ChartCard.vue';
+import AffiliateAgreementModal from '@/Components/AffiliateAgreementModal.vue';
+
+const page = usePage();
 
 const props = defineProps({
     stats: Object,
@@ -331,7 +351,8 @@ const props = defineProps({
     geoPerformance: Array,
     dailyStats: Array,
     dateRange: String,
-    referralCapData: Object
+    referralCapData: Object,
+    mustAgree: Boolean,
 });
 
 const selectedRange = ref(props.dateRange);

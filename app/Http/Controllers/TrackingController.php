@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Log;
+use Stevebauman\Location\Facades\Location;
 
 class TrackingController extends Controller
 {
@@ -42,17 +43,66 @@ class TrackingController extends Controller
             abort(404, 'Invalid tracking link');
         }
 
-        // Get basic geo data (you can integrate with a geo-IP service here)
-        $geoData = [
-            'country_code' => null,
-            'country_name' => null,
-            'city' => null,
-            'region' => null,
-        ];
+        // Resolve real visitor IP
+        $visitorIp = $request->ip();
+
+        // Geo-IP lookup via ip-api.com (free, cached per IP for 24 h to respect rate limits)
+        $geoData = Cache::remember(
+            'geo:' . md5($visitorIp),
+            now()->addHours(24),
+            function () use ($visitorIp) {
+                try {
+                    $position = Location::get($visitorIp);
+                    if ($position) {
+                        return [
+                            'country_code' => $position->countryCode ?? null,
+                            'country_name' => $position->countryName ?? null,
+                            'city'         => $position->cityName ?? null,
+                            'region'       => $position->regionName ?? null,
+                        ];
+                    }
+                } catch (\Throwable $e) {
+                    Log::warning('Geo-IP lookup failed', ['ip' => $visitorIp, 'error' => $e->getMessage()]);
+                }
+                return ['country_code' => null, 'country_name' => null, 'city' => null, 'region' => null];
+            }
+        );
 
         // Get device data from user agent
         $userAgent = $request->userAgent();
         $deviceData = $this->parseUserAgent($userAgent);
+
+        // ── Targeting Gate ────────────────────────────────────────────────
+        $offer = $affiliateLink->offer;
+
+        if (!$offer->isTargetedTo($geoData['country_code'], $deviceData['device'], $deviceData['os'])) {
+            Log::info('Click blocked by targeting rules', [
+                'offer_id'     => $offer->id,
+                'country_code' => $geoData['country_code'],
+                'device'       => $deviceData['device'],
+                'os'           => $deviceData['os'],
+            ]);
+
+            $fallback = $offer->findFallbackOffer();
+            if ($fallback) {
+                $sep = str_contains($fallback->preview_url, '?') ? '&' : '?';
+                return redirect()->away($fallback->preview_url . $sep . 'ref=targeting');
+            }
+            abort(451, 'This offer is not available in your region or on your device.');
+        }
+
+        // Unique-IP conversion enforcement
+        if ($offer->require_unique_ip) {
+            $alreadyConverted = \App\Models\Click::where('offer_id', $offer->id)
+                ->where('ip_address', $visitorIp)
+                ->where('is_converted', true)
+                ->exists();
+
+            if ($alreadyConverted) {
+                abort(409, 'This offer has already been completed from your connection.');
+            }
+        }
+        // ─────────────────────────────────────────────────────────────────
 
         // Smart Link Selection (if rotation is enabled)
         if ($affiliateLink->enable_rotation && $affiliateLink->rotationGroup) {
@@ -102,7 +152,6 @@ class TrackingController extends Controller
         // Redirect immediately (don't wait for queue processing)
         // Append tracking_code to the offer URL so advertisers can capture it
         // for S2S postback attribution (e.g. ?tracking_code=ABC123).
-        $offer = $affiliateLink->offer;
 
         // Check advertiser wallet balance against the offer's minimum_wallet_required.
         // If insufficient, divert traffic to another offer in the same category.
@@ -129,7 +178,8 @@ class TrackingController extends Controller
             }
         }
 
-        $offerUrl = $offer->preview_url;
+        // Use offer_url (actual landing page) if set, otherwise fall back to preview_url
+        $offerUrl = $offer->offer_url ?: $offer->preview_url;
         $separator = str_contains($offerUrl, '?') ? '&' : '?';
         return redirect()->away($offerUrl . $separator . 'tracking_code=' . urlencode($affiliateLink->tracking_code));
     }
@@ -192,6 +242,7 @@ class TrackingController extends Controller
             'token'            => 'required|string',
             'transaction_id'   => 'nullable|string|max:255',
             'conversion_value' => 'required|numeric|min:0|max:999999',
+            'customer_id'      => 'nullable|string|max:255', // For recurring RevShare subscriptions
         ]);
 
         // Look up affiliate link to get the offer and its postback_secret
@@ -211,6 +262,45 @@ class TrackingController extends Controller
             ]);
             // Return 200 with generic message to avoid revealing which part failed
             return response()->json(['success' => false, 'message' => 'Invalid request.'], 401);
+        }
+
+        // Enforce commission-model-specific rules:
+        // PPS and RevShare require a real sale amount; PPL allows zero (no purchase needed).
+        $commissionModel = $affiliateLink->offer->commission_model;
+        if (in_array($commissionModel, ['pps', 'revshare']) && (float) $validated['conversion_value'] <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => strtoupper($commissionModel) . ' offers require conversion_value > 0. '
+                    . 'Please pass the actual sale amount (e.g. "conversion_value": 15000).',
+            ], 422);
+        }
+
+        // For recurring RevShare: check if the customer has reached the duration cap.
+        $offer = $affiliateLink->offer;
+        if (
+            $commissionModel === 'revshare'
+            && $offer->revshare_type === 'recurring'
+            && !empty($validated['customer_id'])
+            && $offer->revshare_recurring_duration !== null
+        ) {
+            $occurrenceCount = \App\Models\Conversion::where('offer_id', $offer->id)
+                ->where('customer_id', $validated['customer_id'])
+                ->whereIn('status', ['pending', 'approved', 'paid'])
+                ->count();
+
+            if ($occurrenceCount >= $offer->revshare_recurring_duration) {
+                Log::info('Postback: recurring revshare duration cap reached', [
+                    'offer_id'    => $offer->id,
+                    'customer_id' => $validated['customer_id'],
+                    'occurrences' => $occurrenceCount,
+                    'cap'         => $offer->revshare_recurring_duration,
+                ]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Recurring commission duration cap reached for this customer. '
+                        . "Maximum {$offer->revshare_recurring_duration} {$offer->revshare_recurring_unit}(s) of commissions have been paid.",
+                ], 422);
+            }
         }
 
         // Replay attack prevention: deduplicate by transaction_id within 30 days
@@ -233,7 +323,8 @@ class TrackingController extends Controller
             (float) $validated['conversion_value'],
             null,
             $request->ip(),
-            'postback'
+            'postback',
+            $validated['customer_id'] ?? null
         );
 
         return response()->json([
@@ -255,7 +346,14 @@ class TrackingController extends Controller
             $conversionValue = $request->query('value', 0);
             $transactionId = $request->query('txn_id');
 
-            if ($conversionValue > 0) {
+            // For PPL offers, fire even with zero value (no purchase required).
+            // For PPS and RevShare, a sale amount > 0 is required.
+            $pixelLink = AffiliateLink::where('tracking_code', $cookieData['tracking_code'])
+                ->with('offer')
+                ->first();
+            $pixelModel = $pixelLink?->offer?->commission_model;
+
+            if ($pixelModel === 'ppl' || $conversionValue > 0) {
                 // Dispatch conversion processing
                 ProcessConversionJob::dispatch(
                     $cookieData['tracking_code'],

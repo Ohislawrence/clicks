@@ -45,7 +45,7 @@ class OfferBudgetWarningNotification extends Notification implements ShouldQueue
     {
         $offer = $this->offer;
         $emoji = $this->percentageUsed >= 90 ? '🚨' : '⚠️';
-        
+
         return (new MailMessage)
             ->subject($emoji . ' Budget Alert: ' . $offer->name)
             ->greeting('Hello, ' . $notifiable->name)
@@ -59,7 +59,7 @@ class OfferBudgetWarningNotification extends Notification implements ShouldQueue
             ->line('')
             ->line('⚠️ **Action Required:**')
             ->line($this->getActionMessage())
-            ->action('Manage Offer Budget', route('advertiser.offers.edit', $offer->id))
+            ->action('View Offer', route('advertiser.offers.show', $offer->id))
             ->line('Don\'t let your campaigns stop! Top up now.');
     }
 
@@ -85,13 +85,13 @@ class OfferBudgetWarningNotification extends Notification implements ShouldQueue
     public function toDatabase(object $notifiable): array
     {
         $offer = $this->offer;
-        
+
         return [
             'type' => 'budget_warning',
             'title' => 'Budget Alert: ' . $offer->name,
             'message' => 'Your offer has used ' . number_format($this->percentageUsed, 1) . '% of its budget. Remaining: $' . number_format($this->remainingBudget, 2),
-            'action_url' => route('advertiser.offers.edit', $offer->id),
-            'action_text' => 'Manage Budget',
+            'action_url' => route('advertiser.offers.show', $offer->id),
+            'action_text' => 'View Offer',
             'offer_id' => $offer->id,
             'offer_name' => $offer->name,
             'percentage_used' => $this->percentageUsed,

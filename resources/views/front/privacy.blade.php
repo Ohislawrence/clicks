@@ -12,15 +12,15 @@
     }
 
     .policy-card {
-        background: #171717;
-        border: 1px solid #262626;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
         border-radius: 20px;
         transition: all 0.2s ease;
     }
 
     .policy-sidebar {
-        background: #171717;
-        border: 1px solid #262626;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
         border-radius: 16px;
     }
 
@@ -81,7 +81,7 @@
 
     .info-box {
         background: #1a1a1a;
-        border: 1px solid #2c2c2c;
+        border: 1px solid #e2e8f0;
         border-radius: 16px;
     }
 
@@ -99,7 +99,7 @@
 @section('content')
 
 <!-- Hero Section -->
-<section class="bg-neutral-950 border-b border-neutral-800">
+<section class="bg-white border-b border-slate-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
         <div class="max-w-3xl">
             <div class="flex flex-wrap gap-3 mb-6">
@@ -107,10 +107,10 @@
                 <span class="badge-gdpr">NDPR Compliant</span>
                 <span class="badge-gdpr">NITDA Registered</span>
             </div>
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-5">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 mb-5">
                 Privacy Policy
             </h1>
-            <p class="text-lg text-neutral-400 leading-relaxed">
+            <p class="text-lg text-slate-500 leading-relaxed">
                 At {{ config('app.name') }}, we take your privacy seriously. This Privacy Policy explains how we collect,
                 use, disclose, and safeguard your information when you use our platform.
             </p>
@@ -119,18 +119,18 @@
 </section>
 
 <!-- Content with Sidebar Navigation -->
-<section class="py-16 bg-neutral-950">
+<section class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
             <!-- Sidebar Navigation -->
             <div class="lg:col-span-1">
                 <div class="policy-sidebar p-4 sticky top-24">
-                    <div class="flex items-center gap-2 mb-4 pb-3 border-b border-neutral-800">
-                        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                    <div class="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
+                        <svg class="w-4 h-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" />
                         </svg>
-                        <span class="text-sm font-semibold text-white">On this page</span>
+                        <span class="text-sm font-semibold text-slate-900">On this page</span>
                     </div>
                     <nav class="space-y-1">
                         <a href="#collect" class="policy-sidebar-link">1. Information We Collect</a>
@@ -326,13 +326,13 @@
                             Policy and our data protection practices.
                         </p>
                         <div class="info-box p-6 mt-4 mb-6">
-                            <p class="font-semibold text-white mb-3">Data Protection Officer</p>
-                            <p class="text-neutral-400 mb-2">
-                                <span class="text-neutral-500">Email:</span>
-                                <a href="mailto:dpo@clicksintel.com" class="text-emerald-400 hover:text-emerald-300">dpo@clicksintel.com</a>
+                            <p class="font-semibold text-slate-900 mb-3">Data Protection Officer</p>
+                            <p class="text-slate-500 mb-2">
+                                <span class="text-slate-400">Email:</span>
+                                <a href="mailto:dpo@clicksintel.com" class="text-slate-700 hover:text-slate-600">dpo@clicksintel.com</a>
                             </p>
-                            <p class="text-neutral-400">
-                                <span class="text-neutral-500">Address:</span> {{ config('app.name') }}, Lagos, Nigeria
+                            <p class="text-slate-500">
+                                <span class="text-slate-400">Address:</span> {{ config('app.name') }}, Lagos, Nigeria
                             </p>
                         </div>
 
@@ -344,13 +344,13 @@
                         </p>
 
                         <div class="info-box p-6 mt-4 mb-6">
-                            <p class="font-semibold text-white mb-3">{{ config('app.name') }}</p>
-                            <p class="text-neutral-400 mb-2">
-                                <span class="text-neutral-500">Email:</span>
-                                <a href="mailto:privacy@clicksintel.com" class="text-emerald-400 hover:text-emerald-300">privacy@clicksintel.com</a>
+                            <p class="font-semibold text-slate-900 mb-3">{{ config('app.name') }}</p>
+                            <p class="text-slate-500 mb-2">
+                                <span class="text-slate-400">Email:</span>
+                                <a href="mailto:privacy@clicksintel.com" class="text-slate-700 hover:text-slate-600">privacy@clicksintel.com</a>
                             </p>
-                            <p class="text-neutral-400">
-                                <span class="text-neutral-500">Address:</span> Lagos, Nigeria
+                            <p class="text-slate-500">
+                                <span class="text-slate-400">Address:</span> Lagos, Nigeria
                             </p>
                         </div>
 
@@ -358,14 +358,14 @@
                             You also have the right to lodge a complaint with Nigeria's data protection regulator:
                         </p>
                         <div class="info-box p-6 mt-4">
-                            <p class="font-semibold text-white mb-2">Nigeria Data Protection Commission (NDPC)</p>
-                            <p class="text-neutral-400 mb-1">Formerly the National Information Technology Development Agency (NITDA) Data Protection Bureau</p>
-                            <p class="text-neutral-400 mb-2">
-                                <span class="text-neutral-500">Website:</span>
-                                <a href="https://ndpc.gov.ng" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300">ndpc.gov.ng</a>
+                            <p class="font-semibold text-slate-900 mb-2">Nigeria Data Protection Commission (NDPC)</p>
+                            <p class="text-slate-500 mb-1">Formerly the National Information Technology Development Agency (NITDA) Data Protection Bureau</p>
+                            <p class="text-slate-500 mb-2">
+                                <span class="text-slate-400">Website:</span>
+                                <a href="https://ndpc.gov.ng" target="_blank" rel="noopener noreferrer" class="text-slate-700 hover:text-slate-600">ndpc.gov.ng</a>
                             </p>
-                            <p class="text-neutral-400">
-                                <span class="text-neutral-500">Email:</span> info@ndpc.gov.ng
+                            <p class="text-slate-500">
+                                <span class="text-slate-400">Email:</span> info@ndpc.gov.ng
                             </p>
                         </div>
                     </div>
@@ -373,7 +373,7 @@
 
                 <!-- Last Updated Note -->
                 <div class="mt-6 text-center">
-                    <p class="text-xs text-neutral-600">
+                    <p class="text-xs text-slate-400">
                         This Privacy Policy was last updated on May 18, 2026. Previous versions are available upon request.
                         This policy is governed by the Nigeria Data Protection Regulation (NDPR) 2019.
                     </p>

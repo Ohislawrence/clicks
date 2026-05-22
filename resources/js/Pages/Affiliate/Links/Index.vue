@@ -333,9 +333,30 @@ const formatCurrency = (amount) => {
 };
 
 const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text).then(() => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Copied to clipboard!');
+        }).catch(() => fallbackCopy(text));
+    } else {
+        fallbackCopy(text);
+    }
+};
+
+const fallbackCopy = (text) => {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.setAttribute('readonly', '');
+    el.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
+    document.body.appendChild(el);
+    el.select();
+    try {
+        document.execCommand('copy');
         alert('Copied to clipboard!');
-    });
+    } catch {
+        prompt('Copy this link:', text);
+    } finally {
+        document.body.removeChild(el);
+    }
 };
 
 const toggleStatus = (link) => {

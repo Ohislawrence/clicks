@@ -152,6 +152,16 @@ class DashboardController extends Controller
             'dailyStats' => $dailyStats,
             'dateRange' => $dateRange,
             'referralCapData' => $referralCapData,
+            'mustAgree' => is_null($user->affiliate_agreement_agreed_at),
         ]);
+    }
+
+    public function agreeToTerms(Request $request)
+    {
+        $request->user()->update([
+            'affiliate_agreement_agreed_at' => now(),
+        ]);
+
+        return back();
     }
 }

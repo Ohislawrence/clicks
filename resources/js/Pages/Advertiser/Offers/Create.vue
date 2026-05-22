@@ -110,6 +110,7 @@
                                             <p class="text-sm font-medium text-gray-900">Pay Per Sale</p>
                                             <p class="text-xs text-gray-500">Fixed amount per sale</p>
                                         </div>
+                                        <span class="text-lg" title="Affiliate earns when a purchase is completed">🛒</span>
                                     </label>
                                     <label class="relative flex cursor-pointer rounded-lg border p-4 focus:outline-none"
                                         :class="form.commission_model === 'ppl' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'"
@@ -119,6 +120,7 @@
                                             <p class="text-sm font-medium text-gray-900">Pay Per Lead</p>
                                             <p class="text-xs text-gray-500">Fixed amount per lead</p>
                                         </div>
+                                        <span class="text-lg" title="Affiliate earns when a lead is captured — no purchase required">📋</span>
                                     </label>
                                     <label class="relative flex cursor-pointer rounded-lg border p-4 focus:outline-none"
                                         :class="form.commission_model === 'revshare' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'"
@@ -128,7 +130,110 @@
                                             <p class="text-sm font-medium text-gray-900">Revenue Share</p>
                                             <p class="text-xs text-gray-500">Percentage of revenue</p>
                                         </div>
+                                        <span class="text-lg" title="Affiliate earns a % of the sale amount">📊</span>
                                     </label>
+                                </div>
+
+                                <!-- Dynamic integration info box -->
+                                <div class="mt-3 rounded-lg border-l-4 p-4"
+                                    :class="{
+                                        'bg-blue-50 border-blue-400': form.commission_model === 'pps',
+                                        'bg-green-50 border-green-400': form.commission_model === 'ppl',
+                                        'bg-purple-50 border-purple-400': form.commission_model === 'revshare',
+                                    }"
+                                >
+                                    <!-- PPS -->
+                                    <template v-if="form.commission_model === 'pps'">
+                                        <p class="text-sm font-semibold text-blue-800">🛒 Pay Per Sale — What this means</p>
+                                        <ul class="mt-2 space-y-1 text-xs text-blue-700 list-disc list-inside">
+                                            <li><strong>Affiliates earn</strong> only when a customer completes a purchase through their link.</li>
+                                            <li><strong>You fire</strong> the postback/pixel on your payment confirmation page.</li>
+                                            <li><code class="bg-blue-100 px-1 rounded">conversion_value</code> is <strong>required and must be &gt; 0</strong> (the actual sale amount, e.g. 15000).</li>
+                                            <li>The platform will reject postbacks with zero or missing <code class="bg-blue-100 px-1 rounded">conversion_value</code>.</li>
+                                        </ul>
+                                    </template>
+                                    <!-- PPL -->
+                                    <template v-else-if="form.commission_model === 'ppl'">
+                                        <p class="text-sm font-semibold text-green-800">📋 Pay Per Lead — What this means</p>
+                                        <ul class="mt-2 space-y-1 text-xs text-green-700 list-disc list-inside">
+                                            <li><strong>Affiliates earn</strong> when someone submits a form, signs up, starts a free trial, or completes any qualifying action — <strong>no purchase needed</strong>.</li>
+                                            <li><strong>You fire</strong> the postback/pixel on your lead capture confirmation page.</li>
+                                            <li><code class="bg-green-100 px-1 rounded">conversion_value</code> is <strong>optional</strong> — you may omit it or pass 0.</li>
+                                            <li>Define clearly in your terms what qualifies as a valid lead to avoid disputes.</li>
+                                        </ul>
+                                    </template>
+                                    <!-- RevShare -->
+                                    <template v-else-if="form.commission_model === 'revshare'">
+                                        <p class="text-sm font-semibold text-purple-800">📊 Revenue Share — What this means</p>
+                                        <ul class="mt-2 space-y-1 text-xs text-purple-700 list-disc list-inside">
+                                            <li><strong>Affiliates earn</strong> a percentage of every sale they drive. Higher sales = higher commissions.</li>
+                                            <li><strong>You fire</strong> the postback/pixel on your payment confirmation page.</li>
+                                            <li><code class="bg-purple-100 px-1 rounded">conversion_value</code> is <strong>required and must be &gt; 0</strong> — commission is calculated as <code class="bg-purple-100 px-1 rounded">rate% × conversion_value</code>.</li>
+                                            <li>The platform will reject postbacks with zero or missing <code class="bg-purple-100 px-1 rounded">conversion_value</code>.</li>
+                                        </ul>
+
+                                        <!-- RevShare recurrence settings -->
+                                        <div class="mt-4 pt-3 border-t border-purple-200">
+                                            <p class="text-xs font-semibold text-purple-800 mb-2">💳 Commission Recurrence</p>
+                                            <div class="grid grid-cols-2 gap-3">
+                                                <label
+                                                    class="flex items-start gap-2 cursor-pointer rounded-lg border p-3"
+                                                    :class="form.revshare_type === 'once' ? 'border-purple-500 bg-purple-50' : 'border-purple-200 bg-white'"
+                                                >
+                                                    <input type="radio" v-model="form.revshare_type" value="once" class="mt-0.5 accent-purple-600" />
+                                                    <div>
+                                                        <p class="text-xs font-semibold text-purple-900">One-time</p>
+                                                        <p class="text-xs text-purple-600">Commission paid only on the initial sale (e.g. one-off products, lifetime deals)</p>
+                                                    </div>
+                                                </label>
+                                                <label
+                                                    class="flex items-start gap-2 cursor-pointer rounded-lg border p-3"
+                                                    :class="form.revshare_type === 'recurring' ? 'border-purple-500 bg-purple-50' : 'border-purple-200 bg-white'"
+                                                >
+                                                    <input type="radio" v-model="form.revshare_type" value="recurring" class="mt-0.5 accent-purple-600" />
+                                                    <div>
+                                                        <p class="text-xs font-semibold text-purple-900">Recurring</p>
+                                                        <p class="text-xs text-purple-600">Commission paid on each renewal billing cycle (subscriptions, SaaS, etc.)</p>
+                                                    </div>
+                                                </label>
+                                            </div>
+
+                                            <!-- Recurring duration picker -->
+                                            <div v-if="form.revshare_type === 'recurring'" class="mt-3 p-3 bg-white border border-purple-200 rounded-lg">
+                                                <p class="text-xs font-semibold text-purple-800 mb-2">Duration Cap</p>
+                                                <div class="flex items-center gap-3">
+                                                    <div class="flex-1">
+                                                        <select v-model="form.revshare_recurring_duration" class="w-full rounded-lg border-purple-300 text-sm focus:border-purple-500 focus:ring-purple-500">
+                                                            <option value="">Unlimited (Lifetime)</option>
+                                                            <option value="1">1</option>
+                                                            <option value="2">2</option>
+                                                            <option value="3">3</option>
+                                                            <option value="6">6</option>
+                                                            <option value="12">12</option>
+                                                            <option value="24">24</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="flex-1">
+                                                        <select v-model="form.revshare_recurring_unit" class="w-full rounded-lg border-purple-300 text-sm focus:border-purple-500 focus:ring-purple-500">
+                                                            <option value="month">Month(s)</option>
+                                                            <option value="year">Year(s)</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <p class="mt-2 text-xs text-purple-600">
+                                                    <template v-if="form.revshare_recurring_duration">
+                                                        Affiliates earn a commission for up to <strong>{{ form.revshare_recurring_duration }} {{ form.revshare_recurring_unit }}(s)</strong> of renewals per customer.
+                                                    </template>
+                                                    <template v-else>
+                                                        Affiliates earn a commission on <strong>every renewal</strong> for the customer's lifetime.
+                                                    </template>
+                                                </p>
+                                                <p class="mt-1 text-xs text-purple-500">
+                                                    Pass <code class="bg-purple-50 px-1 rounded">customer_id</code> (your subscriber ID) in each postback so the platform can link renewals to the original attribution and enforce the duration cap.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </template>
                                 </div>
                             </div>
 
@@ -311,6 +416,149 @@
                         </div>
                     </div>
 
+                    <!-- Targeting & Product -->
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-1">Targeting & Product</h3>
+                        <p class="text-sm text-gray-500 mb-6">Control who sees this offer. Leave targeting empty to accept all traffic.</p>
+
+                        <div class="space-y-6">
+                            <!-- Offer URL -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Destination / Offer URL
+                                    <span class="text-gray-400 font-normal">(where affiliates send traffic)</span>
+                                </label>
+                                <input
+                                    v-model="form.offer_url"
+                                    type="url"
+                                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                    placeholder="https://yoursite.com/landing-page"
+                                />
+                                <p class="mt-1 text-xs text-gray-500">If different from the Preview URL above. This is the actual link affiliates promote.</p>
+                                <p v-if="form.errors.offer_url" class="mt-1 text-sm text-red-600">{{ form.errors.offer_url }}</p>
+                            </div>
+
+                            <!-- Product Image URL -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Product Image URL</label>
+                                <div class="flex gap-3">
+                                    <input
+                                        v-model="form.product_image"
+                                        type="url"
+                                        class="flex-1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                        placeholder="https://cdn.example.com/product.jpg or CPAlead image URL"
+                                    />
+                                    <img
+                                        v-if="form.product_image"
+                                        :src="form.product_image"
+                                        class="h-10 w-10 rounded-lg object-cover border border-gray-200 flex-shrink-0"
+                                        @error="$event.target.style.display='none'"
+                                    />
+                                </div>
+                                <p v-if="form.errors.product_image" class="mt-1 text-sm text-red-600">{{ form.errors.product_image }}</p>
+                            </div>
+
+                            <!-- Target Countries -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Target Countries
+                                    <span class="text-gray-400 font-normal">— leave empty for worldwide</span>
+                                </label>
+                                <div class="relative" v-click-outside="() => countryDropdownOpen = false">
+                                    <input
+                                        v-model="countrySearch"
+                                        type="text"
+                                        placeholder="Search countries to add..."
+                                        class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                        @focus="countryDropdownOpen = true"
+                                    />
+                                    <div v-if="countryDropdownOpen && filteredCountries.length" class="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-52 overflow-y-auto">
+                                        <button
+                                            v-for="c in filteredCountries"
+                                            :key="c.code"
+                                            type="button"
+                                            class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-center justify-between"
+                                            :class="form.target_countries.includes(c.code) ? 'bg-blue-50' : ''"
+                                            @click="toggleCountry(c.code)"
+                                        >
+                                            <span>{{ c.flag }} {{ c.name }}</span>
+                                            <svg v-if="form.target_countries.includes(c.code)" class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div v-if="form.target_countries.length" class="flex flex-wrap gap-2 mt-2">
+                                    <span
+                                        v-for="code in form.target_countries"
+                                        :key="code"
+                                        class="inline-flex items-center gap-1 pl-2 pr-1 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full"
+                                    >
+                                        {{ countryFlag(code) }} {{ countryName(code) }}
+                                        <button type="button" @click="removeCountry(code)" class="ml-0.5 hover:text-blue-600 font-bold leading-none">×</button>
+                                    </span>
+                                </div>
+                                <p v-else class="mt-1 text-xs text-gray-400">🌍 Worldwide (no country restriction)</p>
+                            </div>
+
+                            <!-- Target Devices -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    Target Devices
+                                    <span class="text-gray-400 font-normal">— leave all unchecked to allow all</span>
+                                </label>
+                                <div class="flex flex-wrap gap-3">
+                                    <label v-for="d in deviceOptions" :key="d.value"
+                                        class="flex items-center gap-2 px-4 py-2 border rounded-lg cursor-pointer transition-colors"
+                                        :class="form.target_devices.includes(d.value) ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'"
+                                    >
+                                        <input type="checkbox" :value="d.value" v-model="form.target_devices" class="sr-only" />
+                                        <span class="text-lg">{{ d.icon }}</span>
+                                        <span class="text-sm font-medium text-gray-700">{{ d.label }}</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Target OS -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    Target Operating Systems
+                                    <span class="text-gray-400 font-normal">— leave all unchecked to allow all</span>
+                                </label>
+                                <div class="flex flex-wrap gap-3">
+                                    <label v-for="o in osOptions" :key="o.value"
+                                        class="flex items-center gap-2 px-4 py-2 border rounded-lg cursor-pointer transition-colors"
+                                        :class="form.target_os.includes(o.value) ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'"
+                                    >
+                                        <input type="checkbox" :value="o.value" v-model="form.target_os" class="sr-only" />
+                                        <span class="text-lg">{{ o.icon }}</span>
+                                        <span class="text-sm font-medium text-gray-700">{{ o.label }}</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Unique IP -->
+                            <div class="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                                <div class="flex items-center h-5 mt-0.5">
+                                    <input
+                                        id="require_unique_ip"
+                                        v-model="form.require_unique_ip"
+                                        type="checkbox"
+                                        class="h-4 w-4 rounded border-amber-300 text-amber-600 focus:ring-amber-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label for="require_unique_ip" class="block text-sm font-medium text-amber-900 cursor-pointer">
+                                        Require Unique IP per Conversion
+                                    </label>
+                                    <p class="text-xs text-amber-700 mt-0.5">
+                                        Block visitors whose IP has already converted this offer. Useful for lead-gen offers to prevent duplicate submissions.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Terms & Conditions -->
                     <div class="bg-white rounded-xl shadow-sm p-6">
                         <h3 class="text-lg font-semibold text-gray-900 mb-6">Terms & Conditions</h3>
@@ -345,20 +593,34 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Product / Service Cost (₦)</label>
-                                <input
-                                    v-model="form.product_cost"
-                                    type="number"
-                                    step="0.01"
-                                    min="0"
-                                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                                    placeholder="e.g. 15000"
-                                />
-                                <p class="mt-1 text-xs text-gray-500">The retail price / value of your product or service</p>
-                                <p v-if="form.errors.product_cost" class="mt-1 text-sm text-red-600">{{ form.errors.product_cost }}</p>
-                            </div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Daily Conversion Cap</label>
+                            <input
+                                v-model="form.daily_conversion_cap"
+                                type="number"
+                                min="0"
+                                step="1"
+                                class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                placeholder="Leave blank or 0 for unlimited"
+                            />
+                            <p class="mt-1 text-xs text-gray-500">Maximum conversions allowed per day.</p>
+                            <p v-if="form.errors.daily_conversion_cap" class="mt-1 text-sm text-red-600">{{ form.errors.daily_conversion_cap }}</p>
+                        </div>
 
-                            <div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Monthly Conversion Cap</label>
+                            <input
+                                v-model="form.monthly_conversion_cap"
+                                type="number"
+                                min="0"
+                                step="1"
+                                class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                placeholder="Leave blank or 0 for unlimited"
+                            />
+                            <p class="mt-1 text-xs text-gray-500">Maximum conversions allowed per month.</p>
+                            <p v-if="form.errors.monthly_conversion_cap" class="mt-1 text-sm text-red-600">{{ form.errors.monthly_conversion_cap }}</p>
+                        </div>
+
+                        <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Minimum Wallet Balance Required (₦)</label>
                                 <input
                                     v-model="form.minimum_wallet_required"
@@ -512,7 +774,7 @@
 </template>
 
 <script setup>
-import { computed, watchEffect } from 'vue';
+import { ref, computed, watchEffect } from 'vue';
 import { Link, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
@@ -531,6 +793,125 @@ const creativeTypes = [
     { value: 'video', label: 'Video' },
 ];
 
+const deviceOptions = [
+    { value: 'desktop', label: 'Desktop', icon: '🖥️' },
+    { value: 'mobile',  label: 'Mobile',  icon: '📱' },
+    { value: 'tablet',  label: 'Tablet',  icon: '📋' },
+];
+
+const osOptions = [
+    { value: 'windows', label: 'Windows',  icon: '🪟' },
+    { value: 'mac',     label: 'macOS',    icon: '🍎' },
+    { value: 'linux',   label: 'Linux',    icon: '🐧' },
+    { value: 'android', label: 'Android',  icon: '🤖' },
+    { value: 'ios',     label: 'iOS',      icon: '📱' },
+];
+
+// Country data (ISO 3166-1 alpha-2)
+const countries = [
+    { code: 'NG', name: 'Nigeria', flag: '🇳🇬' },
+    { code: 'GH', name: 'Ghana', flag: '🇬🇭' },
+    { code: 'KE', name: 'Kenya', flag: '🇰🇪' },
+    { code: 'ZA', name: 'South Africa', flag: '🇿🇦' },
+    { code: 'EG', name: 'Egypt', flag: '🇪🇬' },
+    { code: 'TZ', name: 'Tanzania', flag: '🇹🇿' },
+    { code: 'UG', name: 'Uganda', flag: '🇺🇬' },
+    { code: 'ET', name: 'Ethiopia', flag: '🇪🇹' },
+    { code: 'DZ', name: 'Algeria', flag: '🇩🇿' },
+    { code: 'MA', name: 'Morocco', flag: '🇲🇦' },
+    { code: 'CM', name: 'Cameroon', flag: '🇨🇲' },
+    { code: 'CI', name: "Côte d'Ivoire", flag: '🇨🇮' },
+    { code: 'SN', name: 'Senegal', flag: '🇸🇳' },
+    { code: 'US', name: 'United States', flag: '🇺🇸' },
+    { code: 'GB', name: 'United Kingdom', flag: '🇬🇧' },
+    { code: 'CA', name: 'Canada', flag: '🇨🇦' },
+    { code: 'AU', name: 'Australia', flag: '🇦🇺' },
+    { code: 'DE', name: 'Germany', flag: '🇩🇪' },
+    { code: 'FR', name: 'France', flag: '🇫🇷' },
+    { code: 'IT', name: 'Italy', flag: '🇮🇹' },
+    { code: 'ES', name: 'Spain', flag: '🇪🇸' },
+    { code: 'NL', name: 'Netherlands', flag: '🇳🇱' },
+    { code: 'SE', name: 'Sweden', flag: '🇸🇪' },
+    { code: 'NO', name: 'Norway', flag: '🇳🇴' },
+    { code: 'DK', name: 'Denmark', flag: '🇩🇰' },
+    { code: 'FI', name: 'Finland', flag: '🇫🇮' },
+    { code: 'PL', name: 'Poland', flag: '🇵🇱' },
+    { code: 'IN', name: 'India', flag: '🇮🇳' },
+    { code: 'PK', name: 'Pakistan', flag: '🇵🇰' },
+    { code: 'BD', name: 'Bangladesh', flag: '🇧🇩' },
+    { code: 'PH', name: 'Philippines', flag: '🇵🇭' },
+    { code: 'ID', name: 'Indonesia', flag: '🇮🇩' },
+    { code: 'MY', name: 'Malaysia', flag: '🇲🇾' },
+    { code: 'SG', name: 'Singapore', flag: '🇸🇬' },
+    { code: 'TH', name: 'Thailand', flag: '🇹🇭' },
+    { code: 'VN', name: 'Vietnam', flag: '🇻🇳' },
+    { code: 'JP', name: 'Japan', flag: '🇯🇵' },
+    { code: 'KR', name: 'South Korea', flag: '🇰🇷' },
+    { code: 'CN', name: 'China', flag: '🇨🇳' },
+    { code: 'BR', name: 'Brazil', flag: '🇧🇷' },
+    { code: 'MX', name: 'Mexico', flag: '🇲🇽' },
+    { code: 'AR', name: 'Argentina', flag: '🇦🇷' },
+    { code: 'CO', name: 'Colombia', flag: '🇨🇴' },
+    { code: 'CL', name: 'Chile', flag: '🇨🇱' },
+    { code: 'PE', name: 'Peru', flag: '🇵🇪' },
+    { code: 'RU', name: 'Russia', flag: '🇷🇺' },
+    { code: 'UA', name: 'Ukraine', flag: '🇺🇦' },
+    { code: 'TR', name: 'Turkey', flag: '🇹🇷' },
+    { code: 'SA', name: 'Saudi Arabia', flag: '🇸🇦' },
+    { code: 'AE', name: 'United Arab Emirates', flag: '🇦🇪' },
+    { code: 'QA', name: 'Qatar', flag: '🇶🇦' },
+    { code: 'KW', name: 'Kuwait', flag: '🇰🇼' },
+    { code: 'IQ', name: 'Iraq', flag: '🇮🇶' },
+    { code: 'IR', name: 'Iran', flag: '🇮🇷' },
+    { code: 'IL', name: 'Israel', flag: '🇮🇱' },
+    { code: 'NZ', name: 'New Zealand', flag: '🇳🇿' },
+    { code: 'ZW', name: 'Zimbabwe', flag: '🇿🇼' },
+    { code: 'ZM', name: 'Zambia', flag: '🇿🇲' },
+    { code: 'RW', name: 'Rwanda', flag: '🇷🇼' },
+    { code: 'MZ', name: 'Mozambique', flag: '🇲🇿' },
+    { code: 'AO', name: 'Angola', flag: '🇦🇴' },
+];
+
+const countrySearch = ref('');
+const countryDropdownOpen = ref(false);
+
+const filteredCountries = computed(() => {
+    const q = countrySearch.value.toLowerCase();
+    return countries.filter(c => c.name.toLowerCase().includes(q) || c.code.toLowerCase().includes(q));
+});
+
+const countryName = (code) => countries.find(c => c.code === code)?.name ?? code;
+const countryFlag = (code) => countries.find(c => c.code === code)?.flag ?? '';
+
+const toggleCountry = (code) => {
+    const idx = form.target_countries.indexOf(code);
+    if (idx === -1) {
+        form.target_countries.push(code);
+    } else {
+        form.target_countries.splice(idx, 1);
+    }
+    countrySearch.value = '';
+    countryDropdownOpen.value = false;
+};
+
+const removeCountry = (code) => {
+    const idx = form.target_countries.indexOf(code);
+    if (idx !== -1) form.target_countries.splice(idx, 1);
+};
+
+// v-click-outside directive
+const vClickOutside = {
+    mounted(el, binding) {
+        el._clickOutsideHandler = (e) => {
+            if (!el.contains(e.target)) binding.value(e);
+        };
+        document.addEventListener('click', el._clickOutsideHandler);
+    },
+    unmounted(el) {
+        document.removeEventListener('click', el._clickOutsideHandler);
+    },
+};
+
 const form = useForm({
     store_product_id: props.prefill?.store_product_id || props.offer?.store_product_id || null,
     name: props.offer?.name || props.prefill?.name || '',
@@ -539,6 +920,9 @@ const form = useForm({
     commission_model: props.offer?.commission_model || 'pps',
     commission_rate: props.offer?.commission_rate || '',
     cookie_duration: props.offer?.cookie_duration || 30,
+    revshare_type: props.offer?.revshare_type || 'once',
+    revshare_recurring_duration: props.offer?.revshare_recurring_duration || '',
+    revshare_recurring_unit: props.offer?.revshare_recurring_unit || 'month',
     access_type: props.offer?.access_type || 'open',
     preview_url: props.offer?.preview_url || props.prefill?.preview_url || '',
     terms_and_conditions: props.offer?.terms_and_conditions || '',
@@ -547,9 +931,18 @@ const form = useForm({
     whatsapp_number: props.offer?.whatsapp_number || props.prefill?.whatsapp_number || '',
     whatsapp_message_template: props.offer?.whatsapp_message_template || '',
     is_active: props.offer?.is_active ?? true,
-    expected_sales: props.offer?.expected_sales || '',
-    product_cost: props.offer?.product_cost || '',
-    minimum_wallet_required: props.offer?.minimum_wallet_required || '',
+    expected_sales: props.offer?.expected_sales ?? '',
+    product_cost: props.offer?.product_cost ?? '',
+    minimum_wallet_required: props.offer?.minimum_wallet_required ?? '',
+    daily_conversion_cap: props.offer?.daily_conversion_cap ?? '',
+    monthly_conversion_cap: props.offer?.monthly_conversion_cap ?? '',
+    // Targeting & product
+    offer_url: props.offer?.offer_url || props.prefill?.preview_url || '',
+    product_image: props.offer?.product_image || props.prefill?.product_image || '',
+    target_countries: props.offer?.target_countries || [],
+    target_devices: props.offer?.target_devices || [],
+    target_os: props.offer?.target_os || [],
+    require_unique_ip: props.offer?.require_unique_ip || false,
     creatives: [],
 });
 

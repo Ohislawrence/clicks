@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Conversion extends Model
@@ -32,6 +33,9 @@ class Conversion extends Model
         'paid_at',
         'postback_sent_at',
         'postback_response',
+        'customer_id',
+        'recurring_occurrence',
+        'parent_conversion_id',
     ];
 
     protected $casts = [
@@ -44,6 +48,7 @@ class Conversion extends Model
         'approved_at' => 'datetime',
         'paid_at' => 'datetime',
         'postback_sent_at' => 'datetime',
+        'recurring_occurrence' => 'integer',
     ];
 
     public function click(): BelongsTo
@@ -69,6 +74,16 @@ class Conversion extends Model
     public function commission(): HasOne
     {
         return $this->hasOne(Commission::class);
+    }
+
+    public function parentConversion(): BelongsTo
+    {
+        return $this->belongsTo(Conversion::class, 'parent_conversion_id');
+    }
+
+    public function renewals(): HasMany
+    {
+        return $this->hasMany(Conversion::class, 'parent_conversion_id');
     }
 
     public function scopePending($query)

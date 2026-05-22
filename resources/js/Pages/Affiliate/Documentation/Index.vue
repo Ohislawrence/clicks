@@ -129,7 +129,7 @@
                     <div class="p-6">
                         <h4 class="text-xl font-semibold mb-3">The Magic Behind Your Links</h4>
                         <p class="text-gray-700 mb-6">
-                            Every affiliate link you create is unique to you. When someone clicks it, we "remember" that they came from you using a technology called <strong>cookies</strong> (not the food! 🍪). Even if they don't buy immediately, we track them for up to 90 days.
+                            Every affiliate link you create is unique to you. When someone clicks it, we "remember" that they came from you using a technology called <strong>cookies</strong> (not the food! 🍪). Even if they don't buy immediately, we track them for the full cookie window set by the advertiser.
                         </p>
 
                         <!-- Tracking Flow Diagram -->
@@ -148,14 +148,14 @@
                                         <div class="text-3xl mb-2">🍪</div>
                                         <div class="font-semibold">Step 2: Cookie</div>
                                     </div>
-                                    <p class="text-sm text-gray-600">We save a cookie in their browser (90 days)</p>
+                                    <p class="text-sm text-gray-600">We save a cookie in their browser (duration varies per offer)</p>
                                 </div>
                                 <div class="text-center">
                                     <div class="bg-purple-100 border-2 border-purple-500 rounded-lg p-4 mb-2">
                                         <div class="text-3xl mb-2">🛒</div>
                                         <div class="font-semibold">Step 3: Purchase</div>
                                     </div>
-                                    <p class="text-sm text-gray-600">They come back and buy (anytime within 90 days)</p>
+                                    <p class="text-sm text-gray-600">They come back and buy (anytime within the offer's cookie window)</p>
                                 </div>
                                 <div class="text-center">
                                     <div class="bg-yellow-100 border-2 border-yellow-500 rounded-lg p-4 mb-2">
@@ -171,8 +171,8 @@
                             <div class="flex">
                                 <div class="text-2xl mr-3">⏱️</div>
                                 <div>
-                                    <p class="font-semibold text-yellow-900">90-Day Cookie Window</p>
-                                    <p class="text-yellow-800">This means if someone clicks your link today and buys 2 weeks later, you still get credit! The cookie "remembers" they came from you.</p>
+                                    <p class="font-semibold text-yellow-900">Cookie Window — Set Per Offer</p>
+                                    <p class="text-yellow-800">Each advertiser sets their own cookie window (e.g. 7, 30, or 60 days). Check the offer's detail page for the exact duration. If someone clicks your link and buys within that window, you get credit!</p>
                                 </div>
                             </div>
                         </div>
@@ -299,9 +299,9 @@
                         <h3 class="text-2xl font-bold text-gray-800">👥 Referral Program</h3>
                     </div>
                     <div class="p-6">
-                        <h4 class="text-xl font-semibold mb-3">Earn Passive Income Forever!</h4>
+                        <h4 class="text-xl font-semibold mb-3">Earn Passive Income from Referrals</h4>
                         <p class="text-gray-700 mb-6">
-                            Invite other affiliates to join the platform and earn <strong>10% of their commissions</strong> for life! They keep their full earnings, and you get a bonus on top.
+                            Invite other affiliates to join the platform and earn <strong>10% of their commissions</strong>! They keep their full earnings, and you get a bonus on top. Note: referral commissions are subject to a cap set by the admin — you will be notified when you are approaching or have reached your limit.
                         </p>
 
                         <!-- Referral Flow -->
@@ -320,8 +320,8 @@
                                 </div>
                                 <div class="bg-white rounded-lg p-4 shadow">
                                     <div class="text-3xl text-center mb-2">💸</div>
-                                    <div class="font-semibold text-center mb-2">Step 3: Earn Forever</div>
-                                    <p class="text-sm text-gray-600 text-center">You get 10% of whatever they earn</p>
+                                    <div class="font-semibold text-center mb-2">Step 3: Earn Referral Commissions</div>
+                                    <p class="text-sm text-gray-600 text-center">You get 10% of whatever they earn (subject to your referral cap)</p>
                                 </div>
                             </div>
                         </div>
@@ -709,16 +709,16 @@
                         <h4 class="text-xl font-semibold mb-3">Payment Process</h4>
 
                         <div class="grid md:grid-cols-2 gap-6 mb-6">
-                            <div class="bg-blue-50 border-2 border-blue-500 rounded-lg p-4">
-                                <div class="font-bold text-lg mb-2 text-blue-900">Minimum Payout</div>
-                                <div class="text-3xl font-bold text-blue-600 mb-2">₦5,000</div>
-                                <p class="text-sm text-blue-800">You must earn at least ₦5,000 before requesting a payout</p>
+                            <div class="bg-green-50 border-2 border-green-500 rounded-lg p-4">
+                                <div class="font-bold text-lg mb-2 text-green-900">Minimum Payout</div>
+                                <div class="text-3xl font-bold text-green-600 mb-2">₦5,000</div>
+                                <p class="text-sm text-green-800">You must have at least ₦5,000 in approved balance before requesting a payout</p>
                             </div>
 
-                            <div class="bg-green-50 border-2 border-green-500 rounded-lg p-4">
-                                <div class="font-bold text-lg mb-2 text-green-900">Payment Schedule</div>
-                                <div class="text-lg font-bold text-green-600 mb-2">Weekly or Monthly</div>
-                                <p class="text-sm text-green-800">Choose your preferred payout frequency in settings</p>
+                            <div class="bg-blue-50 border-2 border-blue-500 rounded-lg p-4">
+                                <div class="font-bold text-lg mb-2 text-blue-900">Payout on Demand</div>
+                                <div class="text-lg font-bold text-blue-600 mb-2">Request Any Time</div>
+                                <p class="text-sm text-blue-800">Submit a payout request whenever your balance meets the minimum. Admin reviews and processes within 1-3 business days.</p>
                             </div>
                         </div>
 
@@ -737,8 +737,8 @@
                                 <div class="flex items-center">
                                     <div class="bg-yellow-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0">2</div>
                                     <div>
-                                        <div class="font-semibold">Pending Status (0-30 days)</div>
-                                        <div class="text-sm text-gray-600">Advertiser reviews the conversion (refund protection period)</div>
+                                        <div class="font-semibold">Pending Status</div>
+                                        <div class="text-sm text-gray-600">Advertiser reviews the conversion (refund protection period — duration varies)</div>
                                     </div>
                                 </div>
                                 <div class="ml-4 border-l-2 border-gray-300 h-6"></div>
@@ -762,7 +762,7 @@
                                     <div class="bg-indigo-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0">5</div>
                                     <div>
                                         <div class="font-semibold">Payment Processed (1-3 business days)</div>
-                                        <div class="text-sm text-gray-600">Money sent to your account via Paystack/Flutterwave</div>
+                                        <div class="text-sm text-gray-600">Admin manually transfers funds to your bank account</div>
                                     </div>
                                 </div>
                             </div>
@@ -825,16 +825,28 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 const currentUrl = computed(() => window.location.href);
 const copyButtonText = ref('Copy URL');
 
-const copyUrl = async () => {
-    try {
-        await navigator.clipboard.writeText(window.location.href);
+const copyUrl = () => {
+    const text = window.location.href;
+    const onSuccess = () => {
         copyButtonText.value = 'Copied!';
-        setTimeout(() => {
-            copyButtonText.value = 'Copy URL';
-        }, 2000);
-    } catch (err) {
-        console.error('Failed to copy:', err);
+        setTimeout(() => { copyButtonText.value = 'Copy URL'; }, 2000);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(onSuccess).catch(() => fallbackCopy(text, onSuccess));
+    } else {
+        fallbackCopy(text, onSuccess);
     }
+};
+
+const fallbackCopy = (text, onSuccess = null) => {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.setAttribute('readonly', '');
+    el.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
+    document.body.appendChild(el);
+    el.select();
+    try { document.execCommand('copy'); if (onSuccess) onSuccess(); } catch { prompt('Copy this URL:', text); }
+    document.body.removeChild(el);
 };
 
 const sections = [
@@ -852,7 +864,7 @@ const sections = [
 const faqs = [
     {
         question: 'How long does the cookie last?',
-        answer: '90 days. If someone clicks your link and buys within 90 days, you get credit.'
+        answer: 'It varies by offer — each advertiser sets their own cookie window (commonly 7, 30, or 60 days). Check the offer detail page to see the exact duration. As long as the customer buys within that window after clicking your link, you get the commission.'
     },
     {
         question: 'Can I promote multiple offers at once?',

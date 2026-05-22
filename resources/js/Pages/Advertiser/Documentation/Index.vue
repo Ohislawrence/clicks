@@ -123,7 +123,230 @@
                     </div>
                 </div>
 
-                <!-- 2. Tracking Integration -->
+                <!-- 2. Commission Models -->
+                <div id="commission-models" class="bg-white overflow-hidden shadow-xl sm:rounded-lg mb-6">
+                    <div class="p-6 border-b border-gray-200 bg-gray-50">
+                        <h3 class="text-2xl font-bold text-gray-800">💰 Commission Models</h3>
+                        <p class="mt-1 text-sm text-gray-500">Understanding how each model works and what your tracking integration must do</p>
+                    </div>
+                    <div class="p-6 space-y-6">
+
+                        <!-- PPS -->
+                        <div class="rounded-xl border-2 border-orange-300 overflow-hidden">
+                            <div class="bg-orange-50 px-6 py-4 flex items-center gap-3">
+                                <span class="text-3xl">🛒</span>
+                                <div>
+                                    <h4 class="text-lg font-bold text-orange-900">Pay Per Sale (PPS)</h4>
+                                    <p class="text-sm text-orange-700">A fixed amount paid for every confirmed purchase</p>
+                                </div>
+                            </div>
+                            <div class="px-6 py-4 grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">How it works</p>
+                                    <ul class="space-y-1 text-sm text-gray-700 list-disc list-inside">
+                                        <li>You set a <strong>fixed commission amount</strong> (e.g. ₦2,000 per sale)</li>
+                                        <li>Affiliate gets paid that amount when a customer completes a purchase</li>
+                                        <li><code class="bg-gray-100 px-1 rounded">conversion_value</code> must be <strong>&gt; 0</strong> — the platform rejects zero-value postbacks</li>
+                                        <li>Commission does <em>not</em> scale with order size (unlike RevShare)</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-orange-50 rounded-lg p-4">
+                                    <p class="text-xs font-semibold text-orange-900 mb-2">🔥 When to use PPS</p>
+                                    <ul class="text-sm text-orange-800 space-y-1">
+                                        <li>✓ Physical products with a fixed price</li>
+                                        <li>✓ E-commerce / WooCommerce / Shopify stores</li>
+                                        <li>✓ One-time purchases where order value varies little</li>
+                                    </ul>
+                                    <div class="mt-3 p-2 bg-white rounded border border-orange-200 text-xs text-gray-600">
+                                        <strong>Example:</strong> ShoesNG pays ₦1,500 per sale. Affiliate drives 10 sales = ₦15,000 commission.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PPL -->
+                        <div class="rounded-xl border-2 border-green-300 overflow-hidden">
+                            <div class="bg-green-50 px-6 py-4 flex items-center gap-3">
+                                <span class="text-3xl">📋</span>
+                                <div>
+                                    <h4 class="text-lg font-bold text-green-900">Pay Per Lead (PPL)</h4>
+                                    <p class="text-sm text-green-700">A fixed amount paid for every qualified lead — no purchase required</p>
+                                </div>
+                            </div>
+                            <div class="px-6 py-4 grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">How it works</p>
+                                    <ul class="space-y-1 text-sm text-gray-700 list-disc list-inside">
+                                        <li>You set a <strong>fixed commission per lead</strong> (e.g. ₦500 per signup)</li>
+                                        <li>Affiliate earns on a form submission, registration, or enquiry — no sale needed</li>
+                                        <li><code class="bg-gray-100 px-1 rounded">conversion_value</code> is <strong>optional</strong> — zero is allowed</li>
+                                        <li>Fire the tracking pixel / postback on your thank-you / confirmation page</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-green-50 rounded-lg p-4">
+                                    <p class="text-xs font-semibold text-green-900 mb-2">🔥 When to use PPL</p>
+                                    <ul class="text-sm text-green-800 space-y-1">
+                                        <li>✓ Insurance / loan enquiry forms</li>
+                                        <li>✓ SaaS free-trial signups</li>
+                                        <li>✓ Newsletter / webinar registrations</li>
+                                        <li>✓ Real estate / car dealer enquiries</li>
+                                    </ul>
+                                    <div class="mt-3 p-2 bg-white rounded border border-green-200 text-xs text-gray-600">
+                                        <strong>Example:</strong> InsureCo pays ₦800 per completed insurance quote. No payment from the customer is needed.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RevShare -->
+                        <div class="rounded-xl border-2 border-purple-300 overflow-hidden">
+                            <div class="bg-purple-50 px-6 py-4 flex items-center gap-3">
+                                <span class="text-3xl">📊</span>
+                                <div>
+                                    <h4 class="text-lg font-bold text-purple-900">Revenue Share (RevShare)</h4>
+                                    <p class="text-sm text-purple-700">A percentage of every sale — scales with order value</p>
+                                </div>
+                            </div>
+                            <div class="px-6 py-4 space-y-4">
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">How it works</p>
+                                        <ul class="space-y-1 text-sm text-gray-700 list-disc list-inside">
+                                            <li>You set a <strong>percentage rate</strong> (e.g. 20%)</li>
+                                            <li>Commission = <code class="bg-gray-100 px-1 rounded">rate% × conversion_value</code></li>
+                                            <li><code class="bg-gray-100 px-1 rounded">conversion_value</code> is <strong>required and must be &gt; 0</strong> — zero-value postbacks are rejected</li>
+                                            <li>Higher-value sales earn affiliates more</li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-purple-50 rounded-lg p-4">
+                                        <p class="text-xs font-semibold text-purple-900 mb-2">🔥 When to use RevShare</p>
+                                        <ul class="text-sm text-purple-800 space-y-1">
+                                            <li>✓ SaaS / subscription businesses</li>
+                                            <li>✓ Marketplaces with variable order sizes</li>
+                                            <li>✓ Digital products / online courses</li>
+                                            <li>✓ Any recurring billing service</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- RevShare Recurring sub-section -->
+                                <div class="border-t border-purple-200 pt-4">
+                                    <h5 class="text-base font-bold text-purple-900 mb-3">🔄 Recurring RevShare (Subscription Support)</h5>
+                                    <p class="text-sm text-gray-700 mb-4">
+                                        When your offer is a <strong>subscription or recurring billing service</strong>, you can reward affiliates on
+                                        <em>every renewal</em> — not just the first sale. The platform tracks each billing cycle and links it back
+                                        to the original affiliate who drove the customer.
+                                    </p>
+
+                                    <div class="grid md:grid-cols-2 gap-4 mb-4">
+                                        <div class="bg-white border-2 border-purple-200 rounded-lg p-4">
+                                            <p class="font-semibold text-purple-800 mb-2">1️⃣ One-time RevShare</p>
+                                            <p class="text-sm text-gray-700">Commission paid only on the <strong>first sale</strong>. Renewals are not tracked.<br>Use for: lifetime deals, one-off products.</p>
+                                        </div>
+                                        <div class="bg-white border-2 border-purple-500 rounded-lg p-4">
+                                            <p class="font-semibold text-purple-800 mb-2">🔄 Recurring RevShare</p>
+                                            <p class="text-sm text-gray-700">Commission paid on the first sale <strong>and every renewal</strong>, up to the duration cap you set (or unlimited lifetime).<br>Use for: monthly/annual subscriptions, SaaS, managed services.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-purple-50 rounded-lg p-4 mb-4">
+                                        <p class="text-sm font-semibold text-purple-900 mb-3">🔑 How the platform links renewals to affiliates</p>
+                                        <ol class="text-sm text-gray-700 space-y-2 list-decimal list-inside">
+                                            <li><strong>First sale:</strong> customer clicks affiliate link → you fire postback with <code class="bg-purple-100 px-1 rounded">tracking_code</code> + <code class="bg-purple-100 px-1 rounded">customer_id</code> (your subscriber ID).</li>
+                                            <li><strong>Each renewal:</strong> your billing system fires a new postback with the same <code class="bg-purple-100 px-1 rounded">customer_id</code>. The platform finds the original affiliate attribution automatically — no tracking_code needed for renewals.</li>
+                                            <li><strong>Duration cap:</strong> if you set a cap (e.g. 12 months), postbacks beyond the cap are rejected with a clear error. Unlimited cap = lifetime commissions.</li>
+                                        </ol>
+                                    </div>
+
+                                    <div class="bg-gray-900 text-gray-100 p-4 rounded-lg font-mono text-xs overflow-x-auto mb-4">
+<span class="text-gray-500">// Initial sale postback (send tracking_code + customer_id)</span>
+POST /api/postback
+{
+  "<span class="text-yellow-400">tracking_code</span>": "<span class="text-green-400">ABC123def456</span>",  <span class="text-gray-500">// From affiliate click URL</span>
+  "<span class="text-yellow-400">token</span>": "<span class="text-green-400">your-postback-secret</span>",
+  "<span class="text-yellow-400">conversion_value</span>": <span class="text-green-400">5000.00</span>,
+  "<span class="text-yellow-400">transaction_id</span>": "<span class="text-green-400">INV-001</span>",
+  "<span class="text-yellow-400">customer_id</span>": "<span class="text-green-400">SUB-9981</span>"   <span class="text-gray-500">// Your internal subscriber/customer ID</span>
+}
+
+<span class="text-gray-500">// Renewal postback (send customer_id only — tracking_code not required)</span>
+POST /api/postback
+{
+  "<span class="text-yellow-400">token</span>": "<span class="text-green-400">your-postback-secret</span>",
+  "<span class="text-yellow-400">conversion_value</span>": <span class="text-green-400">5000.00</span>,      <span class="text-gray-500">// Monthly renewal amount</span>
+  "<span class="text-yellow-400">transaction_id</span>": "<span class="text-green-400">INV-002</span>",
+  "<span class="text-yellow-400">customer_id</span>": "<span class="text-green-400">SUB-9981</span>"          <span class="text-gray-500">// Same ID as the original sale</span>
+}
+                                    </div>
+
+                                    <div class="grid md:grid-cols-3 gap-3 text-xs">
+                                        <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                            <p class="font-semibold text-green-800 mb-1">✅ Duration Cap: 12 months</p>
+                                            <p class="text-green-700">Platform pays commission on months 1-12. Month 13+ postbacks are rejected automatically.</p>
+                                        </div>
+                                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                            <p class="font-semibold text-blue-800 mb-1">♾️ Duration Cap: Unlimited</p>
+                                            <p class="text-blue-700">Affiliate earns a commission on every renewal for the lifetime of the customer.</p>
+                                        </div>
+                                        <div class="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                                            <p class="font-semibold text-orange-800 mb-1">📝 customer_id is required</p>
+                                            <p class="text-orange-700">Renewal postbacks without a matching <code>customer_id</code> from an initial sale will be treated as a new first-sale conversion.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Comparison table -->
+                        <div class="overflow-x-auto rounded-xl border border-gray-200">
+                            <table class="w-full text-sm">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Feature</th>
+                                        <th class="px-4 py-3 text-center text-xs font-semibold text-orange-600 uppercase">🛒 PPS</th>
+                                        <th class="px-4 py-3 text-center text-xs font-semibold text-green-600 uppercase">📋 PPL</th>
+                                        <th class="px-4 py-3 text-center text-xs font-semibold text-purple-600 uppercase">📊 RevShare</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <tr>
+                                        <td class="px-4 py-3 font-medium text-gray-700">What triggers a commission?</td>
+                                        <td class="px-4 py-3 text-center text-gray-600">Sale (payment confirmed)</td>
+                                        <td class="px-4 py-3 text-center text-gray-600">Lead / signup (no sale needed)</td>
+                                        <td class="px-4 py-3 text-center text-gray-600">Sale (payment confirmed)</td>
+                                    </tr>
+                                    <tr class="bg-gray-50">
+                                        <td class="px-4 py-3 font-medium text-gray-700">Commission type</td>
+                                        <td class="px-4 py-3 text-center text-gray-600">Fixed per sale</td>
+                                        <td class="px-4 py-3 text-center text-gray-600">Fixed per lead</td>
+                                        <td class="px-4 py-3 text-center text-gray-600">% of sale value</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-3 font-medium text-gray-700">conversion_value required?</td>
+                                        <td class="px-4 py-3 text-center">✅ Yes (&gt;0)</td>
+                                        <td class="px-4 py-3 text-center">❌ Optional (0 OK)</td>
+                                        <td class="px-4 py-3 text-center">✅ Yes (&gt;0)</td>
+                                    </tr>
+                                    <tr class="bg-gray-50">
+                                        <td class="px-4 py-3 font-medium text-gray-700">Recurring / subscription support?</td>
+                                        <td class="px-4 py-3 text-center">❌ No</td>
+                                        <td class="px-4 py-3 text-center">❌ No</td>
+                                        <td class="px-4 py-3 text-center">✅ Yes (with customer_id)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-3 font-medium text-gray-700">customer_id param needed?</td>
+                                        <td class="px-4 py-3 text-center">Optional</td>
+                                        <td class="px-4 py-3 text-center">Optional</td>
+                                        <td class="px-4 py-3 text-center">Required for renewals</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 3. Tracking Integration -->
                 <div id="tracking-integration" class="bg-white overflow-hidden shadow-xl sm:rounded-lg mb-6">
                     <div class="p-6 border-b border-gray-200 bg-gray-50">
                         <h3 class="text-2xl font-bold text-gray-800">🔧 Tracking Integration (Simple Guide)</h3>
@@ -484,27 +707,101 @@
                                 <div class="p-6 border-t-2 border-gray-200">
                                     <h5 class="font-bold text-lg mb-4">📡 API Endpoint (For Your Developer):</h5>
 
-                                    <div class="bg-gray-900 text-gray-100 p-4 rounded-lg mb-4 font-mono text-sm overflow-x-auto">
+                                    <div class="bg-gray-900 text-gray-100 p-4 rounded-lg mb-6 font-mono text-sm overflow-x-auto">
                                         <div class="text-green-400">POST</div>
                                         <div class="text-yellow-400">https://dealsintel.com/api/postback</div>
                                     </div>
 
+                                    <!-- Secret Token Explanation -->
+                                    <div class="mb-6 bg-red-50 border-2 border-red-300 rounded-lg p-4">
+                                        <h6 class="font-bold text-red-900 mb-2 flex items-center gap-2">🔐 The Secret Token — What It Is &amp; Why It Matters</h6>
+                                        <p class="text-sm text-red-800 mb-3">
+                                            Every offer has a unique <strong>Postback Secret Token</strong>. You must send it as the <code class="bg-red-100 px-1 rounded font-mono">token</code> parameter in every postback request. The platform uses it to verify that the request came from your server and not from someone trying to fake conversions.
+                                        </p>
+                                        <ul class="text-sm text-red-800 space-y-1 list-disc list-inside">
+                                            <li><strong>Where to find it:</strong> Go to your offer's detail page → <em>Tracking Integration</em> section → "Your Secret Token". Click <em>Show</em> then <em>Copy</em>.</li>
+                                            <li><strong>Keep it secret:</strong> Never expose it in client-side JavaScript, HTML source, or public repos. Treat it like a password.</li>
+                                            <li><strong>Each offer has its own token</strong> — if you run multiple offers, each has a different secret.</li>
+                                            <li><strong>Regenerating:</strong> If a token is ever compromised, regenerate it from the offer page. The old token stops working immediately.</li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- Parameters Table -->
                                     <div class="mb-6">
-                                        <h6 class="font-bold mb-3">📋 What to Send (JSON Format):</h6>
-                                        <div class="bg-gray-900 text-gray-100 p-4 rounded-lg font-mono text-xs overflow-x-auto mb-3">
-{
-  "<span class="text-yellow-400">tracking_code</span>": "<span class="text-green-400">ABC123def456</span>", <span class="text-gray-500">// From ?tracking_code= in your URL when customer arrived</span>
-  "<span class="text-yellow-400">token</span>": "<span class="text-green-400">your-offer-postback-secret</span>",       <span class="text-gray-500">// From your offer settings in this dashboard</span>
-  "<span class="text-yellow-400">conversion_value</span>": <span class="text-green-400">1500.00</span>,              <span class="text-gray-500">// Order total / lead value</span>
-  "<span class="text-yellow-400">transaction_id</span>": "<span class="text-green-400">ORDER-789</span>"              <span class="text-gray-500">// Your unique order number (strongly recommended — prevents duplicates)</span>
-}
+                                        <h6 class="font-bold mb-3">📋 Parameters</h6>
+                                        <div class="overflow-x-auto rounded-lg border border-gray-200">
+                                            <table class="w-full text-sm">
+                                                <thead class="bg-gray-50">
+                                                    <tr>
+                                                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Parameter</th>
+                                                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Required</th>
+                                                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Description</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="divide-y divide-gray-100">
+                                                    <tr>
+                                                        <td class="px-4 py-2 font-mono text-blue-700">tracking_code</td>
+                                                        <td class="px-4 py-2 text-green-700 font-medium">Yes</td>
+                                                        <td class="px-4 py-2 text-gray-600">The value from <code class="bg-gray-100 px-1 rounded">?tracking_code=</code> appended to your URL when the customer arrived via an affiliate link. Save it in a session on landing.</td>
+                                                    </tr>
+                                                    <tr class="bg-gray-50">
+                                                        <td class="px-4 py-2 font-mono text-blue-700">token</td>
+                                                        <td class="px-4 py-2 text-green-700 font-medium">Yes</td>
+                                                        <td class="px-4 py-2 text-gray-600">Your offer's <strong>Postback Secret Token</strong> — authenticates your server. Found on your offer's detail page under <em>Tracking Integration</em>.</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="px-4 py-2 font-mono text-blue-700">conversion_value</td>
+                                                        <td class="px-4 py-2 text-gray-600">PPS/RevShare: <span class="text-green-700 font-medium">Yes (&gt;0)</span><br>PPL: Optional</td>
+                                                        <td class="px-4 py-2 text-gray-600">Order total or lead value. PPS and RevShare reject zero-value postbacks. PPL allows 0 or omit.</td>
+                                                    </tr>
+                                                    <tr class="bg-gray-50">
+                                                        <td class="px-4 py-2 font-mono text-blue-700">transaction_id</td>
+                                                        <td class="px-4 py-2 text-gray-500">Recommended</td>
+                                                        <td class="px-4 py-2 text-gray-600">Your unique order or invoice ID. Prevents the same conversion from being counted twice if the postback is retried.</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="px-4 py-2 font-mono text-blue-700">customer_id</td>
+                                                        <td class="px-4 py-2 text-gray-500">RevShare recurring only</td>
+                                                        <td class="px-4 py-2 text-gray-600">Your internal subscriber / customer ID. Links renewal postbacks to the same affiliate who drove the original sale.</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
-                                        <div class="bg-yellow-50 p-3 rounded border border-yellow-300">
-                                            <div class="text-sm text-yellow-900">
-                                                <strong>🔑 Where do I get these values?</strong><br>
-                                                <strong>tracking_code</strong> — When a customer clicks an affiliate link, they arrive at your site with <code class="bg-yellow-200 px-1">?tracking_code=ABC123</code> in the URL. Save that value and send it back when they convert.<br>
-                                                <strong>token</strong> — Copy your <em>Postback Secret</em> from your offer's settings page in this dashboard.
+                                    </div>
+
+                                    <!-- Two Formats -->
+                                    <div class="mb-6">
+                                        <h6 class="font-bold mb-3">📤 Two Ways to Send the Request (Both Work)</h6>
+                                        <p class="text-sm text-gray-600 mb-4">The endpoint accepts parameters either as a <strong>JSON body</strong> or as <strong>URL query-string</strong>. Use whichever is easier for your stack.</p>
+
+                                        <!-- Format 1: JSON -->
+                                        <div class="mb-4">
+                                            <div class="bg-blue-100 px-3 py-1 rounded-t text-sm font-semibold text-blue-900">Format 1 — JSON body <span class="font-normal">(recommended for server-side code)</span></div>
+                                            <div class="bg-gray-900 text-gray-100 p-4 rounded-b font-mono text-xs overflow-x-auto">
+<span class="text-blue-400">POST</span> <span class="text-yellow-400">https://dealsintel.com/api/postback</span>
+<span class="text-gray-500">Content-Type: application/json</span>
+
+{
+  "<span class="text-yellow-400">tracking_code</span>":    "<span class="text-green-400">ABC123def456</span>",   <span class="text-gray-500">// saved from ?tracking_code= on landing</span>
+  "<span class="text-yellow-400">token</span>":            "<span class="text-green-400">YOUR_SECRET_TOKEN</span>", <span class="text-gray-500">// from your offer's Tracking Integration section</span>
+  "<span class="text-yellow-400">conversion_value</span>": <span class="text-green-400">1500.00</span>,            <span class="text-gray-500">// order total</span>
+  "<span class="text-yellow-400">transaction_id</span>":   "<span class="text-green-400">ORDER-789</span>",        <span class="text-gray-500">// your unique order ID</span>
+  "<span class="text-yellow-400">customer_id</span>":      "<span class="text-green-400">SUB-9981</span>"          <span class="text-gray-500">// RevShare recurring only</span>
+}
                                             </div>
+                                        </div>
+
+                                        <!-- Format 2: Query String -->
+                                        <div class="mb-4">
+                                            <div class="bg-orange-100 px-3 py-1 rounded-t text-sm font-semibold text-orange-900">Format 2 — Query-string URL <span class="font-normal">(simpler for basic scripts)</span></div>
+                                            <div class="bg-gray-900 text-gray-100 p-4 rounded-b font-mono text-xs overflow-x-auto break-all">
+<span class="text-blue-400">POST</span> <span class="text-yellow-400">https://dealsintel.com/api/postback</span>?<span class="text-green-400">tracking_code</span>=ABC123def456&amp;<span class="text-green-400">token</span>=YOUR_SECRET_TOKEN&amp;<span class="text-green-400">conversion_value</span>=1500.00&amp;<span class="text-green-400">transaction_id</span>=ORDER-789
+                                            </div>
+                                            <p class="text-xs text-gray-500 mt-1 px-1">Note: this is still a POST request — not a GET. The parameters are in the URL, but the HTTP method must be POST.</p>
+                                        </div>
+
+                                        <div class="bg-yellow-50 p-3 rounded border border-yellow-300 text-sm text-yellow-900">
+                                            <strong>💡 How the offer page URL differs:</strong> The example URL shown in your offer's <em>Tracking Integration</em> card (e.g. <code class="bg-yellow-100 px-1 rounded font-mono">…?tracking_code=&#123;TRACKING_CODE&#125;&amp;token=BN7Q…</code>) already has your real secret token filled in — just replace the <code class="bg-yellow-100 px-1 rounded font-mono">&#123;TRACKING_CODE&#125;</code>, <code class="bg-yellow-100 px-1 rounded font-mono">&#123;VALUE&#125;</code>, and <code class="bg-yellow-100 px-1 rounded font-mono">&#123;TXN_ID&#125;</code> placeholders. Both the offer page URL and this JSON example reach the exact same endpoint.
                                         </div>
                                     </div>
 
@@ -526,6 +823,7 @@ if ($trackingCode) {
         'token'            => 'YOUR_OFFER_POSTBACK_SECRET', <span class="text-gray-500">// From offer settings</span>
         'conversion_value' => $order->total,
         'transaction_id'   => $order->id,
+        'customer_id'      => $customer->id,  <span class="text-gray-500">// RevShare recurring: pass your subscriber/customer ID</span>
     ]);
 }
                                             </div>
@@ -549,6 +847,7 @@ if (trackingCode) {
       token:            'YOUR_OFFER_POSTBACK_SECRET', <span class="text-gray-500">// From offer settings</span>
       conversion_value: order.total,
       transaction_id:   order.id,
+      customer_id:      customer.id,   <span class="text-gray-500">// RevShare recurring: pass your subscriber/customer ID</span>
     })
   });
 }
@@ -571,6 +870,7 @@ if tracking_code:
         'token':            'YOUR_OFFER_POSTBACK_SECRET',  <span class="text-gray-500"># From offer settings</span>
         'conversion_value': order.total,
         'transaction_id':   order.id,
+        'customer_id':      customer.id,   <span class="text-gray-500"># RevShare recurring: pass your subscriber/customer ID</span>
     })
                                             </div>
                                         </div>
@@ -1872,20 +2172,33 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 const currentUrl = computed(() => window.location.href);
 const copyButtonText = ref('Copy URL');
 
-const copyUrl = async () => {
-    try {
-        await navigator.clipboard.writeText(window.location.href);
+const copyUrl = () => {
+    const text = window.location.href;
+    const onSuccess = () => {
         copyButtonText.value = 'Copied!';
-        setTimeout(() => {
-            copyButtonText.value = 'Copy URL';
-        }, 2000);
-    } catch (err) {
-        console.error('Failed to copy:', err);
+        setTimeout(() => { copyButtonText.value = 'Copy URL'; }, 2000);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(onSuccess).catch(() => fallbackCopy(text, onSuccess));
+    } else {
+        fallbackCopy(text, onSuccess);
     }
+};
+
+const fallbackCopy = (text, onSuccess = null) => {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.setAttribute('readonly', '');
+    el.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
+    document.body.appendChild(el);
+    el.select();
+    try { document.execCommand('copy'); if (onSuccess) onSuccess(); } catch { prompt('Copy this URL:', text); }
+    document.body.removeChild(el);
 };
 
 const sections = [
     { id: 'overview', title: 'Platform Overview', description: 'How it works', icon: '🎯' },
+    { id: 'commission-models', title: 'Commission Models', description: 'PPS, PPL & RevShare explained', icon: '💰' },
     { id: 'tracking-integration', title: 'Tracking Integration', description: 'Technical setup guide', icon: '🔧' },
     { id: 'offline-tracking', title: 'Offline/Manual Tracking', description: 'For bank transfers & offline sales', icon: '🏦' },
     { id: 'conversion-flow', title: 'Conversion Flow', description: 'Step-by-step process', icon: '🔄' },
@@ -1903,7 +2216,7 @@ const sections = [
 const faqs = [
     {
         question: 'Do I need both cookie tracking AND S2S?',
-        answer: 'No. You can use just cookie tracking (simplest) or just S2S (most accurate). For best results, use both together with deduplication.'
+        answer: 'No — choose one method. The tracking pixel (cookie-based) is the simplest to set up. S2S postback is more reliable and unaffected by ad-blockers. If you use both, always pass a unique transaction_id in every request so the same conversion is not counted twice. Important: RevShare offers only support S2S postback — the pixel is not available for RevShare.'
     },
     {
         question: 'What commission rate should I offer?',
@@ -1911,31 +2224,31 @@ const faqs = [
     },
     {
         question: 'Can I change commission rates later?',
-        answer: 'Yes, but existing affiliates keep their current rate. New rate applies to new affiliates only (unless you manually adjust).'
+        answer: 'Yes. Edit your offer and submit it for re-approval. Once the admin approves the updated offer, the new rate applies to all affiliates on that offer immediately — there is no per-affiliate rate memory. Plan rate changes carefully so active affiliates are not surprised.'
     },
     {
         question: 'How quickly should I approve conversions?',
-        answer: 'We recommend approving within 7 days for good-quality conversions. This keeps affiliates motivated. You have 30 days maximum.'
+        answer: 'We recommend reviewing pending conversions promptly — ideally within a few days of them appearing in your dashboard. Approved conversions credit the affiliate; rejected ones are not paid. The admin can also enable auto-approval globally, in which case valid postbacks are approved immediately without manual review.'
     },
     {
         question: 'What if an affiliate sends fraudulent traffic?',
-        answer: 'Our system auto-detects most fraud. You can also manually block affiliates from your dashboard. Rejected conversions are not paid.'
+        answer: 'Reject suspicious conversions from your Conversions page — rejected conversions are never paid. The platform also prevents duplicate conversions by rejecting any postback that reuses the same transaction_id within 30 days. If you need a specific affiliate removed from your offer entirely, contact the admin to revoke their access.'
     },
     {
         question: 'Can I have different commission rates per affiliate?',
-        answer: 'Yes! You can set custom rates for top performers or negotiate individually with high-volume affiliates.'
+        answer: 'Not currently — all affiliates on an offer earn the same base rate. Top performers are rewarded automatically through the platform\'s tier system, which adds up to 15% bonus commission as affiliates reach higher tiers (Bronze → Silver → Gold → Platinum) based on their conversion volume and earnings.'
     },
     {
         question: 'What happens when my budget cap is reached?',
-        answer: 'Your offer automatically pauses. New clicks/conversions are rejected until you increase the budget or the next period starts (daily/monthly reset).'
+        answer: 'If auto-pause is enabled on your offer, it will be automatically paused when the cap is hit and you will receive a notification. New conversions beyond the cap are rejected. You can reactivate the offer by topping up your wallet or increasing the cap. If auto-pause is not enabled, the cap acts as a warning threshold only.'
     },
     {
         question: 'Do I pay platform fees on top of commissions?',
-        answer: 'Yes, there is a small platform fee (typically 5%) deducted from your commission amount. Example: ₦10,000 commission = ₦500 platform fee.'
+        answer: 'Yes — the admin sets a platform spread percentage for your offer during approval. This is added on top of your commission rate, so your total cost per conversion is slightly higher than what the affiliate receives. For example: if the commission rate is ₦10,000 and the platform spread is 10%, you are charged ₦11,000 per conversion while the affiliate earns ₦10,000. The exact spread for your offer is visible on your offer\'s detail page.'
     },
     {
         question: 'Can I test the tracking before going live?',
-        answer: 'Absolutely! Set your offer to "Request Access" mode, approve only yourself, then make test purchases to verify everything works.'
+        answer: 'Yes. Set your offer to "Request Access" mode so only approved affiliates can promote it. Create a test affiliate account, approve it, generate a tracking link, and use that link to make a test purchase. Check your Conversions page to confirm the postback or pixel was received correctly before opening the offer to all affiliates.'
     },
     {
         question: 'What if the tracking pixel doesn\'t fire?',

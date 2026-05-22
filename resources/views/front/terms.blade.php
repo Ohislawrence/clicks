@@ -12,15 +12,15 @@
     }
 
     .terms-card {
-        background: #171717;
-        border: 1px solid #262626;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
         border-radius: 20px;
         transition: all 0.2s ease;
     }
 
     .terms-sidebar {
-        background: #171717;
-        border: 1px solid #262626;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
         border-radius: 16px;
     }
 
@@ -85,7 +85,7 @@
 
     .info-box {
         background: #1a1a1a;
-        border: 1px solid #2c2c2c;
+        border: 1px solid #e2e8f0;
         border-radius: 16px;
     }
 
@@ -111,17 +111,17 @@
 @section('content')
 
 <!-- Hero Section -->
-<section class="bg-neutral-950 border-b border-neutral-800">
+<section class="bg-white border-b border-slate-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
         <div class="max-w-3xl">
             <div class="flex flex-wrap gap-3 mb-6">
                 <span class="badge-terms">Updated: {{ date('F d, Y') }}</span>
                 <span class="badge-terms">Legally Binding</span>
             </div>
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-5">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 mb-5">
                 Terms of Service
             </h1>
-            <p class="text-lg text-neutral-400 leading-relaxed">
+            <p class="text-lg text-slate-500 leading-relaxed">
                 These Terms of Service govern your access to and use of {{ config('app.name') }}'s platform
                 and services. By using our platform, you agree to be bound by these Terms.
             </p>
@@ -130,18 +130,18 @@
 </section>
 
 <!-- Content with Sidebar Navigation -->
-<section class="py-16 bg-neutral-950">
+<section class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
             <!-- Sidebar Navigation -->
             <div class="lg:col-span-1">
                 <div class="terms-sidebar p-4 sticky top-24">
-                    <div class="flex items-center gap-2 mb-4 pb-3 border-b border-neutral-800">
-                        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                    <div class="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
+                        <svg class="w-4 h-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
                         </svg>
-                        <span class="text-sm font-semibold text-white">Contents</span>
+                        <span class="text-sm font-semibold text-slate-900">Contents</span>
                     </div>
                     <nav class="space-y-1">
                         <a href="#acceptance" class="terms-sidebar-link">1. Acceptance of Terms</a>
@@ -384,13 +384,13 @@
                         <p>For questions about these Terms, contact us:</p>
 
                         <div class="info-box p-6 mt-4">
-                            <p class="font-semibold text-white mb-3">{{ config('app.name') }}</p>
-                            <p class="text-neutral-400 mb-2">
-                                <span class="text-neutral-500">Email:</span>
-                                <a href="mailto:legal@clicksintel.com" class="text-emerald-400 hover:text-emerald-300">legal@clicksintel.com</a>
+                            <p class="font-semibold text-slate-900 mb-3">{{ config('app.name') }}</p>
+                            <p class="text-slate-500 mb-2">
+                                <span class="text-slate-400">Email:</span>
+                                <a href="mailto:legal@clicksintel.com" class="text-slate-700 hover:text-slate-600">legal@clicksintel.com</a>
                             </p>
-                            <p class="text-neutral-400">
-                                <span class="text-neutral-500">Address:</span> Lagos, Nigeria
+                            <p class="text-slate-500">
+                                <span class="text-slate-400">Address:</span> Lagos, Nigeria
                             </p>
                         </div>
                     </div>
@@ -398,7 +398,7 @@
 
                 <!-- Last Updated Note -->
                 <div class="mt-6 text-center">
-                    <p class="text-xs text-neutral-600">
+                    <p class="text-xs text-slate-400">
                         These Terms of Service were last updated on May 18, 2026. Previous versions are available upon request.
                     </p>
                 </div>

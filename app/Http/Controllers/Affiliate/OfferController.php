@@ -18,21 +18,67 @@ class OfferController extends Controller
             ->approved(); // Only show approved offers to affiliates
 
         // Filter by category
-        if ($request->has('category') && $request->category) {
+        if ($request->filled('category')) {
             $query->where('category_id', $request->category);
         }
 
         // Filter by commission model
-        if ($request->has('model') && $request->model) {
+        if ($request->filled('model')) {
             $query->where('commission_model', $request->model);
         }
 
         // Search
-        if ($request->has('search') && $request->search) {
-            $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('description', 'like', '%' . $request->search . '%');
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
             });
+        }
+
+        // Filter by access type
+        if ($request->filled('access_type')) {
+            $query->where('access_type', $request->access_type);
+        }
+
+        // Filter by min commission
+        if ($request->filled('min_commission') && is_numeric($request->min_commission)) {
+            $query->where('commission_rate', '>=', (float) $request->min_commission);
+        }
+
+        // Filter by max commission
+        if ($request->filled('max_commission') && is_numeric($request->max_commission)) {
+            $query->where('commission_rate', '<=', (float) $request->max_commission);
+        }
+
+        // Filter by target country — show worldwide (null) OR offers that include this country
+        if ($request->filled('country')) {
+            $code = strtoupper($request->country);
+            $query->where(function ($q) use ($code) {
+                $q->whereNull('target_countries')
+                  ->orWhereJsonContains('target_countries', $code);
+            });
+        }
+
+        // Filter by target device — show all-device (null) OR offers that include this device
+        if ($request->filled('device')) {
+            $device = strtolower($request->device);
+            $query->where(function ($q) use ($device) {
+                $q->whereNull('target_devices')
+                  ->orWhereJsonContains('target_devices', $device);
+            });
+        }
+
+        // Filter by offer source
+        if ($request->filled('source')) {
+            if ($request->source === 'cpalead') {
+                $query->where('is_cpalead', true);
+            } elseif ($request->source === 'native') {
+                $query->where(function ($q) {
+                    $q->whereNull('is_cpalead')
+                      ->orWhere('is_cpalead', false);
+                });
+            }
         }
 
         // Filter accessible offers
@@ -47,15 +93,36 @@ class OfferController extends Controller
               });
         });
 
-        $offers = $query->paginate(12);
+        // Sorting
+        switch ($request->get('sort', 'newest')) {
+            case 'commission_high':
+                $query->orderByDesc('commission_rate');
+                break;
+            case 'commission_low':
+                $query->orderBy('commission_rate');
+                break;
+            case 'popular':
+                $query->withCount('clicks')->orderByDesc('clicks_count');
+                break;
+            case 'converting':
+                $query->withCount('conversions')->orderByDesc('conversions_count');
+                break;
+            default: // newest
+                $query->latest();
+                break;
+        }
+
+        $offers = $query->paginate(12)->withQueryString();
         $categories = OfferCategory::where('is_active', true)
             ->orderBy('sort_order')
             ->get();
 
+        $filterKeys = ['category', 'model', 'search', 'access_type', 'min_commission', 'max_commission', 'country', 'device', 'source', 'sort'];
+
         return Inertia::render('Affiliate/Offers/Index', [
             'offers' => $offers,
             'categories' => $categories,
-            'filters' => $request->only(['category', 'model', 'search']),
+            'filters' => $request->only($filterKeys),
         ]);
     }
 

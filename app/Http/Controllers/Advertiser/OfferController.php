@@ -81,8 +81,8 @@ class OfferController extends Controller
             'is_active' => 'boolean',
             // Budget & caps
             'budget'               => 'nullable|numeric|min:0',
-            'daily_conversion_cap' => 'nullable|integer|min:1',
-            'monthly_conversion_cap' => 'nullable|integer|min:1',
+            'daily_conversion_cap' => 'nullable|integer|min:0',
+            'monthly_conversion_cap' => 'nullable|integer|min:0',
             'creatives' => 'nullable|array',
             'creatives.*.type' => 'required|in:banner,image,text,video',
             'creatives.*.name' => 'required|string|max:255',
@@ -92,6 +92,20 @@ class OfferController extends Controller
             'expected_sales'          => 'nullable|integer|min:0',
             'product_cost'            => 'nullable|numeric|min:0',
             'minimum_wallet_required' => 'nullable|numeric|min:0',
+            // RevShare recurring settings
+            'revshare_type'               => 'nullable|in:once,recurring',
+            'revshare_recurring_duration' => 'nullable|integer|min:1',
+            'revshare_recurring_unit'     => 'nullable|in:month,year',
+            // Targeting
+            'offer_url'          => 'nullable|url|max:2048',
+            'product_image'      => 'nullable|url|max:2048',
+            'target_countries'   => 'nullable|array',
+            'target_countries.*' => 'string|size:2',
+            'target_devices'     => 'nullable|array',
+            'target_devices.*'   => 'in:desktop,mobile,tablet',
+            'target_os'          => 'nullable|array',
+            'target_os.*'        => 'in:windows,mac,linux,android,ios',
+            'require_unique_ip'  => 'nullable|boolean',
         ]);
 
         // Validate budget against wallet balance before creating the offer
@@ -132,6 +146,19 @@ class OfferController extends Controller
             'expected_sales'          => $validated['expected_sales'] ?? null,
             'product_cost'            => $validated['product_cost'] ?? null,
             'minimum_wallet_required' => $validated['minimum_wallet_required'] ?? null,
+            'revshare_type'               => $validated['commission_model'] === 'revshare'
+                ? ($validated['revshare_type'] ?? 'once') : null,
+            'revshare_recurring_duration' => ($validated['commission_model'] === 'revshare' && ($validated['revshare_type'] ?? 'once') === 'recurring')
+                ? ($validated['revshare_recurring_duration'] ?? null) : null,
+            'revshare_recurring_unit'     => ($validated['commission_model'] === 'revshare' && ($validated['revshare_type'] ?? 'once') === 'recurring')
+                ? ($validated['revshare_recurring_unit'] ?? 'month') : null,
+            // Targeting fields
+            'offer_url'        => $validated['offer_url'] ?? null,
+            'product_image'    => $validated['product_image'] ?? null,
+            'target_countries' => !empty($validated['target_countries']) ? $validated['target_countries'] : null,
+            'target_devices'   => !empty($validated['target_devices']) ? $validated['target_devices'] : null,
+            'target_os'        => !empty($validated['target_os']) ? $validated['target_os'] : null,
+            'require_unique_ip' => $validated['require_unique_ip'] ?? false,
         ]);
 
         // Allocate budget from advertiser wallet if provided
@@ -140,12 +167,15 @@ class OfferController extends Controller
             $rate = (float) $validated['commission_rate'];
             $conversionCap = ($rate > 0) ? (int) floor($budget / $rate) : null;
 
+            $dailyConversionCap = !empty($validated['daily_conversion_cap']) ? $validated['daily_conversion_cap'] : null;
+            $monthlyConversionCap = !empty($validated['monthly_conversion_cap']) ? $validated['monthly_conversion_cap'] : null;
+
             $offer->update([
                 'budget_limit'         => $budget,
                 'spent_budget'         => 0,
                 'total_conversion_cap' => $conversionCap,
-                'daily_conversion_cap' => $validated['daily_conversion_cap'] ?? null,
-                'monthly_conversion_cap' => $validated['monthly_conversion_cap'] ?? null,
+                'daily_conversion_cap' => $dailyConversionCap,
+                'monthly_conversion_cap' => $monthlyConversionCap,
                 'auto_pause_on_cap'    => true,
             ]);
 
@@ -165,8 +195,8 @@ class OfferController extends Controller
         } else {
             // Still apply optional caps if provided, but no wallet deduction
             $capData = array_filter([
-                'daily_conversion_cap'   => $validated['daily_conversion_cap'] ?? null,
-                'monthly_conversion_cap' => $validated['monthly_conversion_cap'] ?? null,
+                'daily_conversion_cap'   => !empty($validated['daily_conversion_cap']) ? $validated['daily_conversion_cap'] : null,
+                'monthly_conversion_cap' => !empty($validated['monthly_conversion_cap']) ? $validated['monthly_conversion_cap'] : null,
             ]);
             if ($capData) {
                 $offer->update(array_merge($capData, ['auto_pause_on_cap' => true]));
@@ -278,14 +308,8 @@ class OfferController extends Controller
             abort(403);
         }
 
-        $categories = OfferCategory::where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
-
-        return Inertia::render('Advertiser/Offers/Edit', [
-            'offer' => $offer,
-            'categories' => $categories,
-        ]);
+        return redirect()->route('advertiser.offers.show', $offer)
+            ->with('error', 'Offer editing is disabled. Please contact admin to make changes.');
     }
 
     public function update(Request $request, Offer $offer)
@@ -314,12 +338,26 @@ class OfferController extends Controller
             'expected_sales'          => 'nullable|integer|min:0',
             'product_cost'            => 'nullable|numeric|min:0',
             'minimum_wallet_required' => 'nullable|numeric|min:0',
+            'daily_conversion_cap'     => 'nullable|integer|min:0',
+            'monthly_conversion_cap'   => 'nullable|integer|min:0',
+            // RevShare recurring settings
+            'revshare_type'               => 'nullable|in:once,recurring',
+            'revshare_recurring_duration' => 'nullable|integer|min:1',
+            'revshare_recurring_unit'     => 'nullable|in:month,year',
+            // Targeting
+            'offer_url'          => 'nullable|url|max:2048',
+            'product_image'      => 'nullable|url|max:2048',
+            'target_countries'   => 'nullable|array',
+            'target_countries.*' => 'string|size:2',
+            'target_devices'     => 'nullable|array',
+            'target_devices.*'   => 'in:desktop,mobile,tablet',
+            'target_os'          => 'nullable|array',
+            'target_os.*'        => 'in:windows,mac,linux,android,ios',
+            'require_unique_ip'  => 'nullable|boolean',
         ]);
 
-        $offer->update($validated);
-
         return redirect()->route('advertiser.offers.show', $offer)
-            ->with('success', 'Offer updated successfully!');
+            ->with('error', 'Offer editing is disabled. Please contact admin to make changes.');
     }
 
     public function destroy(Offer $offer)

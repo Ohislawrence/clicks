@@ -14,6 +14,9 @@ class Offer extends Model
 
     protected $fillable = [
         'advertiser_id',
+        'offer_channel',
+        'network_name',
+        'network_offer_id',
         'store_product_id',
         'category_id',
         'name',
@@ -58,6 +61,17 @@ class Offer extends Model
         'last_cap_reset_date',
         'auto_pause_on_cap',
         'pause_reason',
+        'revshare_type',
+        'revshare_recurring_duration',
+        'revshare_recurring_unit',
+        'offer_url',
+        'product_image',
+        'cpalead_offer_id',
+        'is_cpalead',
+        'target_countries',
+        'target_devices',
+        'target_os',
+        'require_unique_ip',
     ];
 
     protected $casts = [
@@ -85,6 +99,12 @@ class Offer extends Model
         'last_cap_reset_date' => 'date',
         'auto_pause_on_cap' => 'boolean',
         'reviewed_at' => 'datetime',
+        'revshare_recurring_duration' => 'integer',
+        'target_countries' => 'array',
+        'target_devices' => 'array',
+        'target_os' => 'array',
+        'require_unique_ip' => 'boolean',
+        'is_cpalead' => 'boolean',
     ];
 
     protected $appends = [
@@ -92,6 +112,33 @@ class Offer extends Model
         'platform_margin',
         'margin_percentage',
     ];
+
+    /**
+     * Determine whether a visitor matches this offer's targeting rules.
+     * Returns true if the visitor is allowed, false if they should be blocked.
+     */
+    public function isTargetedTo(?string $countryCode, ?string $device, ?string $os): bool
+    {
+        if (!empty($this->target_countries) && $countryCode) {
+            if (!in_array(strtoupper($countryCode), $this->target_countries)) {
+                return false;
+            }
+        }
+
+        if (!empty($this->target_devices) && $device) {
+            if (!in_array(strtolower($device), $this->target_devices)) {
+                return false;
+            }
+        }
+
+        if (!empty($this->target_os) && $os) {
+            if (!in_array(strtolower($os), $this->target_os)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     protected static function booted(): void
     {

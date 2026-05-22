@@ -531,6 +531,7 @@ class StoreController extends Controller
             ->firstOrFail();
 
         $query = http_build_query([
+            'product_id' => $product->id,
             'prefill' => [
                 'name'           => $product->name,
                 'description'    => \Illuminate\Support\Str::limit(strip_tags($product->description ?? ''), 200),

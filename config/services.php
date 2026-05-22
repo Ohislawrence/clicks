@@ -46,4 +46,14 @@ return [
         'secret_hash' => env('FLUTTERWAVE_SECRET_HASH'),
     ],
 
+    'cpalead' => [
+        'api_key' => env('CPALEAD_API_KEY'),
+        'base_url' => env('CPALEAD_BASE_URL', 'https://api.cpalead.com'),
+        'advertiser_id' => env('CPALEAD_ADVERTISER_ID'),
+        'default_cookie_duration' => env('CPALEAD_DEFAULT_COOKIE_DURATION', 30),
+        'platform_spread_percentage' => env('CPALEAD_PLATFORM_SPREAD_PERCENTAGE', 10),
+        'auto_approve' => env('CPALEAD_AUTO_APPROVE', true),
+        'disable_missing_offers' => env('CPALEAD_DISABLE_MISSING_OFFERS', false),
+    ],
+
 ];

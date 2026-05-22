@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\TrafficSource;
 use App\Notifications\WelcomeAffiliateNotification;
 use App\Notifications\WelcomeAdvertiserNotification;
+use App\Notifications\NewAffiliateAccountNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -104,9 +105,14 @@ class RegisterController extends Controller
             // Send welcome notification
             $user->notify(new WelcomeAffiliateNotification());
 
+            // Notify all admins of the new application
+            \App\Models\User::role('admin')->each(function ($admin) use ($user) {
+                $admin->notify(new NewAffiliateAccountNotification($user));
+            });
+
             Auth::login($user);
 
-            return redirect()->route('affiliate.dashboard')->with('success', 'Welcome! Your affiliate account has been created successfully.');
+            return redirect()->route('affiliate.dashboard')->with('success', 'Welcome! Your affiliate account has been created. Please verify your email and wait for admin approval before promoting offers.');
 
         } catch (\Exception $e) {
             DB::rollBack();

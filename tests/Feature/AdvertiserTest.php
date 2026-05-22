@@ -147,7 +147,7 @@ class AdvertiserTest extends TestCase
         $response->assertOk();
     }
 
-    public function test_advertiser_can_update_own_offer(): void
+    public function test_advertiser_cannot_update_own_offer(): void
     {
         $offer = $this->makeOffer();
 
@@ -164,11 +164,12 @@ class AdvertiserTest extends TestCase
                 'is_active'        => true,
             ]);
 
-        $response->assertRedirect();
+        $response->assertRedirect(route('advertiser.offers.show', $offer));
+        $response->assertSessionHas('error');
 
         $this->assertDatabaseHas('offers', [
             'id'   => $offer->id,
-            'name' => 'Updated Offer Name',
+            'name' => $offer->name,
         ]);
     }
 

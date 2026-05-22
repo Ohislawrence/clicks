@@ -29,7 +29,7 @@
                         </div>
                         <TierBadge :tier="tierInfo.current_tier" size="lg" />
                     </div>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                         <div>
                             <p class="text-purple-100 text-sm">Current Bonus</p>
@@ -43,8 +43,8 @@
                                     <span>{{ tierInfo.progress_percentage }}%</span>
                                 </div>
                                 <div class="w-full bg-purple-300 rounded-full h-3">
-                                    <div 
-                                        class="bg-white h-3 rounded-full transition-all duration-500" 
+                                    <div
+                                        class="bg-white h-3 rounded-full transition-all duration-500"
                                         :style="{ width: `${Math.min(tierInfo.progress_percentage, 100)}%` }"
                                     ></div>
                                 </div>
@@ -128,11 +128,11 @@
                     <!-- Earnings Trend -->
                     <div class="bg-white rounded-lg shadow p-6">
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">Earnings Trend</h3>
-                        <apexchart 
+                        <apexchart
                             v-if="earningsChartOptions"
-                            type="area" 
-                            height="300" 
-                            :options="earningsChartOptions" 
+                            type="area"
+                            height="300"
+                            :options="earningsChartOptions"
                             :series="earningsChartSeries"
                         />
                     </div>
@@ -140,11 +140,11 @@
                     <!-- Performance Breakdown -->
                     <div class="bg-white rounded-lg shadow p-6">
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">Conversion Rate by Day</h3>
-                        <apexchart 
+                        <apexchart
                             v-if="crChartOptions"
-                            type="bar" 
-                            height="300" 
-                            :options="crChartOptions" 
+                            type="bar"
+                            height="300"
+                            :options="crChartOptions"
                             :series="crChartSeries"
                         />
                     </div>
@@ -353,7 +353,22 @@ const applyFilters = () => {
 };
 
 const copyReferralCode = () => {
-    navigator.clipboard.writeText(props.referralStats.referral_code);
-    // Could add a toast notification here
+    const text = props.referralStats.referral_code;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+    } else {
+        fallbackCopy(text);
+    }
+};
+
+const fallbackCopy = (text) => {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.setAttribute('readonly', '');
+    el.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
+    document.body.appendChild(el);
+    el.select();
+    try { document.execCommand('copy'); } catch { prompt('Copy this:', text); }
+    document.body.removeChild(el);
 };
 </script>

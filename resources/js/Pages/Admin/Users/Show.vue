@@ -200,9 +200,87 @@
                         </div>
                     </div>
 
-                    <!-- Stats Sidebar -->
-                    <div class="space-y-6">
-                        <!-- Stats Cards -->
+                        <!-- Account Approval — Affiliate -->
+                        <div v-if="hasRole('affiliate')" class="bg-white rounded-xl shadow-sm p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Affiliate Account Approval</h3>
+
+                            <div class="flex items-center mb-4 p-3 rounded-lg"
+                                :class="user.is_verified ? 'bg-green-50 border border-green-200' : 'bg-yellow-50 border border-yellow-200'"
+                            >
+                                <span class="text-2xl mr-3">{{ user.is_verified ? '✅' : '⏳' }}</span>
+                                <div>
+                                    <p class="font-semibold" :class="user.is_verified ? 'text-green-800' : 'text-yellow-800'">
+                                        {{ user.is_verified ? 'Approved' : 'Pending Approval' }}
+                                    </p>
+                                    <p class="text-xs" :class="user.is_verified ? 'text-green-600' : 'text-yellow-600'">
+                                        {{ user.is_verified ? 'Affiliate can browse and promote offers' : 'Affiliate cannot see or promote offers yet' }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div v-if="!user.is_verified" class="space-y-3">
+                                <button
+                                    @click="approveAffiliate"
+                                    :disabled="approving"
+                                    class="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white font-semibold py-2 px-4 rounded-lg transition"
+                                >
+                                    {{ approving ? 'Approving...' : '✅ Approve Affiliate' }}
+                                </button>
+                                <div>
+                                    <textarea
+                                        v-model="rejectionReason"
+                                        placeholder="Optional rejection reason..."
+                                        rows="2"
+                                        class="w-full border border-gray-300 rounded-lg p-2 text-sm mb-2 focus:ring-2 focus:ring-red-300 focus:outline-none"
+                                    ></textarea>
+                                    <button
+                                        @click="rejectAffiliate"
+                                        :disabled="rejecting"
+                                        class="w-full bg-red-100 hover:bg-red-200 disabled:opacity-50 text-red-700 font-semibold py-2 px-4 rounded-lg transition"
+                                    >
+                                        {{ rejecting ? 'Rejecting...' : '❌ Reject Affiliate' }}
+                                    </button>
+                                </div>
+                            </div>
+                            <div v-else>
+                                <button
+                                    @click="rejectAffiliate"
+                                    :disabled="rejecting"
+                                    class="w-full bg-red-100 hover:bg-red-200 disabled:opacity-50 text-red-700 font-semibold py-2 px-4 rounded-lg transition"
+                                >
+                                    {{ rejecting ? 'Revoking...' : '🚫 Revoke Approval' }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Account Approval — Advertiser -->
+                        <div v-if="hasRole('advertiser')" class="bg-white rounded-xl shadow-sm p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Advertiser Account Approval</h3>
+
+                            <div class="flex items-center mb-4 p-3 rounded-lg"
+                                :class="user.is_verified ? 'bg-green-50 border border-green-200' : 'bg-yellow-50 border border-yellow-200'"
+                            >
+                                <span class="text-2xl mr-3">{{ user.is_verified ? '✅' : '⏳' }}</span>
+                                <div>
+                                    <p class="font-semibold" :class="user.is_verified ? 'text-green-800' : 'text-yellow-800'">
+                                        {{ user.is_verified ? 'Approved' : 'Pending Approval' }}
+                                    </p>
+                                    <p class="text-xs" :class="user.is_verified ? 'text-green-600' : 'text-yellow-600'">
+                                        {{ user.is_verified ? 'Advertiser can create offers' : 'Advertiser account not yet approved' }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div v-if="!user.is_verified">
+                                <button
+                                    @click="approveAdvertiser"
+                                    :disabled="approving"
+                                    class="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white font-semibold py-2 px-4 rounded-lg transition"
+                                >
+                                    {{ approving ? 'Approving...' : '✅ Approve Advertiser' }}
+                                </button>
+                            </div>
+                        </div>
                         <div class="bg-white rounded-xl shadow-sm p-6">
                             <h3 class="text-lg font-semibold text-gray-900 mb-4">Statistics</h3>
                             <div class="space-y-4">
@@ -244,6 +322,36 @@ const props = defineProps({
 
 const hasRole = (roleName) => {
     return props.user.roles.some(role => role.name === roleName);
+};
+
+const approving = ref(false);
+const rejecting = ref(false);
+const rejectionReason = ref('');
+
+const approveAffiliate = () => {
+    approving.value = true;
+    router.post(route('admin.users.approve-affiliate', props.user.id), {}, {
+        preserveScroll: true,
+        onFinish: () => { approving.value = false; },
+    });
+};
+
+const rejectAffiliate = () => {
+    rejecting.value = true;
+    router.post(route('admin.users.reject-affiliate', props.user.id), {
+        rejection_reason: rejectionReason.value,
+    }, {
+        preserveScroll: true,
+        onFinish: () => { rejecting.value = false; rejectionReason.value = ''; },
+    });
+};
+
+const approveAdvertiser = () => {
+    approving.value = true;
+    router.post(route('admin.users.approve-advertiser', props.user.id), {}, {
+        preserveScroll: true,
+        onFinish: () => { approving.value = false; },
+    });
 };
 
 const capForm = useForm({

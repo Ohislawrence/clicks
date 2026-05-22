@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', config('app.name', 'ClicksIntel') . ' — Performance Marketing')</title>
+    <title inertia>@yield('title', config('app.name', 'ClicksIntel'))</title>
 
     <!-- SEO -->
     <meta name="description" content="@yield('meta_description', 'Performance marketing platform built for scale. Real-time tracking, fraud prevention, and payouts that keep affiliates growing.')">
@@ -17,7 +17,7 @@
     <!-- Open Graph -->
     <meta property="og:type" content="@yield('og_type', 'website')">
     <meta property="og:url" content="@yield('og_url', url()->current())">
-    <meta property="og:title" content="@yield('og_title', config('app.name', 'ClicksIntel') . ' — Performance Marketing')">
+    <meta property="og:title" content="@yield('og_title', config('app.name', 'ClicksIntel'))">
     <meta property="og:description" content="@yield('og_description', 'Performance marketing platform built for scale.')">
     <meta property="og:image" content="@yield('og_image', asset('images/og-image.jpg'))">
     <meta property="og:site_name" content="{{ config('app.name', 'ClicksIntel') }}">
@@ -25,7 +25,7 @@
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="@yield('twitter_url', url()->current())">
-    <meta name="twitter:title" content="@yield('twitter_title', config('app.name', 'ClicksIntel') . ' — Performance Marketing')">
+    <meta name="twitter:title" content="@yield('twitter_title', config('app.name', 'ClicksIntel'))">
     <meta name="twitter:description" content="@yield('twitter_description', 'Performance marketing platform built for scale.')">
     <meta name="twitter:image" content="@yield('twitter_image', asset('images/twitter-card.jpg'))">
 
@@ -34,59 +34,62 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('logo/favico-black.png') }}">
 
-    <!-- Fonts -->
+    <!-- Fonts - Plus Jakarta Sans for modern fintech aesthetic -->
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700,800&display=swap" rel="stylesheet" />
 
     <!-- Prevent FOUC -->
-    <style>html{background:#0a0a0a}body{visibility:hidden}</style>
+    <style>html{background:#ffffff}body{visibility:hidden}</style>
 
-    <!-- Styles & Scripts -->
-    @vite('resources/js/app.js')
+    <!-- Scripts -->
+    @routes
+    @vite(['resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="font-sans antialiased bg-neutral-950 text-neutral-100">
+<body class="font-sans antialiased bg-white text-slate-900" style="font-family: 'Plus Jakarta Sans', sans-serif;">
 
     <!-- Navigation -->
-    <nav class="fixed top-0 inset-x-0 z-50 bg-neutral-950/95 backdrop-blur-sm border-b border-neutral-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
+    <nav class="fixed top-0 inset-x-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
                 <!-- Logo -->
-                <a href="{{ route('front.home') }}" class="flex items-center gap-2.5 group">
-                    <img src="{{ asset('logo/full-white.png') }}" alt="{{ config('app.name', 'ClicksIntel') }}" class="h-8">
+                <a href="{{ route('front.home') }}" class="flex items-center gap-2.5 group shrink-0">
+                    <img src="{{ asset('logo/black.png') }}" alt="{{ config('app.name', 'ClicksIntel') }}" class="h-8 dark-logo">
                 </a>
 
-                <!-- Desktop Nav -->
-                <div class="hidden md:flex items-center gap-0.5">
-                    <a href="{{ route('front.for-affiliates') }}" class="px-3.5 py-2 rounded-md text-sm font-medium text-neutral-400 hover:text-white hover:bg-neutral-800/80 transition-all duration-200">
-                        For Affiliates
-                    </a>
-                    <a href="{{ route('front.for-advertisers') }}" class="px-3.5 py-2 rounded-md text-sm font-medium text-neutral-400 hover:text-white hover:bg-neutral-800/80 transition-all duration-200">
-                        For Advertisers
-                    </a>
-                    <a href="{{ route('front.features') }}" class="px-3.5 py-2 rounded-md text-sm font-medium text-neutral-400 hover:text-white hover:bg-neutral-800/80 transition-all duration-200">
-                        Features
-                    </a>
-                    <a href="{{ route('blog.index') }}" class="px-3.5 py-2 rounded-md text-sm font-medium text-neutral-400 hover:text-white hover:bg-neutral-800/80 transition-all duration-200">
-                        Blog
-                    </a>
-                    <a href="{{ route('front.about') }}" class="px-3.5 py-2 rounded-md text-sm font-medium text-neutral-400 hover:text-white hover:bg-neutral-800/80 transition-all duration-200">
-                        About
-                    </a>
+                <!-- Pill Navigation - Desktop -->
+                <div class="hidden lg:flex items-center">
+                    <div class="flex items-center gap-0.5 bg-slate-100/80 backdrop-blur-sm rounded-full px-1.5 py-1.5 border border-slate-200/60">
+                        <a href="{{ route('front.for-affiliates') }}" class="px-4 py-2 rounded-full text-sm font-semibold {{ request()->routeIs('front.for-affiliates') ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-white' }} transition-all duration-200">
+                            For Affiliates
+                        </a>
+                        <a href="{{ route('front.for-advertisers') }}" class="px-4 py-2 rounded-full text-sm font-semibold {{ request()->routeIs('front.for-advertisers') ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-white' }} transition-all duration-200">
+                            For Advertisers
+                        </a>
+                        <a href="{{ route('front.features') }}" class="px-4 py-2 rounded-full text-sm font-semibold {{ request()->routeIs('front.features') ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-white' }} transition-all duration-200">
+                            Features
+                        </a>
+                        <a href="{{ route('blog.index') }}" class="px-4 py-2 rounded-full text-sm font-semibold {{ request()->routeIs('blog.*') ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-white' }} transition-all duration-200">
+                            Blog
+                        </a>
+                        <a href="{{ route('front.about') }}" class="px-4 py-2 rounded-full text-sm font-semibold {{ request()->routeIs('front.about') ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-white' }} transition-all duration-200">
+                            About
+                        </a>
+                    </div>
                 </div>
 
                 <!-- Desktop Auth -->
-                <div class="hidden md:flex items-center gap-3">
+                <div class="hidden lg:flex items-center gap-3">
                     @auth
-                        <a href="{{ route('dashboard') }}" class="text-sm font-medium text-neutral-400 hover:text-white transition-colors">
+                        <a href="{{ route('dashboard') }}" class="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors px-4 py-2.5 rounded-full hover:bg-slate-100">
                             Dashboard
                         </a>
                     @else
-                        <a href="{{ route('login') }}" class="text-sm font-medium text-neutral-400 hover:text-white transition-colors">
+                        <a href="{{ route('login') }}" class="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors px-4 py-2.5 rounded-full hover:bg-slate-100">
                             Log in
                         </a>
                         @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 rounded-md bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-all duration-200 shadow-sm shadow-emerald-500/10">
+                            <a href="{{ route('register') }}" class="inline-flex items-center px-5 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold transition-all duration-200">
                                 Get Started
                             </a>
                         @endif
@@ -94,7 +97,7 @@
                 </div>
 
                 <!-- Mobile Menu Button -->
-                <button type="button" id="mobile-menu-btn" class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors" aria-controls="mobile-menu" aria-expanded="false">
+                <button type="button" id="mobile-menu-btn" class="lg:hidden inline-flex items-center justify-center p-2.5 rounded-full text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors" aria-controls="mobile-menu" aria-expanded="false">
                     <span class="sr-only">Open menu</span>
                     <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -107,34 +110,34 @@
         </div>
 
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden border-t border-neutral-800 bg-neutral-950">
-            <div class="px-4 pt-2 pb-4 space-y-1">
-                <a href="{{ route('front.for-affiliates') }}" class="block px-3 py-2 rounded-md text-base font-medium text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors">
+        <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-slate-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-1">
+                <a href="{{ route('front.for-affiliates') }}" class="block px-4 py-3 rounded-xl text-base font-semibold {{ request()->routeIs('front.for-affiliates') ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' }} transition-colors">
                     For Affiliates
                 </a>
-                <a href="{{ route('front.for-advertisers') }}" class="block px-3 py-2 rounded-md text-base font-medium text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors">
+                <a href="{{ route('front.for-advertisers') }}" class="block px-4 py-3 rounded-xl text-base font-semibold {{ request()->routeIs('front.for-advertisers') ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' }} transition-colors">
                     For Advertisers
                 </a>
-                <a href="{{ route('front.features') }}" class="block px-3 py-2 rounded-md text-base font-medium text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors">
+                <a href="{{ route('front.features') }}" class="block px-4 py-3 rounded-xl text-base font-semibold {{ request()->routeIs('front.features') ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' }} transition-colors">
                     Features
                 </a>
-                <a href="{{ route('blog.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors">
+                <a href="{{ route('blog.index') }}" class="block px-4 py-3 rounded-xl text-base font-semibold {{ request()->routeIs('blog.*') ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' }} transition-colors">
                     Blog
                 </a>
-                <a href="{{ route('front.about') }}" class="block px-3 py-2 rounded-md text-base font-medium text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors">
+                <a href="{{ route('front.about') }}" class="block px-4 py-3 rounded-xl text-base font-semibold {{ request()->routeIs('front.about') ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' }} transition-colors">
                     About
                 </a>
-                <div class="pt-4 mt-2 border-t border-neutral-800 space-y-2">
+                <div class="pt-4 mt-2 border-t border-slate-100 space-y-2">
                     @auth
-                        <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors">
+                        <a href="{{ route('dashboard') }}" class="block px-4 py-3 rounded-xl text-base font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors">
                             Dashboard
                         </a>
                     @else
-                        <a href="{{ route('login') }}" class="block px-3 py-2 rounded-md text-base font-medium text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors">
+                        <a href="{{ route('login') }}" class="block px-4 py-3 rounded-xl text-base font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors">
                             Log in
                         </a>
                         @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="block px-3 py-2 rounded-md text-base font-medium bg-emerald-500 hover:bg-emerald-600 text-white text-center transition-colors">
+                            <a href="{{ route('register') }}" class="block px-4 py-3 rounded-xl text-base font-semibold bg-slate-900 hover:bg-slate-800 text-white text-center transition-colors">
                                 Get Started
                             </a>
                         @endif
@@ -145,82 +148,112 @@
     </nav>
 
     <!-- Page Content -->
-    <main class="pt-16">
+    <main class="pt-20">
         @yield('content')
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-neutral-800 bg-neutral-950">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-12">
-                <!-- Brand -->
-                <div class="lg:col-span-2">
-                    <a href="{{ route('front.home') }}" class="inline-flex items-center gap-2.5 mb-4">
-                        <img src="{{ asset('logo/full-white.png') }}" alt="{{ config('app.name', 'ClicksIntel') }}" class="h-8">
+    <footer class="bg-slate-50">
+        <!-- Top CTA Section -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="bg-slate-900 rounded-3xl px-8 py-16 sm:px-16 sm:py-20 text-center">
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-5 max-w-3xl mx-auto leading-tight">
+                    Start building with {{ config('app.name', 'ClicksIntel') }} today
+                </h2>
+                <p class="text-lg text-slate-400 mb-10 max-w-xl mx-auto">
+                    Join thousands of affiliates and advertisers who trust our platform for performance marketing at scale.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="{{ route('register') }}" class="inline-flex items-center px-7 py-3.5 rounded-full bg-white hover:bg-slate-100 text-slate-900 text-sm font-bold transition-all duration-200 w-full sm:w-auto justify-center">
+                        Get Started
                     </a>
-                    <p class="text-neutral-400 text-sm leading-relaxed max-w-sm">
-                        Performance marketing infrastructure for serious affiliates and advertisers. Built for speed, transparency, and scale.
-                    </p>
-                </div>
-
-                <!-- Platform -->
-                <div>
-                    <h4 class="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-4">Platform</h4>
-                    <ul class="space-y-3 text-sm">
-                        <li><a href="{{ route('front.for-affiliates') }}" class="text-neutral-400 hover:text-emerald-400 transition-colors">For Affiliates</a></li>
-                        <li><a href="{{ route('front.for-advertisers') }}" class="text-neutral-400 hover:text-emerald-400 transition-colors">For Advertisers</a></li>
-                        <li><a href="{{ route('front.features') }}" class="text-neutral-400 hover:text-emerald-400 transition-colors">Features</a></li>
-                        <li><a href="{{ route('blog.index') }}" class="text-neutral-400 hover:text-emerald-400 transition-colors">Blog</a></li>
-                        <li><a href="{{ route('front.about') }}" class="text-neutral-400 hover:text-emerald-400 transition-colors">About Us</a></li>
-                    </ul>
-                </div>
-
-                <!-- Support -->
-                <div>
-                    <h4 class="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-4">Support</h4>
-                    <ul class="space-y-3 text-sm">
-                        <li><a href="{{ route('front.contact') }}" class="text-neutral-400 hover:text-emerald-400 transition-colors">Contact</a></li>
-                        <li><a href="{{ route('front.faq') }}" class="text-neutral-400 hover:text-emerald-400 transition-colors">FAQ</a></li>
-                        <li><a href="{{ route('register') }}" class="text-neutral-400 hover:text-emerald-400 transition-colors">Get Started</a></li>
-                    </ul>
-                </div>
-
-                <!-- Legal -->
-                <div>
-                    <h4 class="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-4">Legal</h4>
-                    <ul class="space-y-3 text-sm">
-                        <li><a href="{{ route('front.privacy') }}" class="text-neutral-400 hover:text-emerald-400 transition-colors">Privacy Policy</a></li>
-                        <li><a href="{{ route('front.terms') }}" class="text-neutral-400 hover:text-emerald-400 transition-colors">Terms of Service</a></li>
-                    </ul>
+                    <a href="{{ route('front.contact') }}" class="inline-flex items-center px-7 py-3.5 rounded-full border border-slate-600 hover:border-slate-400 text-white hover:bg-slate-800 text-sm font-bold transition-all duration-200 w-full sm:w-auto justify-center">
+                        Contact Sales
+                    </a>
                 </div>
             </div>
+        </div>
 
-            <div class="border-t border-neutral-800 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p class="text-sm text-neutral-500">&copy; {{ date('Y') }} {{ config('app.name', 'ClicksIntel') }}. All rights reserved.</p>
-                <div class="flex items-center gap-4">
-                    <span class="inline-flex items-center gap-1.5 text-xs text-neutral-500">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                        All systems operational
-                    </span>
+        <!-- Footer Links Grid -->
+        <div class="border-t border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10">
+                    <!-- Brand Column -->
+                    <div class="col-span-2 md:col-span-3 lg:col-span-2">
+                        <a href="{{ route('front.home') }}" class="inline-flex items-center gap-2.5 mb-5">
+                            <img src="{{ asset('logo/black.png') }}" alt="{{ config('app.name', 'ClicksIntel') }}" class="h-8 dark-logo">
+                        </a>
+                        <p class="text-slate-500 text-sm leading-relaxed max-w-xs mb-6">
+                            Performance marketing infrastructure for serious affiliates and advertisers. Built for speed, transparency, and scale.
+                        </p>
+                        <div class="flex items-center gap-3">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                All systems operational
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Platform -->
+                    <div>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-5">Platform</h4>
+                        <ul class="space-y-3.5 text-sm">
+                            <li><a href="{{ route('front.for-affiliates') }}" class="text-slate-600 hover:text-slate-900 font-medium transition-colors">For Affiliates</a></li>
+                            <li><a href="{{ route('front.for-advertisers') }}" class="text-slate-600 hover:text-slate-900 font-medium transition-colors">For Advertisers</a></li>
+                            <li><a href="{{ route('front.features') }}" class="text-slate-600 hover:text-slate-900 font-medium transition-colors">Features</a></li>
+                            <li><a href="{{ route('blog.index') }}" class="text-slate-600 hover:text-slate-900 font-medium transition-colors">Blog</a></li>
+                            <li><a href="{{ route('front.about') }}" class="text-slate-600 hover:text-slate-900 font-medium transition-colors">About Us</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Support -->
+                    <div>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-5">Support</h4>
+                        <ul class="space-y-3.5 text-sm">
+                            <li><a href="{{ route('front.contact') }}" class="text-slate-600 hover:text-slate-900 font-medium transition-colors">Contact</a></li>
+                            <li><a href="{{ route('front.faq') }}" class="text-slate-600 hover:text-slate-900 font-medium transition-colors">FAQ</a></li>
+                            <li><a href="{{ route('register') }}" class="text-slate-600 hover:text-slate-900 font-medium transition-colors">Get Started</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Legal -->
+                    <div>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-5">Legal</h4>
+                        <ul class="space-y-3.5 text-sm">
+                            <li><a href="{{ route('front.privacy') }}" class="text-slate-600 hover:text-slate-900 font-medium transition-colors">Privacy Policy</a></li>
+                            <li><a href="{{ route('front.terms') }}" class="text-slate-600 hover:text-slate-900 font-medium transition-colors">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="border-t border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-slate-400 font-medium">&copy; {{ date('Y') }} {{ config('app.name', 'ClicksIntel') }}. All rights reserved.</p>
+                <div class="flex items-center gap-6">
+                    <a href="{{ route('front.privacy') }}" class="text-sm text-slate-400 hover:text-slate-600 font-medium transition-colors">Privacy</a>
+                    <a href="{{ route('front.terms') }}" class="text-sm text-slate-400 hover:text-slate-600 font-medium transition-colors">Terms</a>
                 </div>
             </div>
         </div>
     </footer>
 
     <!-- Cookie Consent Banner (NDPR) -->
-    <div id="cookie-banner" class="fixed bottom-0 inset-x-0 z-50 bg-neutral-900 border-t border-neutral-700 px-4 py-4 sm:px-6 hidden" role="dialog" aria-live="polite" aria-label="Cookie consent">
+    <div id="cookie-banner" class="fixed bottom-0 inset-x-0 z-50 bg-white border-t border-slate-200 px-4 py-4 sm:px-6 hidden shadow-[0_-8px_30px_rgba(0,0,0,0.06)]" role="dialog" aria-live="polite" aria-label="Cookie consent">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div class="flex-1 text-sm text-neutral-300">
-                <span class="font-semibold text-white">We use cookies</span> — including essential, analytics, and affiliate-tracking cookies.
+            <div class="flex-1 text-sm text-slate-600">
+                <span class="font-semibold text-slate-900">We use cookies</span> — including essential, analytics, and affiliate-tracking cookies.
                 By clicking <strong>Accept All</strong> you consent to our use of cookies as described in our
-                <a href="{{ route('front.privacy') }}" class="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">Privacy Policy</a>.
+                <a href="{{ route('front.privacy') }}" class="text-slate-900 hover:text-slate-700 underline underline-offset-2 font-medium">Privacy Policy</a>.
                 You may <strong>Reject Non-Essential</strong> cookies without affecting core functionality.
             </div>
             <div class="flex items-center gap-3 shrink-0">
-                <button id="cookie-reject" class="px-4 py-2 text-sm font-medium text-neutral-300 border border-neutral-600 rounded-lg hover:bg-neutral-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <button id="cookie-reject" class="px-5 py-2.5 text-sm font-semibold text-slate-600 border border-slate-200 rounded-full hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-200">
                     Reject Non-Essential
                 </button>
-                <button id="cookie-accept" class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                <button id="cookie-accept" class="px-5 py-2.5 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-slate-900/20">
                     Accept All
                 </button>
             </div>
