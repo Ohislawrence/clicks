@@ -9,6 +9,7 @@ use App\Notifications\AdvertiserAccountRejectedNotification;
 use App\Notifications\AffiliateAccountApprovedNotification;
 use App\Notifications\AffiliateAccountRejectedNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
@@ -147,8 +148,8 @@ class UserController extends Controller
 
     public function impersonate(User $user)
     {
-        session(['impersonate' => auth()->id()]);
-        auth()->login($user);
+        session(['impersonate' => Auth::guard('web')->id()]);
+        Auth::guard('web')->login($user);
 
         return redirect()->route('dashboard')
             ->with('success', "Now viewing as {$user->name}");
@@ -159,7 +160,7 @@ class UserController extends Controller
         if (session()->has('impersonate')) {
             $adminId = session('impersonate');
             session()->forget('impersonate');
-            auth()->loginUsingId($adminId);
+            Auth::guard('web')->loginUsingId($adminId);
         }
 
         return redirect()->route('admin.dashboard')

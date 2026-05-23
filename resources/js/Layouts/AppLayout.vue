@@ -33,6 +33,12 @@ const logout = () => {
     router.post(route('logout'));
 };
 
+const stopImpersonating = () => {
+    if (confirm('Stop impersonating and return to your admin account?')) {
+        router.post(route('stop-impersonating'));
+    }
+};
+
 const toggleSidebar = () => {
     isSidebarCollapsed.value = !isSidebarCollapsed.value;
 };
@@ -106,6 +112,8 @@ const balanceLabel = computed(() => {
     if (isAdvertiser.value) return 'Ad Balance';
     return '';
 });
+
+const isImpersonating = computed(() => page.props.impersonating === true);
 </script>
 
 <template>
@@ -113,6 +121,14 @@ const balanceLabel = computed(() => {
         <Head :title="title" />
 
         <Banner />
+
+        <div v-if="isImpersonating" class="bg-red-50 border-b border-red-200 px-4 py-3 text-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <span class="inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">Impersonating</span>
+                <span class="text-red-800">You are currently impersonating another user.</span>
+            </div>
+            <button @click="stopImpersonating" class="px-3 py-1 rounded-full bg-red-100 text-red-800 font-semibold hover:bg-red-200 transition">Return to admin</button>
+        </div>
 
         <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
             <!-- Desktop Sidebar -->

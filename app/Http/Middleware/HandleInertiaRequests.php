@@ -43,6 +43,7 @@ class HandleInertiaRequests extends Middleware
                     'roles' => $request->user()->roles->map(fn($role) => ['name' => $role->name]),
                 ] : null,
             ],
+            'impersonating' => $request->session()->has('impersonate'),
         ];
     }
 }

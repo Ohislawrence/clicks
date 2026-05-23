@@ -96,6 +96,7 @@ Route::middleware([
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session')])->group(function () {
     Route::get('/pending-approval', [PendingApprovalController::class, 'index'])->name('pending-approval');
+    Route::post('/stop-impersonating', [AdminUserController::class, 'stopImpersonating'])->name('stop-impersonating');
 });
 
 // Affiliate Routes
@@ -279,7 +280,6 @@ Route::middleware([
     Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
     Route::post('/users/{user}/toggle-status', [AdminUserController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::post('/users/{user}/impersonate', [AdminUserController::class, 'impersonate'])->name('users.impersonate');
-    Route::post('/stop-impersonating', [AdminUserController::class, 'stopImpersonating'])->name('stop-impersonating');
     Route::post('/users/{user}/approve-advertiser', [AdminUserController::class, 'approveAdvertiser'])->name('users.approve-advertiser');
     Route::post('/users/{user}/reject-advertiser', [AdminUserController::class, 'rejectAdvertiser'])->name('users.reject-advertiser');
     Route::post('/users/{user}/approve-affiliate', [AdminUserController::class, 'approveAffiliate'])->name('users.approve-affiliate');
