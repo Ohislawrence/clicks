@@ -12,6 +12,8 @@
         </script>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <script>window.whatsappSupportPhone = "{{ preg_replace('/[^0-9]/', '', Cache::get('whatsapp_support_number', '')) }}";</script>
 
         <title inertia>{{ config('app.name', 'ClicksIntel') }}</title>
 

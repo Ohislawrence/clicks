@@ -56,4 +56,10 @@ return [
         'disable_missing_offers' => env('CPALEAD_DISABLE_MISSING_OFFERS', false),
     ],
 
+    'deepseek' => [
+        'api_key' => env('DEEPSEEK_API_KEY'),
+        'base_url' => env('DEEPSEEK_BASE_URL', 'https://api.deepseek.com'),
+        'default_model' => env('DEEPSEEK_DEFAULT_MODEL', 'deepseek-v4-flash'),
+    ],
+
 ];

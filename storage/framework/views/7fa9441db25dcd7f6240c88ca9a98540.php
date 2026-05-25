@@ -12,6 +12,8 @@
         </script>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+        <script>window.whatsappSupportPhone = "<?php echo e(preg_replace('/[^0-9]/', '', Cache::get('whatsapp_support_number', ''))); ?>";</script>
 
         <title inertia><?php echo e(config('app.name', 'ClicksIntel')); ?></title>
 

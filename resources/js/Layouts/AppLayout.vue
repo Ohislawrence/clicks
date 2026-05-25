@@ -490,6 +490,7 @@ const isImpersonating = computed(() => page.props.impersonating === true);
             </div>
         </div>
     </div>
+    <div id="ai-chat-widget-root"></div>
 </template>
 
 <style scoped>

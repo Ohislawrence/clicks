@@ -52,6 +52,20 @@
                                 <p class="mt-1 text-sm text-gray-500">Platform fee deducted from affiliate commissions (0 = no fee)</p>
                                 <div v-if="form.errors.platform_fee_percentage" class="text-red-600 text-sm mt-1">{{ form.errors.platform_fee_percentage }}</div>
                             </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    WhatsApp Support Number
+                                </label>
+                                <input
+                                    v-model="form.whatsapp_support_number"
+                                    type="text"
+                                    placeholder="e.g. +1234567890"
+                                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                />
+                                <p class="mt-1 text-sm text-gray-500">Enter the WhatsApp number for the floating support button on the front page.</p>
+                                <div v-if="form.errors.whatsapp_support_number" class="text-red-600 text-sm mt-1">{{ form.errors.whatsapp_support_number }}</div>
+                            </div>
                         </div>
                     </div>
 
@@ -228,14 +242,78 @@
                         </div>
                     </div>
 
+                    <!-- AI Workflow Control -->
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+                        <div class="px-6 py-4 bg-gradient-to-r from-slate-600 to-slate-800">
+                            <h3 class="text-lg font-semibold text-white flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M13.5 2.5a1 1 0 011 1v1.085a8.001 8.001 0 012.344 12.97l.811.811a1 1 0 11-1.414 1.414l-.811-.811A8.001 8.001 0 016.5 4.585V3.5a1 1 0 011-1h6z" />
+                                </svg>
+                                Deepseek AI Workflow Control
+                            </h3>
+                        </div>
+                        <div class="px-6 py-6 space-y-6">
+                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                <div>
+                                    <label class="text-sm font-medium text-gray-700">Enable Deepseek AI Workflow</label>
+                                    <p class="text-sm text-gray-500">Use Deepseek for lead scoring, offer recommendation, and campaign copy generation.</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                        v-model="form.deepseek_ai_enabled"
+                                        type="checkbox"
+                                        class="sr-only peer"
+                                    />
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Minimum Lead Score to Apply AI Workflow
+                                </label>
+                                <input
+                                    v-model.number="form.deepseek_lead_score_threshold"
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                />
+                                <p class="mt-1 text-sm text-gray-500">Only leads with equal or higher scores will be used for campaign recommendation.</p>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                <div>
+                                    <label class="text-sm font-medium text-gray-700">Auto Offer Recommendation</label>
+                                    <p class="text-sm text-gray-500">Allow Deepseek to suggest the best matching offer automatically.</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                        v-model="form.deepseek_auto_offer_recommendation"
+                                        type="checkbox"
+                                        class="sr-only peer"
+                                    />
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Save Button -->
-                    <div class="flex items-center justify-end space-x-4">
+                    <div class="flex items-center justify-between space-x-4">
                         <button
                             type="button"
                             @click="resetForm"
                             class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
                         >
                             Reset to Defaults
+                        </button>
+                        <button
+                            type="button"
+                            @click="testDeepseek"
+                            class="px-6 py-3 bg-white border border-blue-500 text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors"
+                        >
+                            Run Deepseek AI Test
                         </button>
                         <button
                             type="submit"
@@ -245,6 +323,12 @@
                             <span v-if="form.processing">Saving...</span>
                             <span v-else>Save Settings</span>
                         </button>
+                    </div>
+
+                    <div v-if="testResult" class="mt-6 bg-white border border-gray-200 rounded-xl p-4">
+                        <h3 class="font-semibold text-gray-900">Last Deepseek AI Test Result</h3>
+                        <p class="mt-2 text-sm text-gray-600">If your queue worker is running, this shows the most recent workflow result.</p>
+                        <pre class="mt-4 overflow-x-auto bg-slate-50 p-4 rounded-lg text-xs text-slate-800 whitespace-pre-wrap">{{ JSON.stringify(testResult, null, 2) }}</pre>
                     </div>
 
                     <!-- Info Banner -->
@@ -278,6 +362,8 @@ const props = defineProps({
     settings: Object,
 });
 
+const testResult = props.settings.deepseek_test_result || null;
+
 const form = useForm({
     minimum_payout: props.settings.minimum_payout,
     commission_cap: props.settings.commission_cap,
@@ -290,11 +376,21 @@ const form = useForm({
     max_clicks_per_ip: props.settings.max_clicks_per_ip,
     platform_fee_percentage: props.settings.platform_fee_percentage,
     whatsapp_support_number: props.settings.whatsapp_support_number,
+    deepseek_ai_enabled: props.settings.deepseek_ai_enabled,
+    deepseek_auto_offer_recommendation: props.settings.deepseek_auto_offer_recommendation,
+    deepseek_lead_score_threshold: props.settings.deepseek_lead_score_threshold,
 });
 
 const saveSettings = () => {
     form.put(route('admin.settings.update'), {
         preserveScroll: true,
+    });
+};
+
+const testDeepseek = () => {
+    form.post(route('admin.deepseek.test-workflow'), {}, {
+        preserveScroll: true,
+        preserveState: true,
     });
 };
 

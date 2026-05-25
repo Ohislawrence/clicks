@@ -19,12 +19,14 @@ use App\Http\Controllers\Admin\WalletController as AdminWalletController;
 use App\Http\Controllers\Admin\OfferController as AdminOfferController;
 use App\Http\Controllers\Admin\CreativeController as AdminCreativeController;
 use App\Http\Controllers\Admin\ConversionController as AdminConversionController;
+use App\Http\Controllers\Admin\DeepseekController as AdminDeepseekController;
 use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\FrontPageController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\TrackingController;
+use App\Http\Controllers\AiChatController;
 use App\Http\Controllers\Admin\BlogController as AdminBlogController;
 use App\Http\Controllers\PaymentDetailsController;
 use App\Http\Controllers\DataSubjectRightsController;
@@ -35,6 +37,7 @@ use Inertia\Inertia;
 // Tracking Routes (Public)
 Route::get('/track/{trackingCode}', [TrackingController::class, 'track'])->name('track');
 Route::get('/pixel', [TrackingController::class, 'pixel'])->name('pixel');
+Route::post('/ai/chat', [AiChatController::class, 'ask'])->name('ai.chat');
 
 // SEO Routes
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
@@ -320,6 +323,7 @@ Route::middleware([
     // Settings
     Route::get('/settings', [AdminSettingsController::class, 'index'])->name('settings.index');
     Route::put('/settings', [AdminSettingsController::class, 'update'])->name('settings.update');
+    Route::post('/deepseek/test-workflow', [AdminDeepseekController::class, 'testWorkflow'])->name('deepseek.test-workflow');
 
     // Reports
     Route::get('/reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');

@@ -24,6 +24,10 @@ class SettingsController extends Controller
             'max_clicks_per_ip' => Cache::get('max_clicks_per_ip', 5),
             'platform_fee_percentage' => Cache::get('platform_fee_percentage', 0),
             'whatsapp_support_number' => Cache::get('whatsapp_support_number', ''),
+            'deepseek_ai_enabled' => Cache::get('deepseek_ai_enabled', false),
+            'deepseek_auto_offer_recommendation' => Cache::get('deepseek_auto_offer_recommendation', true),
+            'deepseek_lead_score_threshold' => Cache::get('deepseek_lead_score_threshold', 50),
+            'deepseek_test_result' => Cache::get('deepseek.last_lead_workflow'),
         ];
 
         return Inertia::render('Admin/Settings/Index', [
@@ -44,6 +48,9 @@ class SettingsController extends Controller
             'fraud_detection_enabled' => 'boolean',
             'max_clicks_per_ip' => 'required|integer|min:1',
             'platform_fee_percentage' => 'required|numeric|min:0|max:100',
+            'deepseek_ai_enabled' => 'boolean',
+            'deepseek_auto_offer_recommendation' => 'boolean',
+            'deepseek_lead_score_threshold' => 'required|numeric|min:0|max:100',
             'whatsapp_support_number' => ['nullable', 'string', 'max:25', 'regex:/^\+?[0-9 ]+$/'],
         ]);
 
