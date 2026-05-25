@@ -5,7 +5,7 @@
 @section('meta_keywords', $post->meta_keywords ?: '')
 @section('og_title', $post->title)
 @section('og_description', $post->excerpt)
-@section('og_image', $post->featured_image ? Storage::url($post->featured_image) : asset('images/og-image.jpg'))
+@section('og_image', $post->featured_image ? Storage::url($post->featured_image) : asset('images/clicksintel-frontpage.PNG'))
 @section('twitter_title', $post->title)
 @section('twitter_description', $post->excerpt)
 
@@ -16,7 +16,7 @@
     "@@type": "BlogPosting",
     "headline": "{{ $post->title }}",
     "description": "{{ $post->excerpt }}",
-    "image": "{{ $post->featured_image ? Storage::url($post->featured_image) : asset('images/og-image.jpg') }}",
+    "image": "{{ $post->featured_image ? Storage::url($post->featured_image) : asset('images/clicksintel-frontpage.PNG') }}",
     "author": {
         "@@type": "Person",
         "name": "{{ $post->author->name }}"

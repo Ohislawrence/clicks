@@ -29,7 +29,7 @@
     <meta property="og:url" content="@yield('og_url', url()->current())">
     <meta property="og:title" content="@yield('og_title', config('app.name', 'ClicksIntel'))">
     <meta property="og:description" content="@yield('og_description', 'Performance marketing platform built for scale.')">
-    <meta property="og:image" content="@yield('og_image', asset('images/og-image.jpg'))">
+    <meta property="og:image" content="@yield('og_image', asset('images/clicksintel-frontpage.PNG'))">
     <meta property="og:site_name" content="{{ config('app.name', 'ClicksIntel') }}">
 
     <!-- Twitter -->
@@ -37,7 +37,7 @@
     <meta name="twitter:url" content="@yield('twitter_url', url()->current())">
     <meta name="twitter:title" content="@yield('twitter_title', config('app.name', 'ClicksIntel'))">
     <meta name="twitter:description" content="@yield('twitter_description', 'Performance marketing platform built for scale.')">
-    <meta name="twitter:image" content="@yield('twitter_image', asset('images/twitter-card.jpg'))">
+    <meta name="twitter:image" content="@yield('twitter_image', asset('images/clicksintel-frontpage.PNG'))">
 
     @stack('structured_data')
 
