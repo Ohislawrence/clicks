@@ -21,8 +21,8 @@
                                 @input="debouncedSearch"
                             />
                         </div>
-                        
-                        <select 
+
+                        <select
                             v-model="searchForm.status"
                             @change="applyFilters"
                             class="rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -34,7 +34,7 @@
                             <option value="paid">Paid</option>
                         </select>
 
-                        <select 
+                        <select
                             v-model="searchForm.offer_id"
                             @change="applyFilters"
                             class="rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -45,7 +45,7 @@
                             </option>
                         </select>
 
-                        <select 
+                        <select
                             v-model="searchForm.affiliate_id"
                             @change="applyFilters"
                             class="rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -129,10 +129,13 @@
                                         Advertiser
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Value
+                                        Value / Cost
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Commission
+                                        Payout
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Admin Profit
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Status
@@ -161,7 +164,10 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-semibold text-gray-900">
-                                            {{ formatCurrency(conversion.conversion_value) }}
+                                            {{ formatCurrency(conversion.advertiser_payout || 0) }}
+                                        </div>
+                                        <div class="text-xs text-gray-400">
+                                            Val: {{ formatCurrency(conversion.conversion_value) }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
@@ -170,7 +176,12 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span 
+                                        <div class="text-sm font-semibold text-green-600">
+                                            {{ formatCurrency(conversion.platform_margin || 0) }}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span
                                             class="px-3 py-1 rounded-full text-xs font-semibold"
                                             :class="{
                                                 'bg-yellow-100 text-yellow-800': conversion.status === 'pending',
@@ -204,10 +215,10 @@
                                     :href="link.url || undefined"
                                     :class="[
                                         'px-3 py-2 rounded-lg text-sm transition-colors',
-                                        link.active 
-                                            ? 'bg-blue-600 text-white' 
-                                            : link.url 
-                                                ? 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50' 
+                                        link.active
+                                            ? 'bg-blue-600 text-white'
+                                            : link.url
+                                                ? 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
                                                 : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                     ]"
                                     v-html="link.label"
@@ -257,7 +268,7 @@ const stats = computed(() => {
         rejected: 0,
         paid: 0,
     };
-    
+
     // If we have conversions data, count by status
     if (props.conversions.data) {
         props.conversions.data.forEach(conversion => {
@@ -266,7 +277,7 @@ const stats = computed(() => {
             }
         });
     }
-    
+
     return statusCounts;
 });
 

@@ -150,10 +150,15 @@
                                                 {{ offer.commission_rate }}%
                                             </span>
                                             <span v-else>
-                                                {{ formatCurrency(offer.commission_rate) }}
+                                                {{ formatCurrency(offer.commission_rate) }} balance
                                             </span>
                                         </div>
                                         <div class="text-xs text-gray-500 uppercase">{{ offer.commission_model }}</div>
+                                        <div v-if="offer.pricing_model === 'spread'" class="mt-1">
+                                            <span class="px-2 py-0.5 rounded text-[10px] bg-indigo-100 text-indigo-700 font-bold uppercase">
+                                                Spread: {{ offer.platform_spread_percentage }}%
+                                            </span>
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm text-gray-900">

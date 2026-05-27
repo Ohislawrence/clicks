@@ -61,10 +61,26 @@ class DashboardController extends Controller
             ->where('status', 'approved')
             ->sum('conversion_value');
 
-        // Commissions Paid
+        // Commissions Paid (Total Payout by Advertiser)
         $totalCommissions = Conversion::whereIn('offer_id', $offerIds)
             ->where('created_at', '>=', $startDate)
+            ->where('status', 'approved')
+            ->sum('advertiser_payout');
+
+        // If some older conversions have null advertiser_payout, fallback to commission_amount
+        $payoutSum = Conversion::whereIn('offer_id', $offerIds)
+            ->where('created_at', '>=', $startDate)
+            ->where('status', 'approved')
+            ->whereNotNull('advertiser_payout')
+            ->sum('advertiser_payout');
+
+        $fallbackSum = Conversion::whereIn('offer_id', $offerIds)
+            ->where('created_at', '>=', $startDate)
+            ->where('status', 'approved')
+            ->whereNull('advertiser_payout')
             ->sum('commission_amount');
+
+        $totalCommissions = $payoutSum + $fallbackSum;
 
         // Conversion Rate
         $conversionRate = $totalClicks > 0 ? ($totalConversions / $totalClicks) * 100 : 0;

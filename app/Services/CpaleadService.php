@@ -117,14 +117,12 @@ class CpaleadService
         $categoryName = $raw['category'] ?? $raw['offer_category'] ?? null;
         $categoryId = $this->resolveCategoryId($categoryName);
 
-        $affiliatePayout = $commissionRate;
-        $advertiserPayout = $commissionRate;
+        $advertiserPayout = $commissionRate; // The rate CPAlead pays us
+        $affiliatePayout = $commissionRate;   // Default to 100% pay through if no spread
+
         if ($this->platformSpreadPercentage > 0) {
-            if ($commissionModel === 'revshare') {
-                $advertiserPayout = $commissionRate + $this->platformSpreadPercentage;
-            } else {
-                $advertiserPayout = $commissionRate + ($commissionRate * $this->platformSpreadPercentage / 100);
-            }
+            $spreadAmount = ($commissionRate * $this->platformSpreadPercentage) / 100;
+            $affiliatePayout = max(0, $commissionRate - $spreadAmount);
         }
 
         return [

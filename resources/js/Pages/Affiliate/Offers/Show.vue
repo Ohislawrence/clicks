@@ -65,10 +65,10 @@
                             <p class="text-sm opacity-90 mb-2">Commission</p>
                             <h3 class="text-4xl font-bold mb-4">
                                 <span v-if="offer.commission_model === 'revshare'">
-                                    {{ offer.commission_rate }}%
+                                    {{ offer.affiliate_payout || offer.commission_rate }}%
                                 </span>
                                 <span v-else>
-                                    {{ formatCurrency(offer.commission_rate) }}
+                                    {{ formatCurrency(offer.affiliate_payout || offer.commission_rate) }}
                                 </span>
                             </h3>
                             <div class="flex items-center justify-between text-sm opacity-90">
@@ -87,19 +87,19 @@
                                     <template v-if="offer.commission_model === 'ppl'">
                                         <p class="text-sm font-bold">📋 Drive a Lead</p>
                                         <p class="text-xs opacity-90 mt-1">
-                                            You earn <strong>{{ formatCurrency(offer.commission_rate) }}</strong> each time someone completes the required action (form fill, sign up, free trial, etc.) — <strong>no purchase needed</strong>.
+                                            You earn <strong>{{ formatCurrency(offer.affiliate_payout || offer.commission_rate) }}</strong> each time someone completes the required action (form fill, sign up, free trial, etc.) — <strong>no purchase needed</strong>.
                                         </p>
                                     </template>
                                     <template v-else-if="offer.commission_model === 'pps'">
                                         <p class="text-sm font-bold">🛒 Drive a Sale</p>
                                         <p class="text-xs opacity-90 mt-1">
-                                            You earn <strong>{{ formatCurrency(offer.commission_rate) }}</strong> each time someone clicks your link and completes a purchase.
+                                            You earn <strong>{{ formatCurrency(offer.affiliate_payout || offer.commission_rate) }}</strong> each time someone clicks your link and completes a purchase.
                                         </p>
                                     </template>
                                     <template v-else-if="offer.commission_model === 'revshare'">
                                         <p class="text-sm font-bold">📊 Drive a Sale</p>
                                         <p class="text-xs opacity-90 mt-1">
-                                            You earn <strong>{{ offer.commission_rate }}%</strong> of the sale amount. The higher the sale value, the more you earn.
+                                            You earn <strong>{{ offer.affiliate_payout || offer.commission_rate }}%</strong> of the sale amount. The higher the sale value, the more you earn.
                                         </p>
                                     </template>
                                 </div>

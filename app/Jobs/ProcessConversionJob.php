@@ -194,7 +194,16 @@ class ProcessConversionJob implements ShouldQueue
             $offer->increment('total_revenue', $this->conversionValue);
 
             // Increment cap counters and check auto-pause
-            $capService->incrementConversion($offer, $finalCommission);
+            // For spread model, we deduct the advertiser_payout. For flat_fee, we deduct the base commissionAmount.
+            $payoutToDeduct = $advertiserPayout ?? $commissionAmount;
+            $capService->incrementConversion($offer, $payoutToDeduct);
+
+            // Deduct from advertiser balance if it's a native offer and not the placeholder admin account
+            if ($offer->advertiser_id && $payoutToDeduct > 0) {
+                DB::table('users')
+                    ->where('id', $offer->advertiser_id)
+                    ->decrement('advertiser_balance', $payoutToDeduct);
+            }
 
             // Update affiliate balance
             if ($autoApprove) {

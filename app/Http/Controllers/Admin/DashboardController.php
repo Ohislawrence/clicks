@@ -33,10 +33,25 @@ class DashboardController extends Controller
         $totalRevenue = Conversion::where('created_at', '>=', $startDate)
             ->where('status', '!=', 'rejected')
             ->sum('conversion_value');
-        
-        $totalCommissions = Conversion::where('created_at', '>=', $startDate)
+
+        $totalAdvertiserPayout = Conversion::where('created_at', '>=', $startDate)
+            ->where('status', 'approved')
+            ->select(DB::raw('SUM(COALESCE(advertiser_payout, commission_amount)) as total'))
+            ->value('total') ?? 0;
+
+        $totalAffiliateCommissions = Conversion::where('created_at', '>=', $startDate)
             ->where('status', 'approved')
             ->sum('commission_amount');
+
+        $totalPlatformMargin = Conversion::where('created_at', '>=', $startDate)
+            ->where('status', 'approved')
+            ->sum('platform_margin');
+
+        // If platform margin is 0 (legacy), calculate from fee
+        if ($totalPlatformMargin == 0 && $totalAffiliateCommissions > 0) {
+            $platformFee = \Illuminate\Support\Facades\Cache::get('settings.platform_fee_percentage', 0);
+            $totalPlatformMargin = ($totalAffiliateCommissions * $platformFee) / 100;
+        }
 
         $conversionRate = $totalClicks > 0 ? round(($totalConversions / $totalClicks) * 100, 2) : 0;
 
@@ -127,12 +142,12 @@ class DashboardController extends Controller
                 $conversions = DB::table('conversions')
                     ->whereDate('created_at', $stat->date)
                     ->count();
-                
+
                 $revenue = DB::table('conversions')
                     ->whereDate('created_at', $stat->date)
                     ->where('status', '!=', 'rejected')
                     ->sum('conversion_value');
-                
+
                 return (object) [
                     'date' => $stat->date,
                     'clicks' => $stat->clicks,
@@ -152,7 +167,9 @@ class DashboardController extends Controller
                 'totalConversions' => $totalConversions,
                 'conversionRate' => $conversionRate,
                 'totalRevenue' => $totalRevenue,
-                'totalCommissions' => $totalCommissions,
+                'totalAdvertiserPayout' => $totalAdvertiserPayout,
+                'totalAffiliateCommissions' => $totalAffiliateCommissions,
+                'totalPlatformMargin' => $totalPlatformMargin,
                 'pendingPayouts' => $pendingPayouts,
                 'pendingConversions' => $pendingConversions,
             ],

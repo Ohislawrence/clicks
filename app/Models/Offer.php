@@ -239,12 +239,19 @@ class Offer extends Model
             return;
         }
 
-        // Affiliate gets the base commission rate
-        $this->affiliate_payout = $this->commission_rate;
+        // Advertiser payout is the total amount the advertiser is willing to pay
+        $this->advertiser_payout = $this->commission_rate;
 
-        // Advertiser pays the commission rate plus the platform spread
-        $spreadAmount = ($this->commission_rate * $this->platform_spread_percentage) / 100;
-        $this->advertiser_payout = $this->commission_rate + $spreadAmount;
+        // Affiliate payout is what remains after the platform takes its spread
+        if ($this->commission_model === 'revshare') {
+            // For revshare, the spread is usually a cut of the commission rate percentage
+            $spreadAmount = ($this->commission_rate * $this->platform_spread_percentage) / 100;
+            $this->affiliate_payout = max(0, $this->commission_rate - $spreadAmount);
+        } else {
+            // For fixed amounts (CPA/CPL)
+            $spreadAmount = ($this->commission_rate * $this->platform_spread_percentage) / 100;
+            $this->affiliate_payout = max(0, $this->commission_rate - $spreadAmount);
+        }
     }
 
     /**

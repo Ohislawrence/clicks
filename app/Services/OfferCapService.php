@@ -118,7 +118,7 @@ class OfferCapService
     /**
      * Increment conversion counters
      */
-    public function incrementConversion(Offer $offer, float $commission): void
+    public function incrementConversion(Offer $offer, float $advertiserPayout): void
     {
         // Check if we need to reset daily counter (new day)
         if ($offer->last_cap_reset_date && $offer->last_cap_reset_date < now()->toDateString()) {
@@ -133,7 +133,7 @@ class OfferCapService
         // Increment counters
         $offer->increment('today_conversions');
         $offer->increment('month_conversions');
-        $offer->increment('spent_budget', $commission);
+        $offer->increment('spent_budget', $advertiserPayout);
         $offer->last_cap_reset_date = now()->toDateString();
         $offer->save();
 

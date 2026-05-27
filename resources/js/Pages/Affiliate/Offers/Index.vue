@@ -208,8 +208,8 @@
                                     <!-- Commission -->
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="text-sm font-bold text-gray-900">
-                                            <template v-if="offer.commission_model === 'revshare'">{{ offer.commission_rate }}%</template>
-                                            <template v-else>{{ formatCurrency(offer.commission_rate) }}</template>
+                                            <template v-if="offer.commission_model === 'revshare'">{{ offer.affiliate_payout || offer.commission_rate }}%</template>
+                                            <template v-else>{{ formatCurrency(offer.affiliate_payout || offer.commission_rate) }}</template>
                                         </span>
                                     </td>
                                     <!-- Model -->

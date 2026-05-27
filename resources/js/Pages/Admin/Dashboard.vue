@@ -6,7 +6,7 @@
                     <h2 class="text-2xl font-bold text-gray-900">Admin Dashboard</h2>
                     <p class="mt-1 text-sm text-gray-600">Platform overview and statistics</p>
                 </div>
-                <select 
+                <select
                     v-model="selectedRange"
                     @change="updateRange"
                     class="rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -25,36 +25,36 @@
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Platform Overview</h3>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                         <MetricCard
-                            title="Total Users"
-                            :value="stats.totalUsers"
-                            :subtitle="`${stats.totalAffiliates} Affiliates, ${stats.totalAdvertisers} Advertisers`"
-                            icon="users"
+                            title="Gross Revenue"
+                            :value="stats.totalAdvertiserPayout"
+                            subtitle="Total paid by advertisers"
+                            icon="money"
                             color="blue"
-                            format="number"
+                            format="currency"
                         />
                         <MetricCard
-                            title="Total Offers"
-                            :value="stats.totalOffers"
-                            :subtitle="`${stats.activeOffers} Active`"
+                            title="Platform Profit"
+                            :value="stats.totalPlatformMargin"
+                            subtitle="Admin spread + fees"
                             icon="chart"
                             color="green"
-                            format="number"
+                            format="currency"
+                        />
+                        <MetricCard
+                            title="Affiliate Earnings"
+                            :value="stats.totalAffiliateCommissions"
+                            subtitle="Total earned by affiliates"
+                            icon="money"
+                            color="purple"
+                            format="currency"
                         />
                         <MetricCard
                             title="Conversion Rate"
                             :value="stats.conversionRate"
-                            :subtitle="`${stats.totalConversions.toLocaleString()} Conversions`"
+                            :subtitle="`${stats.totalConversions.toLocaleString()} Transitions`"
                             icon="check"
-                            color="purple"
-                            format="percentage"
-                        />
-                        <MetricCard
-                            title="Total Revenue"
-                            :value="stats.totalRevenue"
-                            :subtitle="`${stats.totalCommissions.toLocaleString('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0 })} Commissions`"
-                            icon="money"
                             color="orange"
-                            format="currency"
+                            format="percentage"
                         />
                     </div>
                 </div>
@@ -210,7 +210,7 @@
                                     <td class="px-6 py-4 text-sm font-semibold text-gray-900">{{ formatCurrency(conversion.conversion_value) }}</td>
                                     <td class="px-6 py-4 text-sm font-semibold text-orange-600">{{ formatCurrency(conversion.commission_amount) }}</td>
                                     <td class="px-6 py-4">
-                                        <span 
+                                        <span
                                             class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
                                             :class="{
                                                 'bg-yellow-100 text-yellow-800': conversion.status === 'pending',
@@ -269,7 +269,7 @@ const performanceSeries = computed(() => [
     }
 ]);
 
-const performanceCategories = computed(() => 
+const performanceCategories = computed(() =>
     props.dailyStats.map(stat => new Date(stat.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }))
 );
 
@@ -280,16 +280,16 @@ const updateRange = () => {
 };
 
 const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-NG', { 
-        style: 'currency', 
+    return new Intl.NumberFormat('en-NG', {
+        style: 'currency',
         currency: 'NGN',
         minimumFractionDigits: 0
     }).format(amount);
 };
 
 const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', { 
-        month: 'short', 
+    return new Date(date).toLocaleDateString('en-US', {
+        month: 'short',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
