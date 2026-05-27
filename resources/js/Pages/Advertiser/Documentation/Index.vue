@@ -114,9 +114,9 @@
                                 <div class="text-center">
                                     <div class="bg-white rounded-lg p-4 shadow mb-2">
                                         <div class="text-3xl mb-1">💸</div>
-                                        <div class="font-semibold text-sm">Pay Commissions</div>
+                                        <div class="font-semibold text-sm">Automatic Payouts</div>
                                     </div>
-                                    <p class="text-xs text-gray-600">Automatic commission deduction</p>
+                                    <p class="text-xs text-gray-600">Commissions & fees handled automatically</p>
                                 </div>
                             </div>
                         </div>
@@ -144,8 +144,8 @@
                                 <div>
                                     <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">How it works</p>
                                     <ul class="space-y-1 text-sm text-gray-700 list-disc list-inside">
-                                        <li>You set a <strong>fixed commission amount</strong> (e.g. ₦2,000 per sale)</li>
-                                        <li>Affiliate gets paid that amount when a customer completes a purchase</li>
+                                        <li>You set a <strong>fixed payout amount</strong> (your total cost per sale)</li>
+                                        <li>The platform deducts a service spread before paying the affiliate</li>
                                         <li><code class="bg-gray-100 px-1 rounded">conversion_value</code> must be <strong>&gt; 0</strong> — the platform rejects zero-value postbacks</li>
                                         <li>Commission does <em>not</em> scale with order size (unlike RevShare)</li>
                                     </ul>
@@ -177,10 +177,10 @@
                                 <div>
                                     <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">How it works</p>
                                     <ul class="space-y-1 text-sm text-gray-700 list-disc list-inside">
-                                        <li>You set a <strong>fixed commission per lead</strong> (e.g. ₦500 per signup)</li>
+                                        <li>You set a <strong>fixed payout per lead</strong> (your total cost per lead)</li>
+                                        <li>The platform deducts a service spread before paying the affiliate</li>
                                         <li>Affiliate earns on a form submission, registration, or enquiry — no sale needed</li>
                                         <li><code class="bg-gray-100 px-1 rounded">conversion_value</code> is <strong>optional</strong> — zero is allowed</li>
-                                        <li>Fire the tracking pixel / postback on your thank-you / confirmation page</li>
                                     </ul>
                                 </div>
                                 <div class="bg-green-50 rounded-lg p-4">
@@ -212,10 +212,10 @@
                                     <div>
                                         <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">How it works</p>
                                         <ul class="space-y-1 text-sm text-gray-700 list-disc list-inside">
-                                            <li>You set a <strong>percentage rate</strong> (e.g. 20%)</li>
-                                            <li>Commission = <code class="bg-gray-100 px-1 rounded">rate% × conversion_value</code></li>
+                                            <li>You set a <strong>percentage payout rate</strong> (your total cost % per sale)</li>
+                                            <li>The platform deducts a service spread from this amount before paying the affiliate</li>
+                                            <li>Commission = <code class="bg-gray-100 px-1 rounded">rate% × conversion_value</code> (minus platform spread)</li>
                                             <li><code class="bg-gray-100 px-1 rounded">conversion_value</code> is <strong>required and must be &gt; 0</strong> — zero-value postbacks are rejected</li>
-                                            <li>Higher-value sales earn affiliates more</li>
                                         </ul>
                                     </div>
                                     <div class="bg-purple-50 rounded-lg p-4">
@@ -341,6 +341,34 @@ POST /api/postback
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+
+                        <!-- Platform Spread Explanation -->
+                        <div class="mt-6 bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-xl shadow-sm">
+                            <div class="flex items-start">
+                                <div class="text-3xl mr-4">ℹ️</div>
+                                <div>
+                                    <h4 class="text-lg font-bold text-blue-900 mb-2">Understanding Platform Spread & Fees</h4>
+                                    <p class="text-sm text-gray-700 leading-relaxed mb-4">
+                                        When you set a commission/payout for your offer (e.g., ₦2,000 per sale), that reflects your <strong>total cost per conversion</strong>. The platform deducts a small percentage (Admin Spread) from this amount to cover technical maintenance, fraud prevention, and platform services.
+                                    </p>
+                                    <div class="grid md:grid-cols-2 gap-4">
+                                        <div class="bg-white p-3 rounded-lg border border-blue-200">
+                                            <div class="font-bold text-gray-800 text-xs uppercase mb-1">What You Pay</div>
+                                            <div class="text-lg font-bold text-blue-700">The rate you set</div>
+                                            <div class="text-[10px] text-gray-500 mt-1">Example: ₦1,000 payout</div>
+                                        </div>
+                                        <div class="bg-white p-3 rounded-lg border border-blue-200">
+                                            <div class="font-bold text-gray-800 text-xs uppercase mb-1">Affiliate Receives</div>
+                                            <div class="text-lg font-bold text-green-600">Payout − Admin Spread</div>
+                                            <div class="text-[10px] text-gray-500 mt-1">Example: ₦850 (if 15% spread)</div>
+                                        </div>
+                                    </div>
+                                    <p class="mt-4 text-xs text-blue-800 italic">
+                                        * The admin spread is configured during offer approval. You can view the effective affiliate payout on your offer details page once it is approved.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -1225,14 +1253,26 @@ if tracking_code:
                                     </div>
                                     <div class="bg-white rounded-lg p-4 flex-grow shadow">
                                         <div class="font-bold text-lg mb-1">Commission Calculated</div>
-                                        <div class="text-sm text-gray-600 mb-2">System automatically calculates affiliate's commission</div>
-                                        <div class="text-xs bg-green-50 p-2 rounded mt-2">
-                                            <div class="font-semibold mb-1">Example calculation:</div>
-                                            <div class="space-y-1 text-gray-600">
-                                                <div>• Sale: ₦50,000</div>
-                                                <div>• Commission rate: 10%</div>
-                                                <div>• Affiliate tier bonus: +10% (Gold)</div>
-                                                <div class="border-t pt-1 font-bold text-green-700">→ Affiliate earns: ₦5,500</div>
+                                        <div class="text-sm text-gray-600 mb-2">System automatically calculates affiliate's commission and platform fees</div>
+                                        <div class="text-xs bg-green-50 p-3 rounded mt-2">
+                                            <div class="font-semibold mb-2 text-gray-800">Example calculation (15% Admin Spread):</div>
+                                            <div class="space-y-1.5 text-gray-700">
+                                                <div class="flex justify-between"><span>• Sale Amount:</span> <span class="font-semibold">₦50,000</span></div>
+                                                <div class="flex justify-between"><span>• Your Offer Commission (10%):</span> <span class="font-bold text-gray-900">₦5,000</span></div>
+                                                <div class="flex justify-between py-1 border-t border-green-200">
+                                                    <span class="text-[10px] text-gray-500 flex flex-col">
+                                                        <span>Admin Spread (15% of commission)</span>
+                                                        <span>Deducted for platform maintenance</span>
+                                                    </span>
+                                                    <span class="text-red-500 italic mt-auto">- ₦750</span>
+                                                </div>
+                                                <div class="flex justify-between py-1 border-t-2 border-green-300 font-bold text-green-700">
+                                                    <span>→ Affiliate Earnings:</span>
+                                                    <span>₦4,250</span>
+                                                </div>
+                                            </div>
+                                            <div class="mt-2 text-[10px] text-gray-400 italic">
+                                                * Note: You always pay exactly the amount you set in your offer. The platform fee is deducted from that amount before paying the affiliate.
                                             </div>
                                         </div>
                                     </div>

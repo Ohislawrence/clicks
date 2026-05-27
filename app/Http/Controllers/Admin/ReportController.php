@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Click;
+use App\Models\Conversion;
 use App\Models\User;
 use App\Services\ReportingService;
 use App\Services\ExportService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Carbon\Carbon;
 
@@ -38,106 +41,134 @@ class ReportController extends Controller
         // Get period stats
         $currentStats = $this->reportingService->getStats($filters);
         $previousStats = $this->reportingService->getStats([
-            'date_from' => Carbon::parse($dateRange['from'])->subDays($dateRange['days']),
-            'date_to' => Carbon::parse($dateRange['to'])->subDays($dateRange['days']),
+            'date_from' => Carbon::parse($dateRange['from'])->subDays(max($dateRange['days'], 1)),
+            'date_to' => Carbon::parse($dateRange['to'])->subDays(max($dateRange['days'], 1)),
             'role' => 'admin',
         ]);
 
-        // Calculate changes
+        // Stats summary with period-over-period changes
         $stats = [
-            'total_clicks' => $currentStats['clicks']['total'],
-            'clicks_change' => $this->calculateChange($currentStats['clicks']['total'], $previousStats['clicks']['total']),
-            'total_conversions' => $currentStats['conversions']['total'],
-            'conversions_change' => $this->calculateChange($currentStats['conversions']['total'], $previousStats['conversions']['total']),
-            'conversion_rate' => $currentStats['conversions']['rate'],
-            'cr_change' => $currentStats['conversions']['rate'] - $previousStats['conversions']['rate'],
-            'total_revenue' => $currentStats['revenue']['total'],
-            'revenue_change' => $this->calculateChange($currentStats['revenue']['total'], $previousStats['revenue']['total']),
-            'platform_margin' => $currentStats['platform_margin']['total'],
-            'platform_margin_change' => $this->calculateChange($currentStats['platform_margin']['total'], $previousStats['platform_margin']['total']),
-            'avg_margin_percentage' => $currentStats['platform_margin']['average_percentage'],
+            'total_clicks'             => $currentStats['clicks']['total'],
+            'clicks_change'            => $this->calculateChange($currentStats['clicks']['total'], $previousStats['clicks']['total']),
+            'total_conversions'        => $currentStats['conversions']['total'],
+            'conversions_change'       => $this->calculateChange($currentStats['conversions']['total'], $previousStats['conversions']['total']),
+            'conversion_rate'          => $currentStats['conversions']['rate'],
+            'cr_change'                => round($currentStats['conversions']['rate'] - $previousStats['conversions']['rate'], 2),
+            'total_revenue'            => $currentStats['revenue']['total'],
+            'revenue_change'           => $this->calculateChange($currentStats['revenue']['total'], $previousStats['revenue']['total']),
+            'platform_margin'          => $currentStats['platform_margin']['total'],
+            'platform_margin_change'   => $this->calculateChange($currentStats['platform_margin']['total'], $previousStats['platform_margin']['total']),
+            'avg_margin_percentage'    => $currentStats['platform_margin']['average_percentage'],
+            'total_affiliate_commissions' => $currentStats['commissions']['total'],
         ];
 
-        // Get performance trend data
+        // Performance trend (daily)
         $performanceTrend = $this->reportingService->getDailyStats($filters);
 
-        // Get revenue by category
-        $revenueByCategory = [
-            ['name' => 'CPA Offers', 'revenue' => $currentStats['revenue']['total'] * 0.45],
-            ['name' => 'CPS Offers', 'revenue' => $currentStats['revenue']['total'] * 0.35],
-            ['name' => 'CPL Offers', 'revenue' => $currentStats['revenue']['total'] * 0.15],
-            ['name' => 'Other', 'revenue' => $currentStats['revenue']['total'] * 0.05],
-        ];
+        // Revenue by commission model — real data
+        $revenueByModel = Conversion::whereBetween('created_at', [$dateRange['from'], $dateRange['to']])
+            ->whereIn('status', ['approved', 'paid'])
+            ->select('commission_model', DB::raw('SUM(conversion_value) as revenue'))
+            ->groupBy('commission_model')
+            ->get();
 
-        // Get top performers
+        $modelLabels = [
+            'revshare' => 'RevShare',
+            'cpa'      => 'CPA',
+            'cpl'      => 'CPL',
+            'pps'      => 'PPS',
+            'ppl'      => 'PPL',
+            'fixed'    => 'Fixed',
+        ];
+        $revenueByCategory = $revenueByModel->map(fn($row) => [
+            'name'    => $modelLabels[$row->commission_model] ?? ucfirst($row->commission_model),
+            'revenue' => (float) $row->revenue,
+        ])->values()->toArray();
+
+        // Fallback if no data
+        if (empty($revenueByCategory)) {
+            $revenueByCategory = [['name' => 'No Data', 'revenue' => 0]];
+        }
+
+        // Top affiliates by earnings in period
         $topAffiliates = User::role('affiliate')
-            ->withCount(['clicks' => function($q) use ($dateRange) {
-                $q->whereBetween('created_at', [$dateRange['from'], $dateRange['to']]);
-            }])
-            ->withSum(['conversions as total_earnings' => function($q) use ($dateRange) {
-                $q->whereBetween('created_at', [$dateRange['from'], $dateRange['to']]);
-            }], 'commission_amount')
-            ->withCount(['conversions as total_conversions' => function($q) use ($dateRange) {
-                $q->whereBetween('created_at', [$dateRange['from'], $dateRange['to']]);
-            }])
-            ->orderBy('total_earnings', 'desc')
+            ->withCount(['clicks' => fn($q) => $q->whereBetween('created_at', [$dateRange['from'], $dateRange['to']])])
+            ->withSum(['conversions as total_earnings' => fn($q) => $q->whereBetween('created_at', [$dateRange['from'], $dateRange['to']])->whereIn('status', ['approved', 'paid'])], 'commission_amount')
+            ->withCount(['conversions as total_conversions' => fn($q) => $q->whereBetween('created_at', [$dateRange['from'], $dateRange['to']])->whereIn('status', ['approved', 'paid'])])
+            ->having(DB::raw('COALESCE(total_earnings, 0)'), '>', 0)
+            ->orderByDesc('total_earnings')
             ->limit(5)
             ->get()
             ->map(fn($user) => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'tier' => $user->tier,
-                'total_earnings' => $user->total_earnings ?? 0,
-                'total_conversions' => $user->total_conversions ?? 0,
+                'id'               => $user->id,
+                'name'             => $user->name,
+                'email'            => $user->email,
+                'tier'             => $user->tier,
+                'total_earnings'   => (float) ($user->total_earnings ?? 0),
+                'total_conversions'=> (int) ($user->total_conversions ?? 0),
             ]);
 
-        $topOffers = \App\Models\Offer::withCount(['clicks' => function($q) use ($dateRange) {
-                $q->whereBetween('created_at', [$dateRange['from'], $dateRange['to']]);
-            }])
-            ->withCount(['conversions as total_conversions' => function($q) use ($dateRange) {
-                $q->whereBetween('created_at', [$dateRange['from'], $dateRange['to']]);
-            }])
-            ->whereHas('clicks', function($q) use ($dateRange) {
-                $q->whereBetween('created_at', [$dateRange['from'], $dateRange['to']]);
-            })
-            ->orderBy('total_conversions', 'desc')
+        // Top offers by conversions in period
+        $topOffers = \App\Models\Offer::withCount(['clicks as clicks_count' => fn($q) => $q->whereBetween('created_at', [$dateRange['from'], $dateRange['to']])])
+            ->withCount(['conversions as total_conversions' => fn($q) => $q->whereBetween('created_at', [$dateRange['from'], $dateRange['to']])->whereIn('status', ['approved', 'paid'])])
+            ->withSum(['conversions as total_spread' => fn($q) => $q->whereBetween('created_at', [$dateRange['from'], $dateRange['to']])->whereIn('status', ['approved', 'paid'])], 'platform_margin')
+            ->having(DB::raw('COALESCE(total_conversions, 0)'), '>', 0)
+            ->orderByDesc('total_conversions')
             ->limit(5)
             ->get()
             ->map(fn($offer) => [
-                'id' => $offer->id,
-                'name' => $offer->name,
-                'total_conversions' => $offer->total_conversions ?? 0,
-                'conversion_rate' => $offer->clicks_count > 0 ? ($offer->total_conversions / $offer->clicks_count) * 100 : 0,
+                'id'               => $offer->id,
+                'name'             => $offer->name,
+                'total_conversions'=> (int) ($offer->total_conversions ?? 0),
+                'conversion_rate'  => ($offer->clicks_count ?? 0) > 0
+                    ? round(($offer->total_conversions / $offer->clicks_count) * 100, 2)
+                    : 0,
+                'total_spread'     => (float) ($offer->total_spread ?? 0),
             ]);
 
-        // Get traffic sources
-        $trafficSources = [
-            ['name' => 'Direct', 'count' => rand(1000, 5000), 'percentage' => 35, 'color' => '#3b82f6'],
-            ['name' => 'Social Media', 'count' => rand(500, 3000), 'percentage' => 25, 'color' => '#10b981'],
-            ['name' => 'Search', 'count' => rand(500, 2500), 'percentage' => 20, 'color' => '#f59e0b'],
-            ['name' => 'Email', 'count' => rand(200, 1500), 'percentage' => 12, 'color' => '#8b5cf6'],
-            ['name' => 'Other', 'count' => rand(100, 1000), 'percentage' => 8, 'color' => '#ef4444'],
-        ];
+        // Traffic sources by device type (real data)
+        $deviceCounts = Click::whereBetween('created_at', [$dateRange['from'], $dateRange['to']])
+            ->select('device_type', DB::raw('COUNT(*) as count'))
+            ->groupBy('device_type')
+            ->get();
 
-        // Get security stats
+        $totalDeviceClicks = $deviceCounts->sum('count') ?: 1;
+        $deviceColors = ['desktop' => '#3b82f6', 'mobile' => '#10b981', 'tablet' => '#f59e0b', 'unknown' => '#9ca3af'];
+        $trafficSources = $deviceCounts->map(fn($row) => [
+            'name'       => ucfirst($row->device_type ?? 'Unknown'),
+            'count'      => (int) $row->count,
+            'percentage' => round(($row->count / $totalDeviceClicks) * 100, 1),
+            'color'      => $deviceColors[$row->device_type ?? 'unknown'] ?? '#8b5cf6',
+        ])->values()->toArray();
+
+        if (empty($trafficSources)) {
+            $trafficSources = [['name' => 'No Data', 'count' => 0, 'percentage' => 0, 'color' => '#9ca3af']];
+        }
+
+        // Security stats — real data
+        $totalClicks = $currentStats['clicks']['total'];
+        $invalidClicks = $currentStats['clicks']['invalid'];
+        $validClicks = $currentStats['clicks']['valid'];
+        $qualityScore = $totalClicks > 0 ? round(($validClicks / $totalClicks) * 100) : 100;
+
         $securityStats = [
-            'blocked_clicks' => $currentStats['clicks']['invalid'],
-            'block_rate' => $currentStats['clicks']['fraud_rate'],
-            'flagged_clicks' => (int)($currentStats['clicks']['total'] * 0.05),
-            'flag_rate' => 5.0,
+            'blocked_clicks'    => $invalidClicks,
+            'block_rate'        => (float) $currentStats['clicks']['fraud_rate'],
+            'flagged_clicks'    => $invalidClicks, // invalid clicks ARE flagged/blocked
+            'flag_rate'         => (float) $currentStats['clicks']['fraud_rate'],
             'active_blacklists' => \App\Models\Blacklist::where('is_active', true)->count(),
-            'avg_quality_score' => 78,
+            'avg_quality_score' => $qualityScore,
         ];
 
         return Inertia::render('Admin/Reports/Index', [
-            'stats' => $stats,
-            'topAffiliates' => $topAffiliates,
-            'topOffers' => $topOffers,
+            'stats'            => $stats,
+            'topAffiliates'    => $topAffiliates,
+            'topOffers'        => $topOffers,
             'performanceTrend' => $performanceTrend,
-            'revenueByCategory' => $revenueByCategory,
-            'trafficSources' => $trafficSources,
-            'securityStats' => $securityStats,
+            'revenueByCategory'=> $revenueByCategory,
+            'trafficSources'   => $trafficSources,
+            'securityStats'    => $securityStats,
+            'selectedRange'    => $range,
         ]);
     }
 

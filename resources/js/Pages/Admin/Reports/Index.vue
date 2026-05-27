@@ -63,7 +63,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium text-gray-600">Conversion Rate</p>
-                                <p class="text-3xl font-bold text-gray-900 mt-2">{{ stats.conversion_rate.toFixed(2) }}%</p>
+                                <p class="text-3xl font-bold text-gray-900 mt-2">{{ safeFixed(stats.conversion_rate) }}%</p>
                                 <p :class="['text-sm mt-2', getChangeClass(stats.cr_change)]">
                                     {{ formatChange(stats.cr_change) }} vs previous period
                                 </p>
@@ -96,9 +96,9 @@
                     <div class="bg-white rounded-lg shadow p-6">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm font-medium text-gray-600">Platform Margin</p>
-                                <p class="text-3xl font-bold text-gray-900 mt-2">₦{{ formatNumber(stats.platform_margin) }}</p>
-                                <p class="text-xs text-gray-500 mt-1">Avg: {{ stats.avg_margin_percentage.toFixed(1) }}%</p>
+                                <p class="text-sm font-medium text-gray-600">Admin Spread (Platform Margin)</p>
+                                <p class="text-3xl font-bold text-green-600 mt-2">₦{{ formatNumber(stats.platform_margin) }}</p>
+                                <p class="text-xs text-gray-500 mt-1">Avg: {{ safeFixed(stats.avg_margin_percentage, 1) }}% of advertiser payout</p>
                                 <p :class="['text-sm mt-1', getChangeClass(stats.platform_margin_change)]">
                                     {{ formatChange(stats.platform_margin_change) }} vs previous period
                                 </p>
@@ -106,6 +106,22 @@
                             <div class="p-3 bg-emerald-100 rounded-full">
                                 <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 8h6m-5 0a3 3 0 110 6H9l3 3m-3-6h6m6 1a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Affiliate Commissions card -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Affiliate Commissions</p>
+                                <p class="text-3xl font-bold text-orange-600 mt-2">₦{{ formatNumber(stats.total_affiliate_commissions) }}</p>
+                                <p class="text-xs text-gray-500 mt-1">Paid to affiliates (approved)</p>
+                            </div>
+                            <div class="p-3 bg-orange-100 rounded-full">
+                                <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
                                 </svg>
                             </div>
                         </div>
@@ -173,12 +189,12 @@
                                     <span class="text-2xl font-bold text-gray-400">#{{ index + 1 }}</span>
                                     <div>
                                         <p class="font-semibold text-gray-900">{{ offer.name }}</p>
-                                        <p class="text-sm text-gray-600">CR: {{ offer.conversion_rate.toFixed(2) }}%</p>
+                                        <p class="text-sm text-gray-600">CR: {{ safeFixed(offer.conversion_rate) }}%</p>
                                     </div>
                                 </div>
                                 <div class="text-right">
-                                    <p class="text-lg font-bold text-gray-900">{{ formatNumber(offer.total_conversions) }}</p>
-                                    <p class="text-sm text-gray-600">conversions</p>
+                                    <p class="text-lg font-bold text-gray-900">{{ formatNumber(offer.total_conversions) }} conv.</p>
+                                    <p class="text-sm text-green-600 font-medium">₦{{ formatNumber(offer.total_spread) }} spread</p>
                                 </div>
                             </div>
                         </div>
@@ -216,12 +232,12 @@
                             <div class="p-4 bg-red-50 rounded-lg border border-red-200">
                                 <p class="text-sm text-red-600 font-medium">Blocked Clicks</p>
                                 <p class="text-2xl font-bold text-red-700 mt-2">{{ formatNumber(securityStats.blocked_clicks) }}</p>
-                                <p class="text-xs text-red-600 mt-1">{{ securityStats.block_rate.toFixed(2) }}% of total</p>
+                                <p class="text-xs text-red-600 mt-1">{{ safeFixed(securityStats.block_rate) }}% of total</p>
                             </div>
                             <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
                                 <p class="text-sm text-yellow-600 font-medium">Quality Flags</p>
                                 <p class="text-2xl font-bold text-yellow-700 mt-2">{{ formatNumber(securityStats.flagged_clicks) }}</p>
-                                <p class="text-xs text-yellow-600 mt-1">{{ securityStats.flag_rate.toFixed(2) }}% of total</p>
+                                <p class="text-xs text-yellow-600 mt-1">{{ safeFixed(securityStats.flag_rate) }}% of total</p>
                             </div>
                             <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
                                 <p class="text-sm text-blue-600 font-medium">Active Rules</p>
@@ -260,9 +276,10 @@ const props = defineProps({
     revenueByCategory: Array,
     trafficSources: Array,
     securityStats: Object,
+    selectedRange: String,
 });
 
-const dateRange = ref('7days');
+const dateRange = ref(props.selectedRange || '7days');
 
 // Chart Options
 const performanceChartOptions = computed(() => ({
@@ -352,9 +369,11 @@ const formatNumber = (num) => {
     return num?.toLocaleString() || '0';
 };
 
+const safeFixed = (val, decimals = 2) => Number(val ?? 0).toFixed(decimals);
+
 const formatChange = (change) => {
-    const prefix = change >= 0 ? '+' : '';
-    return `${prefix}${change.toFixed(1)}%`;
+    const prefix = (change ?? 0) >= 0 ? '+' : '';
+    return `${prefix}${safeFixed(change ?? 0, 1)}%`;
 };
 
 const getChangeClass = (change) => {
