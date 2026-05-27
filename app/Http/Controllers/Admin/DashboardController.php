@@ -36,8 +36,7 @@ class DashboardController extends Controller
 
         $totalAdvertiserPayout = Conversion::where('created_at', '>=', $startDate)
             ->where('status', 'approved')
-            ->select(DB::raw('SUM(COALESCE(advertiser_payout, commission_amount)) as total'))
-            ->value('total') ?? 0;
+            ->sum('advertiser_payout');
 
         $totalAffiliateCommissions = Conversion::where('created_at', '>=', $startDate)
             ->where('status', 'approved')
@@ -46,12 +45,6 @@ class DashboardController extends Controller
         $totalPlatformMargin = Conversion::where('created_at', '>=', $startDate)
             ->where('status', 'approved')
             ->sum('platform_margin');
-
-        // If platform margin is 0 (legacy), calculate from fee
-        if ($totalPlatformMargin == 0 && $totalAffiliateCommissions > 0) {
-            $platformFee = \Illuminate\Support\Facades\Cache::get('settings.platform_fee_percentage', 0);
-            $totalPlatformMargin = ($totalAffiliateCommissions * $platformFee) / 100;
-        }
 
         $conversionRate = $totalClicks > 0 ? round(($totalConversions / $totalClicks) * 100, 2) : 0;
 

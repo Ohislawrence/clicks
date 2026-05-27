@@ -110,6 +110,25 @@
                     </div>
                 </div>
 
+                <!-- Financial Summary -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-purple-500">
+                        <p class="text-sm font-medium text-gray-500">Total Sale Revenue</p>
+                        <p class="text-2xl font-bold text-gray-900 mt-1">{{ formatCurrency(stats.total_revenue || 0) }}</p>
+                        <p class="text-xs text-gray-400 mt-1">Approved + paid conversions</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-orange-500">
+                        <p class="text-sm font-medium text-gray-500">Affiliate Commissions</p>
+                        <p class="text-2xl font-bold text-orange-600 mt-1">{{ formatCurrency(stats.total_commissions || 0) }}</p>
+                        <p class="text-xs text-gray-400 mt-1">Paid out to affiliates</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-green-500">
+                        <p class="text-sm font-medium text-gray-500">Admin Spread (Platform Revenue)</p>
+                        <p class="text-2xl font-bold text-green-600 mt-1">{{ formatCurrency(stats.total_spread || 0) }}</p>
+                        <p class="text-xs text-gray-400 mt-1">Platform margin from approved conversions</p>
+                    </div>
+                </div>
+
                 <!-- Conversions Table -->
                 <div v-if="conversions.data.length > 0" class="bg-white rounded-xl shadow-sm overflow-hidden">
                     <div class="overflow-x-auto">
@@ -252,6 +271,7 @@ const props = defineProps({
     offers: Array,
     affiliates: Array,
     filters: Object,
+    stats: Object,
 });
 
 const searchForm = reactive({
@@ -261,24 +281,14 @@ const searchForm = reactive({
     affiliate_id: props.filters.affiliate_id || '',
 });
 
-const stats = computed(() => {
-    const statusCounts = {
-        pending: 0,
-        approved: 0,
-        rejected: 0,
-        paid: 0,
-    };
-
-    // If we have conversions data, count by status
-    if (props.conversions.data) {
-        props.conversions.data.forEach(conversion => {
-            if (statusCounts.hasOwnProperty(conversion.status)) {
-                statusCounts[conversion.status]++;
-            }
-        });
-    }
-
-    return statusCounts;
+const stats = computed(() => props.stats || {
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+    paid: 0,
+    total_spread: 0,
+    total_commissions: 0,
+    total_revenue: 0,
 });
 
 const applyFilters = () => {

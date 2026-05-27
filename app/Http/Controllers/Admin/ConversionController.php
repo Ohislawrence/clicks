@@ -38,10 +38,21 @@ class ConversionController extends Controller
         $offers = Offer::select('id', 'name')->get();
         $affiliates = User::role('affiliate')->select('id', 'name')->get();
 
+        $stats = [
+            'pending'        => Conversion::where('status', 'pending')->count(),
+            'approved'       => Conversion::where('status', 'approved')->count(),
+            'rejected'       => Conversion::where('status', 'rejected')->count(),
+            'paid'           => Conversion::where('status', 'paid')->count(),
+            'total_spread'   => Conversion::whereIn('status', ['approved', 'paid'])->sum('platform_margin'),
+            'total_commissions' => Conversion::whereIn('status', ['approved', 'paid'])->sum('commission_amount'),
+            'total_revenue'  => Conversion::whereIn('status', ['approved', 'paid'])->sum('conversion_value'),
+        ];
+
         return Inertia::render('Admin/Conversions/Index', [
             'conversions' => $conversions,
             'offers' => $offers,
             'affiliates' => $affiliates,
+            'stats' => $stats,
             'filters' => [
                 'status' => $request->status,
                 'offer_id' => $request->offer_id,

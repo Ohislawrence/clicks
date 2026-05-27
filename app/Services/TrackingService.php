@@ -54,7 +54,7 @@ class TrackingService
 
         // Update link stats
         $affiliateLink->increment('click_count');
-        
+
         // Update offer stats
         $affiliateLink->offer->increment('total_clicks');
 
@@ -98,12 +98,14 @@ class TrackingService
         $affiliateLink = $click->affiliateLink;
         $offer = $affiliateLink->offer;
 
-        // Calculate commission
-        $commissionAmount = $this->calculateCommission(
-            $offer->commission_model,
-            $offer->commission_rate,
-            $data['conversion_value'] ?? 0
-        );
+        // Calculate commission using the offer's effective rates (admin spread already applied)
+        $conversionValue = (float) ($data['conversion_value'] ?? 0);
+        // affiliate_payout on the offer is already reduced by platform_spread_percentage
+        $commissionAmount = round($offer->getEffectiveCommission($conversionValue), 2);
+        // advertiser_payout is the gross amount the advertiser is charged for this conversion
+        $advertiserPayout = round($offer->getEffectiveAdvertiserPayout($conversionValue), 2);
+        // platform_margin is the admin's spread (what the platform earns)
+        $platformMargin = round($advertiserPayout - $commissionAmount, 2);
 
         // Create conversion
         $conversion = Conversion::create([
@@ -112,8 +114,10 @@ class TrackingService
             'offer_id' => $offer->id,
             'affiliate_link_id' => $affiliateLink->id,
             'transaction_id' => $data['transaction_id'] ?? Str::uuid(),
-            'conversion_value' => $data['conversion_value'] ?? 0,
+            'conversion_value' => $conversionValue,
             'commission_amount' => $commissionAmount,
+            'advertiser_payout' => $advertiserPayout,
+            'platform_margin' => $platformMargin,
             'commission_model' => $offer->commission_model,
             'status' => 'pending', // Needs approval
             'tracking_method' => $trackingMethod,
@@ -200,7 +204,7 @@ class TrackingService
         }
 
         $botPatterns = ['bot', 'crawler', 'spider', 'scraper', 'curl', 'wget'];
-        
+
         foreach ($botPatterns as $pattern) {
             if (stripos($userAgent, $pattern) !== false) {
                 return true;
@@ -235,7 +239,7 @@ class TrackingService
     protected function getTrackingCookie(): ?array
     {
         $cookie = Cookie::get(self::COOKIE_NAME);
-        
+
         if (!$cookie) {
             return null;
         }

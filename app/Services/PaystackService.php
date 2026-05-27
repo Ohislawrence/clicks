@@ -166,18 +166,35 @@ class PaystackService
     public function initializePayment(string $email, float $amount, string $reference, string $callbackUrl, array $metadata = []): array
     {
         try {
+            $amountKobo = (int) round($amount * 100);
+
+            Log::info('Paystack Initialize Payment: request', [
+                'email'        => $email,
+                'amount_naira' => $amount,
+                'amount_kobo'  => $amountKobo,
+                'reference'    => $reference,
+                'callback_url' => $callbackUrl,
+                'key_prefix'   => substr($this->secretKey ?? '', 0, 7),
+            ]);
+
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->secretKey,
                 'Content-Type'  => 'application/json',
-            ])->post($this->baseUrl . '/transaction/initialize', [
+            ])->timeout(30)->post($this->baseUrl . '/transaction/initialize', [
                 'email'        => $email,
-                'amount'       => (int) round($amount * 100), // kobo
+                'amount'       => $amountKobo,
                 'reference'    => $reference,
                 'callback_url' => $callbackUrl,
                 'metadata'     => $metadata,
             ]);
 
             $data = $response->json();
+
+            Log::info('Paystack Initialize Payment: response', [
+                'http_status' => $response->status(),
+                'successful'  => $response->successful(),
+                'data'        => $data,
+            ]);
 
             if ($response->successful() && ($data['status'] ?? false)) {
                 return [
@@ -187,16 +204,25 @@ class PaystackService
                 ];
             }
 
-            Log::error('Paystack Initialize Payment Error', $data ?? []);
+            $errorMessage = $data['message'] ?? 'Payment provider rejected the request';
+            Log::error('Paystack Initialize Payment Error', [
+                'http_status'  => $response->status(),
+                'message'      => $errorMessage,
+                'response'     => $data,
+            ]);
             return [
                 'success' => false,
-                'message' => $data['message'] ?? 'Failed to initialize payment',
+                'message' => $errorMessage,
             ];
-        } catch (\Exception $e) {
-            Log::error('Paystack Exception', ['message' => $e->getMessage()]);
+        } catch (\Throwable $e) {
+            Log::error('Paystack Exception in initializePayment', [
+                'class'   => get_class($e),
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+            ]);
             return [
                 'success' => false,
-                'message' => 'An error occurred while initializing payment',
+                'message' => 'Connection error: ' . $e->getMessage(),
             ];
         }
     }

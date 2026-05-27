@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\WalletController as AdminWalletController;
 use App\Http\Controllers\Admin\OfferController as AdminOfferController;
 use App\Http\Controllers\Admin\CreativeController as AdminCreativeController;
 use App\Http\Controllers\Admin\ConversionController as AdminConversionController;
+use App\Http\Controllers\Admin\SpreadController as AdminSpreadController;
 use App\Http\Controllers\Admin\DeepseekController as AdminDeepseekController;
 use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -313,6 +314,9 @@ Route::middleware([
 
     // Conversion Management
     Route::get('/conversions', [AdminConversionController::class, 'index'])->name('conversions.index');
+
+    // Platform Spread
+    Route::get('/spread', [AdminSpreadController::class, 'index'])->name('spread.index');
 
     // Payout Management
     Route::get('/payouts', [AdminPayoutController::class, 'index'])->name('payouts.index');

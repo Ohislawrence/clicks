@@ -67,7 +67,20 @@ class WalletController extends Controller
         );
 
         if (!$result['success']) {
-            return back()->withErrors(['amount' => 'Could not initialize payment. Please try again.']);
+            // Mark the pending transaction as failed so it doesn't clutter history
+            WalletTransaction::where('reference', $reference)->update(['status' => 'failed']);
+
+            Log::warning('Wallet deposit initiation failed', [
+                'user_id'   => $user->id,
+                'email'     => $user->email,
+                'amount'    => $amount,
+                'reference' => $reference,
+                'reason'    => $result['message'] ?? 'unknown',
+            ]);
+
+            return back()->withErrors([
+                'amount' => 'Could not initialize payment: ' . ($result['message'] ?? 'Please try again.'),
+            ]);
         }
 
         return Inertia::location($result['authorization_url']);

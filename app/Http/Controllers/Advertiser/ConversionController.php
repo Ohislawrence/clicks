@@ -214,15 +214,13 @@ class ConversionController extends Controller
             return back()->withErrors(['transaction_id' => 'A conversion with this transaction ID already exists.']);
         }
 
-        // Calculate commission
-        $commissionAmount = 0;
-        if ($offer->commission_model === 'revshare') {
-            $commissionAmount = ($validated['amount'] * $offer->commission_rate) / 100;
-        } else {
-            $commissionAmount = $offer->commission_rate;
-        }
+        // Calculate commission using effective rates (admin spread already applied to offer)
+        $saleAmount = (float) $validated['amount'];
+        $commissionAmount = round($offer->getEffectiveCommission($saleAmount), 2);
+        $advertiserPayout = round($offer->getEffectiveAdvertiserPayout($saleAmount), 2);
+        $platformMargin = round($advertiserPayout - $commissionAmount, 2);
 
-        DB::transaction(function () use ($validated, $offer, $affiliate, $commissionAmount, $user) {
+        DB::transaction(function () use ($validated, $offer, $affiliate, $commissionAmount, $advertiserPayout, $platformMargin, $user) {
             // Create a manual click record for tracking
             $click = Click::create([
                 'affiliate_id' => $affiliate->id,
@@ -242,15 +240,15 @@ class ConversionController extends Controller
                 'affiliate_id' => $affiliate->id,
                 'offer_id' => $offer->id,
                 'transaction_id' => $validated['transaction_id'],
-                'amount' => $validated['amount'],
+                'conversion_value' => $validated['amount'],
                 'commission_amount' => $commissionAmount,
+                'advertiser_payout' => $advertiserPayout,
+                'platform_margin' => $platformMargin,
+                'commission_model' => $offer->commission_model,
                 'status' => 'approved', // Manual conversions are auto-approved
-                'currency' => 'NGN',
-                'conversion_data' => json_encode([
-                    'manual_entry' => true,
-                    'entered_by' => $user->name,
-                    'notes' => $validated['notes'] ?? null,
-                ]),
+                'is_manual' => true,
+                'manual_notes' => $validated['notes'] ?? null,
+                'tracking_method' => 'manual',
                 'created_at' => $validated['conversion_date'],
                 'updated_at' => now(),
             ]);
