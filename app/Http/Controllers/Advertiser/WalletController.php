@@ -132,7 +132,7 @@ class WalletController extends Controller
      */
     public function topUpOffer(Request $request, Offer $offer)
     {
-        if ($offer->advertiser_id !== $request->user()->id) {
+        if ((int) $offer->advertiser_id !== (int) $request->user()->id && !session()->has('impersonate')) {
             abort(403);
         }
 

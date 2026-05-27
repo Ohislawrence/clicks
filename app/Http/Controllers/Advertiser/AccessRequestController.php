@@ -48,7 +48,7 @@ class AccessRequestController extends Controller
     {
         // Check ownership
         $offer = Offer::findOrFail($accessRequest->offer_id);
-        if ($offer->advertiser_id !== auth()->id()) {
+        if ((int) $offer->advertiser_id !== (int) auth()->id() && !session()->has('impersonate')) {
             abort(403);
         }
 
@@ -72,7 +72,7 @@ class AccessRequestController extends Controller
     {
         // Check ownership
         $offer = Offer::findOrFail($accessRequest->offer_id);
-        if ($offer->advertiser_id !== auth()->id()) {
+        if ((int) $offer->advertiser_id !== (int) auth()->id() && !session()->has('impersonate')) {
             abort(403);
         }
 

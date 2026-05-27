@@ -58,7 +58,7 @@ class ConversionController extends Controller
     {
         // Check ownership
         $offer = Offer::findOrFail($conversion->offer_id);
-        if ($offer->advertiser_id !== auth()->id()) {
+        if ((int) $offer->advertiser_id !== (int) auth()->id() && !session()->has('impersonate')) {
             abort(403);
         }
 
@@ -88,7 +88,7 @@ class ConversionController extends Controller
     {
         // Check ownership
         $offer = Offer::findOrFail($conversion->offer_id);
-        if ($offer->advertiser_id !== auth()->id()) {
+        if ((int) $offer->advertiser_id !== (int) auth()->id() && !session()->has('impersonate')) {
             abort(403);
         }
 
@@ -195,7 +195,7 @@ class ConversionController extends Controller
 
         // Verify offer ownership
         $offer = Offer::findOrFail($validated['offer_id']);
-        if ($offer->advertiser_id !== $user->id) {
+        if ((int) $offer->advertiser_id !== (int) $user->id && !session()->has('impersonate')) {
             abort(403, 'Unauthorized access to this offer.');
         }
 

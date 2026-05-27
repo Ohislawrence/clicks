@@ -200,7 +200,7 @@ class StoreSubscriptionController extends Controller
         $store = $subscription->store;
 
         // Ensure subscription belongs to current user
-        if ($store->user_id !== auth()->id()) {
+        if ((int) $store->user_id !== (int) auth()->id() && !session()->has('impersonate')) {
             abort(403, 'Unauthorized');
         }
 

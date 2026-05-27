@@ -101,7 +101,7 @@ class AdvertiserPayoutController extends Controller
     {
         $user = auth()->user();
 
-        if ($payout->user_id !== $user->id) {
+        if ((int) $payout->user_id !== (int) $user->id && !session()->has('impersonate')) {
             abort(403);
         }
 
