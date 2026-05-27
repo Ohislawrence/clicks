@@ -15,7 +15,7 @@ class CreativeController extends Controller
     public function index(Offer $offer)
     {
         // Check ownership
-        if ($offer->advertiser_id !== auth()->id()) {
+        if ((int) $offer->advertiser_id !== (int) auth()->id() && !session()->has('impersonate')) {
             abort(403);
         }
 
@@ -53,7 +53,7 @@ class CreativeController extends Controller
     public function store(Request $request, Offer $offer)
     {
         // Check ownership
-        if ($offer->advertiser_id !== auth()->id()) {
+        if ((int) $offer->advertiser_id !== (int) auth()->id() && !session()->has('impersonate')) {
             abort(403);
         }
 
@@ -128,7 +128,7 @@ class CreativeController extends Controller
     public function update(Request $request, Offer $offer, OfferCreative $creative)
     {
         // Check ownership
-        if ($offer->advertiser_id !== auth()->id() || $creative->offer_id !== $offer->id) {
+        if (((int) $offer->advertiser_id !== (int) auth()->id() && !session()->has('impersonate')) || $creative->offer_id !== $offer->id) {
             abort(403);
         }
 
@@ -186,7 +186,7 @@ class CreativeController extends Controller
     public function destroy(Offer $offer, OfferCreative $creative)
     {
         // Check ownership
-        if ($offer->advertiser_id !== auth()->id() || $creative->offer_id !== $offer->id) {
+        if (((int) $offer->advertiser_id !== (int) auth()->id() && !session()->has('impersonate')) || $creative->offer_id !== $offer->id) {
             abort(403);
         }
 
@@ -203,7 +203,7 @@ class CreativeController extends Controller
     public function toggleStatus(Offer $offer, OfferCreative $creative)
     {
         // Check ownership
-        if ($offer->advertiser_id !== auth()->id() || $creative->offer_id !== $offer->id) {
+        if (((int) $offer->advertiser_id !== (int) auth()->id() && !session()->has('impersonate')) || $creative->offer_id !== $offer->id) {
             abort(403);
         }
 
