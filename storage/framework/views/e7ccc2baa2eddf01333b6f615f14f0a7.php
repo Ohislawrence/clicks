@@ -1043,6 +1043,74 @@
 </section>
 
 
+<?php if($latestPosts && $latestPosts->count() > 0): ?>
+<section class="section py-28" style="background:#fff;border-top:1px solid var(--wire);" aria-label="Latest from blog">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10">
+        <div class="mb-14 reveal">
+            <div class="eyebrow mb-5">Insights & Updates</div>
+            <div class="flex flex-wrap items-end justify-between gap-6">
+                <h2 class="display" style="font-size:clamp(26px,3.5vw,50px);">
+                    Master your <span style="color:#059669;">marketing game</span>
+                </h2>
+                <a href="<?php echo e(route('blog.index')); ?>" class="btn-ghost-em" style="align-self:flex-end;">
+                    View all articles &rarr;
+                </a>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <?php $__currentLoopData = $latestPosts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $post): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <article class="card-lift reveal flex flex-col h-full" style="background:#fff;border:1px solid var(--wire);border-radius:20px;overflow:hidden;transition-delay:<?php echo e($i * 100); ?>ms;">
+                <a href="<?php echo e(route('blog.show', $post->slug)); ?>" class="block overflow-hidden relative group" style="height:220px;">
+                    <?php if($post->featured_image): ?>
+                        <img src="<?php echo e(Storage::url($post->featured_image)); ?>" alt="<?php echo e($post->title); ?>" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    <?php else: ?>
+                        <div class="w-full h-full bg-slate-100 flex items-center justify-center">
+                            <svg class="w-12 h-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        </div>
+                    <?php endif; ?>
+                    <div class="absolute top-4 left-4">
+                        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/90 text-emerald-700 backdrop-blur shadow-sm">
+                            <?php echo e($post->category->name); ?>
+
+                        </span>
+                    </div>
+                </a>
+                <div class="p-6 flex flex-col flex-1">
+                    <div class="flex items-center gap-2 text-[11px] text-slate-400 mb-3 font-medium">
+                        <time datetime="<?php echo e($post->published_at->toDateString()); ?>"><?php echo e($post->published_at->format('M d, Y')); ?></time>
+                        <span>&middot;</span>
+                        <span><?php echo e($post->reading_time); ?> min read</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 mb-3 line-clamp-2 hover:text-emerald-600 transition-colors" style="font-family:var(--fd); font-size:18px; line-height:1.4;">
+                        <a href="<?php echo e(route('blog.show', $post->slug)); ?>"><?php echo e($post->title); ?></a>
+                    </h3>
+                    <p class="text-slate-500 text-sm mb-6 line-clamp-3 leading-relaxed">
+                        <?php echo e($post->excerpt); ?>
+
+                    </p>
+                    <div class="mt-auto pt-5 border-t border-slate-50 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center text-[11px] font-bold text-emerald-700 uppercase">
+                                <?php echo e(substr($post->author->name, 0, 1)); ?>
+
+                            </div>
+                            <span class="text-xs font-semibold text-slate-700"><?php echo e($post->author->name); ?></span>
+                        </div>
+                        <a href="<?php echo e(route('blog.show', $post->slug)); ?>" class="text-emerald-600 hover:text-emerald-700 font-bold text-xs flex items-center gap-1 group">
+                            Read more
+                            <svg class="w-3 h-3 transform transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" /></svg>
+                        </a>
+                    </div>
+                </div>
+            </article>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
+
 <section class="section py-24" aria-label="Platform trust">
     <div class="max-w-7xl mx-auto px-6 lg:px-10">
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -1063,42 +1131,6 @@
 </section>
 
 
-<section class="section py-28" style="background:#f8fafc;border-top:1px solid var(--wire);" aria-label="Call to action">
-    <div class="max-w-7xl mx-auto px-6 lg:px-10">
-        <div style="background:var(--ink);border:1px solid var(--wire-s);border-radius:24px;padding:clamp(40px,6vw,80px);text-align:center;" class="reveal">
-            <div class="eyebrow mb-8" style="justify-content:center;color:#059669;">
-                <span style="color:#059669;">Start today - it's free</span>
-            </div>
-            <h2 class="display mb-6" style="font-size:clamp(28px,5vw,64px);color:#fff;">
-                Nigeria's performance<br>
-                marketing platform<br>
-                <span style="color:#059669;">is ready for you</span>
-            </h2>
-            <p style="font-size:17px;color:var(--stone);max-width:540px;margin:0 auto 40px;font-weight:400;line-height:1.75;">
-                Join thousands of Nigerian affiliates and advertisers already earning and growing on <?php echo e(config('app.name')); ?>.
-            </p>
-            <div class="flex flex-wrap gap-4 justify-center mb-14">
-                <a href="<?php echo e(route('register')); ?>?type=affiliate" class="btn-em" style="padding:16px 36px;font-size:15px;">
-                    Join as affiliate - it's free
-                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
-                        <path d="M3 7.5h9M8 4l3.5 3.5L8 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </a>
-                <a href="<?php echo e(route('register')); ?>?type=advertiser" class="btn-ghost-em" style="padding:15px 36px;font-size:15px;border-color:rgba(255,255,255,0.2);color:#fff;">
-                    Post an offer as advertiser
-                </a>
-            </div>
-            <div class="flex flex-wrap justify-center gap-8">
-                <?php $__currentLoopData = ['No setup fees','Same-day approval','Naira payouts','Cancel anytime']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trust): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <div style="display:flex;align-items:center;gap:7px;">
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7l3 3 7-6" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    <span style="font-size:13px;color:var(--stone);"><?php echo e($trust); ?></span>
-                </div>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-            </div>
-        </div>
-    </div>
-</section>
 
 <?php $__env->stopSection(); ?>
 

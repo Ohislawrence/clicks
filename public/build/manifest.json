@@ -278,7 +278,7 @@
     ]
   },
   "resources/js/Pages/Admin/Blog/Categories.vue": {
-    "file": "assets/Categories-RF_NjMm-.js",
+    "file": "assets/Categories-CYDMdzQU.js",
     "name": "Categories",
     "src": "resources/js/Pages/Admin/Blog/Categories.vue",
     "isDynamicEntry": true,
@@ -310,7 +310,7 @@
     ]
   },
   "resources/js/Pages/Admin/Blog/Index.vue": {
-    "file": "assets/Index-D7g6YBpw.js",
+    "file": "assets/Index-CS0kuakj.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/Blog/Index.vue",
     "isDynamicEntry": true,
@@ -402,7 +402,7 @@
     ]
   },
   "resources/js/Pages/Admin/Reports/Index.vue": {
-    "file": "assets/Index-BbzeurSb.js",
+    "file": "assets/Index-8BsvF48o.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/Reports/Index.vue",
     "isDynamicEntry": true,
@@ -723,7 +723,7 @@
     ]
   },
   "resources/js/Pages/Advertiser/Reports/Index.vue": {
-    "file": "assets/Index-DqoCE20I.js",
+    "file": "assets/Index-CDilQGyU.js",
     "name": "Index",
     "src": "resources/js/Pages/Advertiser/Reports/Index.vue",
     "isDynamicEntry": true,
@@ -1002,7 +1002,7 @@
     ]
   },
   "resources/js/Pages/Affiliate/Reports/Index.vue": {
-    "file": "assets/Index-BqaU_3T-.js",
+    "file": "assets/Index-CPlw1xXX.js",
     "name": "Index",
     "src": "resources/js/Pages/Affiliate/Reports/Index.vue",
     "isDynamicEntry": true,
@@ -1354,7 +1354,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-DH7bv_RN.js",
+    "file": "assets/app-Dypf27b3.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -1465,7 +1465,7 @@
       "resources/js/Pages/Welcome.vue"
     ],
     "css": [
-      "assets/app-BkOduA85.css"
+      "assets/app-Dd9Vs2va.css"
     ]
   }
 }

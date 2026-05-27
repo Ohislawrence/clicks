@@ -5,9 +5,10 @@
 @section('meta_keywords', $post->meta_keywords ?: '')
 @section('og_title', $post->title)
 @section('og_description', $post->excerpt)
-@section('og_image', $post->featured_image ? Storage::url($post->featured_image) : asset('images/clicksintel-frontpage.PNG'))
+@section('og_image', $post->featured_image ? url(Storage::url($post->featured_image)) : asset('images/clicksintel-frontpage.PNG'))
 @section('twitter_title', $post->title)
 @section('twitter_description', $post->excerpt)
+@section('twitter_image', $post->featured_image ? url(Storage::url($post->featured_image)) : asset('images/clicksintel-frontpage.PNG'))
 
 @push('structured_data')
 <script type="application/ld+json">
@@ -16,7 +17,7 @@
     "@@type": "BlogPosting",
     "headline": "{{ $post->title }}",
     "description": "{{ $post->excerpt }}",
-    "image": "{{ $post->featured_image ? Storage::url($post->featured_image) : asset('images/clicksintel-frontpage.PNG') }}",
+    "image": "{{ $post->featured_image ? url(Storage::url($post->featured_image)) : asset('images/clicksintel-frontpage.PNG') }}",
     "author": {
         "@@type": "Person",
         "name": "{{ $post->author->name }}"

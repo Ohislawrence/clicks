@@ -29,7 +29,7 @@
     <meta property="og:url" content="<?php echo $__env->yieldContent('og_url', url()->current()); ?>">
     <meta property="og:title" content="<?php echo $__env->yieldContent('og_title', config('app.name', 'ClicksIntel')); ?>">
     <meta property="og:description" content="<?php echo $__env->yieldContent('og_description', 'Performance marketing platform built for scale.'); ?>">
-    <meta property="og:image" content="<?php echo $__env->yieldContent('og_image', asset('images/og-image.jpg')); ?>">
+    <meta property="og:image" content="<?php echo $__env->yieldContent('og_image', asset('images/clicksintel-frontpage.PNG')); ?>">
     <meta property="og:site_name" content="<?php echo e(config('app.name', 'ClicksIntel')); ?>">
 
     <!-- Twitter -->
@@ -37,7 +37,7 @@
     <meta name="twitter:url" content="<?php echo $__env->yieldContent('twitter_url', url()->current()); ?>">
     <meta name="twitter:title" content="<?php echo $__env->yieldContent('twitter_title', config('app.name', 'ClicksIntel')); ?>">
     <meta name="twitter:description" content="<?php echo $__env->yieldContent('twitter_description', 'Performance marketing platform built for scale.'); ?>">
-    <meta name="twitter:image" content="<?php echo $__env->yieldContent('twitter_image', asset('images/twitter-card.jpg')); ?>">
+    <meta name="twitter:image" content="<?php echo $__env->yieldContent('twitter_image', asset('images/clicksintel-frontpage.PNG')); ?>">
 
     <?php echo $__env->yieldPushContent('structured_data'); ?>
 

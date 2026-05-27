@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BlogPost;
 use Illuminate\Http\Request;
 
 class FrontPageController extends Controller
@@ -11,7 +12,13 @@ class FrontPageController extends Controller
      */
     public function home()
     {
-        return view('front.home');
+        $latestPosts = BlogPost::with('category', 'author')
+            ->published()
+            ->orderBy('published_at', 'desc')
+            ->limit(3)
+            ->get();
+
+        return view('front.home', compact('latestPosts'));
     }
 
     /**
