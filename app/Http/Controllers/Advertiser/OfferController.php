@@ -273,11 +273,34 @@ class OfferController extends Controller
         }
     }
 
-    public function show(Offer $offer)
+    public function show($id)
     {
+        // Debugging info
+        \Illuminate\Support\Facades\Log::info("Viewing offer ID: {$id} for user: " . auth()->id());
+
+        $offer = Offer::withTrashed()->find($id);
+
+        if (!$offer) {
+            \Illuminate\Support\Facades\Log::error("Offer not found in DB with ID: {$id}");
+            abort(404, "Offer not found in database.");
+        }
+
         // Check ownership
-        if ($offer->advertiser_id !== auth()->id()) {
-            abort(403);
+        if ($offer->advertiser_id !== (int) auth()->id()) {
+            \Illuminate\Support\Facades\Log::warning("Ownership mismatch: Offer owner {$offer->advertiser_id}, Current user " . auth()->id());
+
+            // If they are admin or impersonating, they should be able to see it?
+            // Better to allow it if impersonating
+            if (!session()->has('impersonate')) {
+                abort(403, "You do not own this offer.");
+            }
+        }
+
+        if ($offer->deleted_at) {
+            return Inertia::render('Advertiser/Offers/Show', [
+                'offer' => $offer,
+                'error' => 'This offer has been deleted.',
+            ]);
         }
 
         $offer->load(['category', 'accessRequests.affiliate', 'reviewer']);
