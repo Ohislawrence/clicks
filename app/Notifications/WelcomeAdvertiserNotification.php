@@ -35,9 +35,9 @@ class WelcomeAdvertiserNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Welcome to DealsIntel - Your Account is Under Review')
+            ->subject('Welcome to ClicksIntel - Your Account is Under Review')
             ->greeting('Welcome, ' . $notifiable->name . '!')
-            ->line('Thank you for registering with DealsIntel as an advertiser. We\'re excited to partner with you!')
+            ->line('Thank you for registering with ClicksIntel as an advertiser. We\'re excited to partner with you!')
             ->line('**Account Status: Under Review** ⏳')
             ->line('Our team is currently reviewing your account details. This typically takes 24-48 hours.')
             ->line('')
@@ -67,7 +67,7 @@ class WelcomeAdvertiserNotification extends Notification implements ShouldQueue
     {
         return [
             'type' => 'welcome',
-            'title' => 'Welcome to DealsIntel!',
+            'title' => 'Welcome to ClicksIntel!',
             'message' => 'Your advertiser account is under review. You\'ll be notified once approved (typically 24-48 hours).',
             'action_url' => route('advertiser.dashboard'),
             'action_text' => 'View Dashboard',
@@ -84,3 +84,4 @@ class WelcomeAdvertiserNotification extends Notification implements ShouldQueue
         return $this->toDatabase($notifiable);
     }
 }
+

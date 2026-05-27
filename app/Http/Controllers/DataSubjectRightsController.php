@@ -86,3 +86,4 @@ class DataSubjectRightsController extends Controller
         return back()->with('status', 'Your data erasure request has been received. Our Data Protection Officer will process it within 30 days in accordance with the NDPR 2019.');
     }
 }
+

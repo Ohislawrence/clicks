@@ -33,3 +33,4 @@ class AdvertiserPayout extends Model
         return $this->status === 'pending';
     }
 }
+

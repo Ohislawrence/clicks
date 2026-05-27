@@ -354,3 +354,4 @@ Emails are queued, so make sure queue worker is running.
 | Recommended for | Production stores | Testing only |
 
 **Recommendation:** Use API Integration with webhooks for the best customer experience and automated order management.
+

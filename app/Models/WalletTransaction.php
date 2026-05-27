@@ -45,3 +45,4 @@ class WalletTransaction extends Model
         return in_array($this->type, ['offer_allocation', 'offer_topup', 'store_withdrawal', 'store_refund_clawback']);
     }
 }
+

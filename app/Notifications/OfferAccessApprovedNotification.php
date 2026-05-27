@@ -96,3 +96,4 @@ class OfferAccessApprovedNotification extends Notification implements ShouldQueu
         return $this->toDatabase($notifiable);
     }
 }
+

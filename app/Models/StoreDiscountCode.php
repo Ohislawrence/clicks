@@ -94,3 +94,4 @@ class StoreDiscountCode extends Model
         $this->increment('uses_count');
     }
 }
+

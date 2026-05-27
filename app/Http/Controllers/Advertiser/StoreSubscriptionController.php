@@ -326,3 +326,4 @@ class StoreSubscriptionController extends Controller
         return back()->with('success', 'Plan changed successfully! The new rate will apply on your next renewal.');
     }
 }
+

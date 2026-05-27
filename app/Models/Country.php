@@ -27,3 +27,4 @@ class Country extends Model
         return $this->hasMany(State::class)->where('is_active', true)->orderBy('sort_order')->orderBy('name');
     }
 }
+

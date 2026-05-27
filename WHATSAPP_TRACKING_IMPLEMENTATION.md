@@ -635,3 +635,4 @@ CLK-M4N8T3,120000,MacBook Air M2 - Card payment
 ---
 
 *For frontend implementation (Vue.js components), please request separately or refer to the UI/UX Requirements section above.*
+

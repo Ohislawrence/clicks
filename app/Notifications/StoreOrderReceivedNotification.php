@@ -112,3 +112,4 @@ class StoreOrderReceivedNotification extends Notification implements ShouldQueue
         ];
     }
 }
+

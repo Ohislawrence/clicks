@@ -1,4 +1,4 @@
-# robots.txt for DealsIntel
+# robots.txt for ClicksIntel
 User-agent: *
 Allow: /
 Disallow: /admin/
@@ -27,4 +27,5 @@ Sitemap: /sitemap.xml
 
 # Crawl-delay (optional)
 Crawl-delay: 1
+
 

@@ -193,7 +193,7 @@ New Features:
 **Usage:**
 ```html
 <!-- Place on thank-you page -->
-<img src="https://dealsintel.com/pixel?value=100.00&txn_id=ORDER123" width="1" height="1" />
+<img src="https://clicksintel.com/pixel?value=100.00&txn_id=ORDER123" width="1" height="1" />
 ```
 
 **JavaScript Snippet** (for advertisers):
@@ -203,7 +203,7 @@ New Features:
   const conversionValue = 100.00;
   const txnId = 'ORDER123';
   const img = new Image();
-  img.src = `https://dealsintel.com/pixel?value=${conversionValue}&txn_id=${txnId}`;
+  img.src = `https://clicksintel.com/pixel?value=${conversionValue}&txn_id=${txnId}`;
 </script>
 ```
 
@@ -418,3 +418,6 @@ All core features implemented and functional:
 
 **Implementation Date:** May 1, 2026  
 **Status:** Backend complete, UI pages pending
+
+
+

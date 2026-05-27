@@ -94,3 +94,4 @@ class Click extends Model
         return $this->belongsTo(User::class, 'reviewed_by');
     }
 }
+

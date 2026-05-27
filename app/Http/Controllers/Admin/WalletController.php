@@ -170,3 +170,4 @@ class WalletController extends Controller
         return back()->with('success', 'Deposit marked as failed.');
     }
 }
+

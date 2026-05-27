@@ -35,9 +35,9 @@ class WelcomeAffiliateNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('🎉 Welcome to DealsIntel - Start Earning Today!')
+            ->subject('🎉 Welcome to ClicksIntel - Start Earning Today!')
             ->greeting('Welcome, ' . $notifiable->name . '!')
-            ->line('Thank you for joining DealsIntel as an affiliate partner. We\'re excited to have you on board!')
+            ->line('Thank you for joining ClicksIntel as an affiliate partner. We\'re excited to have you on board!')
             ->line('**Here\'s how to get started:**')
             ->line('1️⃣ Browse available offers in your dashboard')
             ->line('2️⃣ Request access to offers that match your audience')
@@ -64,7 +64,7 @@ class WelcomeAffiliateNotification extends Notification implements ShouldQueue
     {
         return [
             'type' => 'welcome',
-            'title' => 'Welcome to DealsIntel!',
+            'title' => 'Welcome to ClicksIntel!',
             'message' => 'Your affiliate account has been created. Start browsing offers and earning commissions today!',
             'action_url' => route('affiliate.dashboard'),
             'action_text' => 'View Dashboard',
@@ -81,3 +81,4 @@ class WelcomeAffiliateNotification extends Notification implements ShouldQueue
         return $this->toDatabase($notifiable);
     }
 }
+

@@ -222,3 +222,4 @@ class StoreThemeController extends Controller
         return back()->with('success', "Store theme {$status} successfully.");
     }
 }
+

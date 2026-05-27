@@ -94,3 +94,4 @@ class StoreOrder extends Model
             && $this->refund_status === 'none';
     }
 }
+

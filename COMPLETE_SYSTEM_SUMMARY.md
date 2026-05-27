@@ -347,7 +347,7 @@ CACHE_DRIVER=redis
 MAIL_MAILER=smtp
 MAIL_HOST=smtp.mailtrap.io
 MAIL_PORT=2525
-MAIL_FROM_ADDRESS=noreply@dealsintel.com
+MAIL_FROM_ADDRESS=noreply@clicksintel.com
 ```
 
 ### Database:
@@ -495,8 +495,11 @@ All 4 phases have been successfully implemented with comprehensive reporting das
 
 ## 🙏 Thank You!
 
-The DealsIntel affiliate marketing platform is now complete with all core features, advanced capabilities, security measures, and comprehensive reporting dashboards. Ready for real-world deployment!
+The ClicksIntel affiliate marketing platform is now complete with all core features, advanced capabilities, security measures, and comprehensive reporting dashboards. Ready for real-world deployment!
 
 **Built with:** Laravel 11, Vue 3, Inertia.js, TailwindCSS, ApexCharts, Redis
 **Date:** May 1, 2026
 **Version:** 1.0.0 (Production Ready) 🚀
+
+
+

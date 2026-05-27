@@ -279,3 +279,4 @@ class ConversionController extends Controller
             ->with('success', 'Manual conversion recorded successfully!');
     }
 }
+

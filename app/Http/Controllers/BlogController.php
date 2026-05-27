@@ -71,3 +71,4 @@ class BlogController extends Controller
         return view('front.blog.category', compact('category', 'posts', 'categories'));
     }
 }
+

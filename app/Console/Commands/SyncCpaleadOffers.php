@@ -56,3 +56,4 @@ class SyncCpaleadOffers extends Command
         return 0;
     }
 }
+

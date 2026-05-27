@@ -61,3 +61,4 @@ class ReferralEarning extends Model
         return $query->where('is_capped', true);
     }
 }
+

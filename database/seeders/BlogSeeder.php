@@ -108,7 +108,7 @@ class BlogSeeder extends Seeder
 <p>Once you find a winning formula, scale aggressively. Invest more budget, create more content, and expand your reach.</p>
 
 <p><strong>Conclusion:</strong> Success in affiliate marketing requires consistent effort, continuous learning, and strategic execution. Implement these strategies systematically, and you\'ll see significant improvements in your affiliate revenue.</p>',
-                'meta_title' => '10 Proven Affiliate Marketing Strategies for 2026 | DealsIntel',
+                'meta_title' => '10 Proven Affiliate Marketing Strategies for 2026 | ClicksIntel',
                 'meta_description' => 'Learn the top 10 strategies successful affiliates use to maximize revenue in 2026. Boost your affiliate marketing earnings today.',
                 'meta_keywords' => 'affiliate marketing strategies, increase affiliate revenue, affiliate marketing tips, 2026 affiliate marketing',
                 'is_published' => true,
@@ -145,7 +145,7 @@ class BlogSeeder extends Seeder
 <p>Follow these steps to begin your CPA marketing journey:</p>
 
 <h3>1. Join a CPA Network</h3>
-<p>Sign up with reputable CPA networks like DealsIntel. Look for networks with good reputation, quality offers, and reliable tracking.</p>
+<p>Sign up with reputable CPA networks like ClicksIntel. Look for networks with good reputation, quality offers, and reliable tracking.</p>
 
 <h3>2. Choose Your Niche</h3>
 <p>Select a niche you\'re interested in or have knowledge about. Popular niches include:</p>
@@ -180,8 +180,8 @@ class BlogSeeder extends Seeder
 <li>Stay compliant with advertising regulations</li>
 </ul>
 
-<p><strong>Ready to start?</strong> Join DealsIntel today and get access to thousands of high-converting CPA offers!</p>',
-                'meta_title' => 'CPA Marketing Guide for Beginners | DealsIntel',
+<p><strong>Ready to start?</strong> Join ClicksIntel today and get access to thousands of high-converting CPA offers!</p>',
+                'meta_title' => 'CPA Marketing Guide for Beginners | ClicksIntel',
                 'meta_description' => 'Complete beginner\'s guide to CPA marketing. Learn what CPA is, how it works, and how to get started earning today.',
                 'meta_keywords' => 'CPA marketing, cost per action, CPA guide, affiliate marketing for beginners',
                 'is_published' => true,
@@ -242,3 +242,4 @@ class BlogSeeder extends Seeder
         $this->command->info('Sample blog posts created successfully.');
     }
 }
+

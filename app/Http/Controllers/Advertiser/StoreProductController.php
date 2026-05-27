@@ -494,3 +494,4 @@ class StoreProductController extends Controller
         return back()->with('success', 'Product featured status updated successfully!');
     }
 }
+

@@ -93,7 +93,7 @@ class NewConversionNotification extends Notification implements ShouldQueue
             ->line('')
             ->line('📝 Please review and approve or reject this conversion within 7 days.')
             ->action('Review Conversion', route('advertiser.conversions.index'))
-            ->line('Thank you for using DealsIntel!');
+            ->line('Thank you for using ClicksIntel!');
     }
 
     /**
@@ -138,3 +138,4 @@ class NewConversionNotification extends Notification implements ShouldQueue
         return $this->toDatabase($notifiable);
     }
 }
+

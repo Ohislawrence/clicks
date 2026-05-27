@@ -91,3 +91,4 @@ class PayoutRequestReceivedNotification extends Notification implements ShouldQu
         return $this->toDatabase($notifiable);
     }
 }
+

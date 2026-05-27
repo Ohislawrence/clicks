@@ -289,3 +289,4 @@ class CpaleadService
             ->update(['is_active' => false]);
     }
 }
+

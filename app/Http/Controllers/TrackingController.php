@@ -144,7 +144,7 @@ class TrackingController extends Controller
         ];
 
         Cookie::queue(
-            'dealsintel_tracking',
+            'clicksintel_tracking',
             json_encode($cookieData),
             $affiliateLink->offer->cookie_duration * 24 * 60 // Convert days to minutes
         );
@@ -339,7 +339,7 @@ class TrackingController extends Controller
     public function pixel(Request $request)
     {
         // Get tracking data from cookie
-        $cookieData = json_decode($request->cookie('dealsintel_tracking'), true);
+        $cookieData = json_decode($request->cookie('clicksintel_tracking'), true);
 
         if ($cookieData && isset($cookieData['tracking_code'])) {
             // Validate required parameters
@@ -374,3 +374,4 @@ class TrackingController extends Controller
             ->header('Expires', '0');
     }
 }
+

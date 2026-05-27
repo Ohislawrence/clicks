@@ -100,3 +100,4 @@ class OfferApprovedNotification extends Notification implements ShouldQueue
         ];
     }
 }
+

@@ -64,3 +64,4 @@ class AiChatController extends Controller
         ]);
     }
 }
+

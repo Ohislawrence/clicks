@@ -110,3 +110,4 @@ class FrontPageController extends Controller
         return view('front.terms');
     }
 }
+

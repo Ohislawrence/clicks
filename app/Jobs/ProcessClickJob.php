@@ -153,3 +153,4 @@ class ProcessClickJob implements ShouldQueue
         ];
     }
 }
+

@@ -261,3 +261,4 @@ The configuration hides:
 - [x] Production filtering enabled
 
 **Your Telescope setup is complete and secure!** 🔭✨
+

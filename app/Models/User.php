@@ -372,3 +372,4 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->affiliate_code ?? 'Affiliate #' . $this->id;
     }
 }
+

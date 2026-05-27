@@ -253,3 +253,4 @@ class OfferCapService
         Cache::put($cacheKey, true, now()->addHours(24));
     }
 }
+

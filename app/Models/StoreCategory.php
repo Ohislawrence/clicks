@@ -32,3 +32,4 @@ class StoreCategory extends Model
         return $this->belongsToMany(StoreProduct::class, 'store_product_category');
     }
 }
+

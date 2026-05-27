@@ -398,3 +398,4 @@ class OfferController extends Controller
         return back()->with('success', 'Postback secret regenerated. Update your postback URL with the new token.');
     }
 }
+

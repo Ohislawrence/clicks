@@ -119,3 +119,4 @@ class StoreCategoryController extends Controller
             ->with('success', 'Category deleted.');
     }
 }
+

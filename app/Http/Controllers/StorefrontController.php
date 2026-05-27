@@ -678,7 +678,7 @@ class StorefrontController extends Controller
      */
     private function resolveAffiliateLinkFromCookie(Request $request, Store $store): ?\App\Models\AffiliateLink
     {
-        $cookieRaw = $request->cookie('dealsintel_tracking');
+        $cookieRaw = $request->cookie('clicksintel_tracking');
         if (!$cookieRaw) {
             return null;
         }
@@ -776,3 +776,4 @@ class StorefrontController extends Controller
         ]);
     }
 }
+

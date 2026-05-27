@@ -59,3 +59,4 @@ class TestQueueCommand extends Command
         return 0;
     }
 }
+

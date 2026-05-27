@@ -40,3 +40,4 @@ class CreativeController extends Controller
         return back()->with('success', "Creative \"{$creativeName}\" deleted.");
     }
 }
+

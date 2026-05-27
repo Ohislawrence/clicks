@@ -120,3 +120,4 @@ class BlacklistHitNotification extends Notification implements ShouldQueue
         ];
     }
 }
+

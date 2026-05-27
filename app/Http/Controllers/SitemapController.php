@@ -86,3 +86,4 @@ class SitemapController extends Controller
             ->header('Content-Type', 'application/xml');
     }
 }
+

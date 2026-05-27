@@ -151,3 +151,4 @@ class StorePlanController extends Controller
         return back()->with('success', "Store plan {$status} successfully.");
     }
 }
+

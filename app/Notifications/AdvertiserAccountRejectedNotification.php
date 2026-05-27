@@ -37,9 +37,9 @@ class AdvertiserAccountRejectedNotification extends Notification implements Shou
     public function toMail(object $notifiable): MailMessage
     {
         $message = (new MailMessage)
-            ->subject('Account Application - DealsIntel')
+            ->subject('Account Application - ClicksIntel')
             ->greeting('Hello, ' . $notifiable->name)
-            ->line('Thank you for your interest in joining DealsIntel as an advertiser.')
+            ->line('Thank you for your interest in joining ClicksIntel as an advertiser.')
             ->line('')
             ->line('After careful review, we regret to inform you that we are unable to approve your advertiser account at this time.');
         
@@ -90,3 +90,4 @@ class AdvertiserAccountRejectedNotification extends Notification implements Shou
         return $this->toDatabase($notifiable);
     }
 }
+

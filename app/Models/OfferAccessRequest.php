@@ -51,3 +51,4 @@ class OfferAccessRequest extends Model
         return $query->where('status', 'rejected');
     }
 }
+

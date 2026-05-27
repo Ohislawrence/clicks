@@ -528,3 +528,4 @@ class StoreAnalyticsService
         return round((($new - $old) / $old) * 100, 2);
     }
 }
+

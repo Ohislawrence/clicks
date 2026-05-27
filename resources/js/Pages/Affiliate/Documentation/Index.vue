@@ -181,7 +181,7 @@
                         <p class="text-gray-700 mb-4">Every link you generate looks like this:</p>
 
                         <div class="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm mb-4">
-                            https://dealsintel.com/track/<span class="bg-yellow-500 text-gray-900 px-1">ABC123XYZ</span>
+                            https://clicksintel.com/track/<span class="bg-yellow-500 text-gray-900 px-1">ABC123XYZ</span>
                         </div>
 
                         <p class="text-gray-700 mb-4">That highlighted code (<code class="bg-gray-200 px-2 py-1 rounded">ABC123XYZ</code>) is YOUR unique identifier. It's how we know the click came from you!</p>
@@ -805,7 +805,7 @@
                     <h3 class="text-2xl font-bold mb-3">Need More Help?</h3>
                     <p class="mb-6">Our support team is here to help you succeed!</p>
                     <div class="flex justify-center gap-4">
-                        <a href="mailto:support@dealsintel.com" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-purple-50 transition">
+                        <a href="mailto:support@clicksintel.com" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-purple-50 transition">
                             📧 Email Support
                         </a>
                         <a href="#" class="bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-800 transition">
@@ -914,3 +914,5 @@ const isLastStep = (index) => {
     return index === 4;
 };
 </script>
+
+

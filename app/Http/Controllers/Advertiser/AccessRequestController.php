@@ -97,3 +97,4 @@ class AccessRequestController extends Controller
         return back()->with('success', 'Access request rejected.');
     }
 }
+

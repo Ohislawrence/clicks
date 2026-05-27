@@ -183,3 +183,4 @@ class SendWeeklyPerformanceSummaries implements ShouldQueue
         }
     }
 }
+

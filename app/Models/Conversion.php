@@ -101,3 +101,4 @@ class Conversion extends Model
         return $query->where('status', 'paid');
     }
 }
+

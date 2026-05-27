@@ -54,3 +54,4 @@ class OfferPausedNotification extends Notification implements ShouldQueue
         ];
     }
 }
+

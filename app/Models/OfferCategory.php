@@ -27,3 +27,4 @@ class OfferCategory extends Model
         return $this->hasMany(Offer::class, 'category_id');
     }
 }
+

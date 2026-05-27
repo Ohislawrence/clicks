@@ -546,3 +546,4 @@ class StoreController extends Controller
         return redirect($url);
     }
 }
+

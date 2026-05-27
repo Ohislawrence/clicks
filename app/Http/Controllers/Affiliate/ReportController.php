@@ -183,3 +183,4 @@ class ReportController extends Controller
         return (($current - $previous) / $previous) * 100;
     }
 }
+

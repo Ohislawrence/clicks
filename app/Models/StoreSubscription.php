@@ -51,3 +51,4 @@ class StoreSubscription extends Model
         return $this->status === 'paid';
     }
 }
+

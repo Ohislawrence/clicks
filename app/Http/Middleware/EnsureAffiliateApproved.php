@@ -27,3 +27,4 @@ class EnsureAffiliateApproved
         return $next($request);
     }
 }
+

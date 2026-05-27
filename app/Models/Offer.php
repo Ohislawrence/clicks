@@ -349,3 +349,4 @@ class Offer extends Model
             ->first();
     }
 }
+

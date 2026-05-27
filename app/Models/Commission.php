@@ -59,3 +59,4 @@ class Commission extends Model
         return $query->where('status', 'paid');
     }
 }
+

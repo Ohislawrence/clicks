@@ -32,3 +32,4 @@ class StoreTheme extends Model
         return $this->hasMany(Store::class);
     }
 }
+

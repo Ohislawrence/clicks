@@ -138,8 +138,8 @@ MAIL_PORT=2525
 MAIL_USERNAME=your_username
 MAIL_PASSWORD=your_password
 MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS=noreply@dealsintel.com
-MAIL_FROM_NAME="DealsIntel Platform"
+MAIL_FROM_ADDRESS=noreply@clicksintel.com
+MAIL_FROM_NAME="ClicksIntel Platform"
 ```
 
 ### Testing
@@ -803,3 +803,6 @@ npm run dev
 **Implementation Date:** May 1, 2026  
 **Version:** 1.0.0  
 **Status:** ✅ Production Ready
+
+
+

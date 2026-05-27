@@ -30,3 +30,4 @@ class PendingApprovalController extends Controller
         ]);
     }
 }
+

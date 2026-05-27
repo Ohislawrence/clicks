@@ -81,3 +81,4 @@ class OfferRejectedNotification extends Notification implements ShouldQueue
         ];
     }
 }
+

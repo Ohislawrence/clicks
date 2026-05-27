@@ -76,3 +76,4 @@ class ReferralCapReachedNotification extends Notification implements ShouldQueue
         ];
     }
 }
+

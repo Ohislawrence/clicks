@@ -115,3 +115,4 @@ class TierUpgradedNotification extends Notification implements ShouldQueue
         return $this->toDatabase($notifiable);
     }
 }
+

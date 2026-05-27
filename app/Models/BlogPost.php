@@ -95,3 +95,4 @@ class BlogPost extends Model
         return ceil($wordCount / 200); // Average reading speed
     }
 }
+

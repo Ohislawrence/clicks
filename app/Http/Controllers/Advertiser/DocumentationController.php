@@ -12,3 +12,4 @@ class DocumentationController extends Controller
         return Inertia::render('Advertiser/Documentation/Index');
     }
 }
+

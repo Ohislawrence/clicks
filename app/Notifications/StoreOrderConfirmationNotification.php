@@ -98,3 +98,4 @@ class StoreOrderConfirmationNotification extends Notification implements ShouldQ
         ];
     }
 }
+

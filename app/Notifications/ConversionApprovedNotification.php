@@ -88,3 +88,4 @@ class ConversionApprovedNotification extends Notification implements ShouldQueue
         return $this->toDatabase($notifiable);
     }
 }
+

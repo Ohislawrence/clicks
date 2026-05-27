@@ -86,3 +86,4 @@ class StoreSubscriptionRenewedNotification extends Notification implements Shoul
         ];
     }
 }
+

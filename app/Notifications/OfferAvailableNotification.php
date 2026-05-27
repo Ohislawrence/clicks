@@ -69,3 +69,4 @@ class OfferAvailableNotification extends Notification implements ShouldQueue
         ];
     }
 }
+

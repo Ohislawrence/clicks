@@ -104,3 +104,4 @@ class OfferAccessRejectedNotification extends Notification implements ShouldQueu
         return $this->toDatabase($notifiable);
     }
 }
+

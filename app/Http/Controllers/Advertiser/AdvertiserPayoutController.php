@@ -129,3 +129,4 @@ class AdvertiserPayoutController extends Controller
         return back()->with('success', 'Withdrawal cancelled and funds returned to your balance.');
     }
 }
+

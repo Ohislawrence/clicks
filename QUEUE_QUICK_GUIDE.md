@@ -1,4 +1,4 @@
-# DealsIntel - Queue System Quick Guide
+# ClicksIntel - Queue System Quick Guide
 
 ## 🚀 Starting the Queue Worker
 
@@ -60,7 +60,7 @@ php artisan queue:flush
 ### 1. Test Click Tracking
 Visit a tracking URL:
 ```
-http://dealsintel.test/track/{tracking_code}
+http://clicksintel.test/track/{tracking_code}
 ```
 
 Check the `jobs` table - a `ProcessClickJob` should appear.
@@ -69,7 +69,7 @@ Check the `jobs` table - a `ProcessClickJob` should appear.
 
 #### Via Postback (cURL):
 ```bash
-curl -X POST http://dealsintel.test/postback \
+curl -X POST http://clicksintel.test/postback \
   -H "Content-Type: application/json" \
   -d '{
     "tracking_code": "YOUR_TRACKING_CODE",
@@ -80,7 +80,7 @@ curl -X POST http://dealsintel.test/postback \
 
 #### Via Pixel (HTML):
 ```html
-<img src="http://dealsintel.test/pixel?value=100.00&txn_id=TEST123" width="1" height="1" />
+<img src="http://clicksintel.test/pixel?value=100.00&txn_id=TEST123" width="1" height="1" />
 ```
 
 ---
@@ -147,3 +147,4 @@ storage/logs/laravel.log
 ---
 
 **For detailed documentation, see:** `PHASE1_IMPLEMENTATION.md`
+

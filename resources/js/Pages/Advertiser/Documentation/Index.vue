@@ -522,7 +522,7 @@ POST /api/postback
                                         <div class="flex-grow">
                                             <div class="font-bold text-gray-800 mb-1">Copy this code:</div>
                                             <div class="bg-gray-900 text-gray-100 p-4 rounded-lg font-mono text-xs overflow-x-auto mb-2">
-                                                &lt;img src="https://dealsintel.com/pixel?value=<span class="text-yellow-400">100.00</span>&txn_id=<span class="text-yellow-400">ORDER123</span>" width="1" height="1" style="display:none" /&gt;
+                                                &lt;img src="https://clicksintel.com/pixel?value=<span class="text-yellow-400">100.00</span>&txn_id=<span class="text-yellow-400">ORDER123</span>" width="1" height="1" style="display:none" /&gt;
                                             </div>
                                             <div class="text-sm text-gray-600">
                                                 ☝️ This is a tiny invisible 1x1 pixel image. When it loads, we know a sale happened!
@@ -580,7 +580,7 @@ POST /api/postback
                                         <div class="flex-grow">
                                             <div class="font-bold text-gray-800 mb-1">Test it:</div>
                                             <div class="bg-blue-50 p-3 rounded-lg border border-blue-300">
-                                                <p class="text-sm text-gray-700 mb-2">Make a test purchase on your website. After checkout, check your DealsIntel dashboard. You should see a new conversion! 🎉</p>
+                                                <p class="text-sm text-gray-700 mb-2">Make a test purchase on your website. After checkout, check your ClicksIntel dashboard. You should see a new conversion! 🎉</p>
                                                 <div class="text-xs text-blue-700">💡 Tip: Use a test order or your own purchase to verify it works before going live.</div>
                                             </div>
                                         </div>
@@ -600,7 +600,7 @@ POST /api/postback
                                     <div class="bg-white p-3 rounded border">
                                         <div class="font-semibold text-sm text-purple-700 mb-1">WordPress/WooCommerce:</div>
                                         <code class="text-xs bg-gray-100 p-2 rounded block overflow-x-auto">
-                                            &lt;img src="https://dealsintel.com/pixel?value=<span class="text-red-600">&lt;?php echo $order->get_total(); ?&gt;</span>&txn_id=<span class="text-red-600">&lt;?php echo $order->get_order_number(); ?&gt;</span>" width="1" height="1" style="display:none" /&gt;
+                                            &lt;img src="https://clicksintel.com/pixel?value=<span class="text-red-600">&lt;?php echo $order->get_total(); ?&gt;</span>&txn_id=<span class="text-red-600">&lt;?php echo $order->get_order_number(); ?&gt;</span>" width="1" height="1" style="display:none" /&gt;
                                         </code>
 
                                         <!-- WooCommerce Real Example -->
@@ -609,7 +609,7 @@ POST /api/postback
                                             <div class="bg-white p-2 rounded mb-2">
                                                 <div class="text-xs text-gray-500 mb-1">If customer bought items worth ₦25,450.00 and order number is #7834:</div>
                                                 <code class="text-xs text-green-700 font-mono">
-                                                    &lt;img src="https://dealsintel.com/pixel?value=<strong>25450.00</strong>&txn_id=<strong>7834</strong>" width="1" height="1" style="display:none" /&gt;
+                                                    &lt;img src="https://clicksintel.com/pixel?value=<strong>25450.00</strong>&txn_id=<strong>7834</strong>" width="1" height="1" style="display:none" /&gt;
                                                 </code>
                                             </div>
                                             <div class="text-xs text-purple-800">
@@ -621,7 +621,7 @@ POST /api/postback
                                     <div class="bg-white p-3 rounded border">
                                         <div class="font-semibold text-sm text-blue-700 mb-1">Shopify:</div>
                                         <code class="text-xs bg-gray-100 p-2 rounded block overflow-x-auto" v-pre>
-                                            &lt;img src="https://dealsintel.com/pixel?value=<span class="text-red-600">{{ order.total_price }}</span>&txn_id=<span class="text-red-600">{{ order.order_number }}</span>" width="1" height="1" style="display:none" /&gt;
+                                            &lt;img src="https://clicksintel.com/pixel?value=<span class="text-red-600">{{ order.total_price }}</span>&txn_id=<span class="text-red-600">{{ order.order_number }}</span>" width="1" height="1" style="display:none" /&gt;
                                         </code>
 
                                         <!-- Shopify Real Example -->
@@ -630,7 +630,7 @@ POST /api/postback
                                             <div class="bg-white p-2 rounded mb-2">
                                                 <div class="text-xs text-gray-500 mb-1">If customer bought items worth ₦149.99 and order number is #1234:</div>
                                                 <code class="text-xs text-green-700 font-mono">
-                                                    &lt;img src="https://dealsintel.com/pixel?value=<strong>149.99</strong>&txn_id=<strong>1234</strong>" width="1" height="1" style="display:none" /&gt;
+                                                    &lt;img src="https://clicksintel.com/pixel?value=<strong>149.99</strong>&txn_id=<strong>1234</strong>" width="1" height="1" style="display:none" /&gt;
                                                 </code>
                                             </div>
                                             <div class="text-xs text-blue-800">
@@ -709,7 +709,7 @@ POST /api/postback
 
                                     <div class="bg-gray-900 text-gray-100 p-4 rounded-lg mb-6 font-mono text-sm overflow-x-auto">
                                         <div class="text-green-400">POST</div>
-                                        <div class="text-yellow-400">https://dealsintel.com/api/postback</div>
+                                        <div class="text-yellow-400">https://clicksintel.com/api/postback</div>
                                     </div>
 
                                     <!-- Secret Token Explanation -->
@@ -778,7 +778,7 @@ POST /api/postback
                                         <div class="mb-4">
                                             <div class="bg-blue-100 px-3 py-1 rounded-t text-sm font-semibold text-blue-900">Format 1 — JSON body <span class="font-normal">(recommended for server-side code)</span></div>
                                             <div class="bg-gray-900 text-gray-100 p-4 rounded-b font-mono text-xs overflow-x-auto">
-<span class="text-blue-400">POST</span> <span class="text-yellow-400">https://dealsintel.com/api/postback</span>
+<span class="text-blue-400">POST</span> <span class="text-yellow-400">https://clicksintel.com/api/postback</span>
 <span class="text-gray-500">Content-Type: application/json</span>
 
 {
@@ -795,7 +795,7 @@ POST /api/postback
                                         <div class="mb-4">
                                             <div class="bg-orange-100 px-3 py-1 rounded-t text-sm font-semibold text-orange-900">Format 2 — Query-string URL <span class="font-normal">(simpler for basic scripts)</span></div>
                                             <div class="bg-gray-900 text-gray-100 p-4 rounded-b font-mono text-xs overflow-x-auto break-all">
-<span class="text-blue-400">POST</span> <span class="text-yellow-400">https://dealsintel.com/api/postback</span>?<span class="text-green-400">tracking_code</span>=ABC123def456&amp;<span class="text-green-400">token</span>=YOUR_SECRET_TOKEN&amp;<span class="text-green-400">conversion_value</span>=1500.00&amp;<span class="text-green-400">transaction_id</span>=ORDER-789
+<span class="text-blue-400">POST</span> <span class="text-yellow-400">https://clicksintel.com/api/postback</span>?<span class="text-green-400">tracking_code</span>=ABC123def456&amp;<span class="text-green-400">token</span>=YOUR_SECRET_TOKEN&amp;<span class="text-green-400">conversion_value</span>=1500.00&amp;<span class="text-green-400">transaction_id</span>=ORDER-789
                                             </div>
                                             <p class="text-xs text-gray-500 mt-1 px-1">Note: this is still a POST request — not a GET. The parameters are in the URL, but the HTTP method must be POST.</p>
                                         </div>
@@ -818,7 +818,7 @@ $_SESSION['affiliate_tracking_code'] = $_GET['tracking_code'] ?? null;
 <span class="text-gray-500">// Step 2: When order is completed — fire the postback</span>
 $trackingCode = $_SESSION['affiliate_tracking_code'];
 if ($trackingCode) {
-    Http::post('https://dealsintel.com/api/postback', [
+    Http::post('https://clicksintel.com/api/postback', [
         'tracking_code'    => $trackingCode,
         'token'            => 'YOUR_OFFER_POSTBACK_SECRET', <span class="text-gray-500">// From offer settings</span>
         'conversion_value' => $order->total,
@@ -839,7 +839,7 @@ req.session.affiliateTrackingCode = req.query.tracking_code || null;
 <span class="text-gray-500">// Step 2: When order is completed — fire the postback</span>
 const trackingCode = req.session.affiliateTrackingCode;
 if (trackingCode) {
-  await fetch('https://dealsintel.com/api/postback', {
+  await fetch('https://clicksintel.com/api/postback', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -865,7 +865,7 @@ request.session['affiliate_tracking_code'] = request.GET.get('tracking_code')
 import requests as http_client
 tracking_code = request.session.get('affiliate_tracking_code')
 if tracking_code:
-    http_client.post('https://dealsintel.com/api/postback', json={
+    http_client.post('https://clicksintel.com/api/postback', json={
         'tracking_code':    tracking_code,
         'token':            'YOUR_OFFER_POSTBACK_SECRET',  <span class="text-gray-500"># From offer settings</span>
         'conversion_value': order.total,
@@ -886,7 +886,7 @@ if tracking_code:
                                             <li>Click it yourself (use incognito mode)</li>
                                             <li>Notice the <code class="bg-gray-200 px-1">?tracking_code=...</code> in your URL — save this value</li>
                                             <li>Make a test purchase on your site, then fire the postback</li>
-                                            <li>Check your DealsIntel dashboard—you should see the conversion! 🎉</li>
+                                            <li>Check your ClicksIntel dashboard—you should see the conversion! 🎉</li>
                                         </ol>
                                     </div>
                                 </div>
@@ -1161,7 +1161,7 @@ if tracking_code:
                                     </div>
                                     <div class="bg-white rounded-lg p-4 flex-grow shadow">
                                         <div class="font-bold text-lg mb-1">User Clicks Affiliate Link</div>
-                                        <div class="text-sm text-gray-600 mb-2">Affiliate shares: <code class="bg-gray-100 px-2 py-1 rounded">https://dealsintel.com/track/ABC123</code></div>
+                                        <div class="text-sm text-gray-600 mb-2">Affiliate shares: <code class="bg-gray-100 px-2 py-1 rounded">https://clicksintel.com/track/ABC123</code></div>
                                         <div class="flex items-center text-xs text-gray-500">
                                             <span class="mr-2">⏱️</span>
                                             <span>Instant redirect</span>
@@ -2152,7 +2152,7 @@ if tracking_code:
                     <h3 class="text-2xl font-bold mb-3">Need Integration Help?</h3>
                     <p class="mb-6">Our technical support team can help you get set up!</p>
                     <div class="flex justify-center gap-4">
-                        <a href="mailto:integration@dealsintel.com" class="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">
+                        <a href="mailto:integration@clicksintel.com" class="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">
                             📧 Integration Support
                         </a>
                         <a href="#" class="bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800 transition">

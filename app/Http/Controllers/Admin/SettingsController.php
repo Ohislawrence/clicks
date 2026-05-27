@@ -61,3 +61,4 @@ class SettingsController extends Controller
         return back()->with('success', 'Settings updated successfully.');
     }
 }
+

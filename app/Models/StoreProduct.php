@@ -103,3 +103,4 @@ class StoreProduct extends Model
         return $this->isDigital() && ($this->download_file || $this->download_url);
     }
 }
+

@@ -205,8 +205,8 @@ Date, Clicks, Conversions, Revenue, Commissions, CR (%), EPC
 
 **Filename Format:**
 ```
-dealsintel_{type}_{Y-m-d_His}.csv
-Example: dealsintel_stats_2026-05-01_143025.csv
+clicksintel_{type}_{Y-m-d_His}.csv
+Example: clicksintel_stats_2026-05-01_143025.csv
 ```
 
 ---
@@ -643,3 +643,4 @@ CREATE INDEX idx_conversions_created ON conversions(created_at);
 
 **Implementation Date:** May 1, 2026  
 **Status:** Backend complete, ready for production
+

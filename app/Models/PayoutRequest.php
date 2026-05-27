@@ -55,3 +55,4 @@ class PayoutRequest extends Model
         return $query->where('status', 'failed');
     }
 }
+

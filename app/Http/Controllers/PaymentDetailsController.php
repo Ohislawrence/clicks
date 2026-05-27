@@ -35,3 +35,4 @@ class PaymentDetailsController extends Controller
         return back()->with('success', 'Payment details updated successfully.');
     }
 }
+

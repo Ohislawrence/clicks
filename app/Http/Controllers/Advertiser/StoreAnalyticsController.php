@@ -39,3 +39,4 @@ class StoreAnalyticsController extends Controller
         ]);
     }
 }
+

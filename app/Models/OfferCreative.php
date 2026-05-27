@@ -49,3 +49,4 @@ class OfferCreative extends Model
         return null;
     }
 }
+

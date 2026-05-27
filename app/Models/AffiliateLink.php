@@ -190,3 +190,4 @@ class AffiliateLink extends Model
         ];
     }
 }
+

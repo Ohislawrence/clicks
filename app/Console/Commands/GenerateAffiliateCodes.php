@@ -57,3 +57,4 @@ class GenerateAffiliateCodes extends Command
         return 0;
     }
 }
+

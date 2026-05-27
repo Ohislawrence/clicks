@@ -43,8 +43,8 @@ class DeepseekController extends Controller
 
         $lead = [
             'name' => 'Admin Test Lead',
-            'email' => 'test+deepseek@dealsintel.local',
-            'company' => 'DealsIntel',
+            'email' => 'test+deepseek@clicksintel.local',
+            'company' => 'ClicksIntel',
             'industry' => 'affiliate marketing',
             'intent' => 'Evaluate customer acquisition and offer recommendation workflows',
             'budget' => 'medium',
@@ -62,3 +62,4 @@ class DeepseekController extends Controller
         return back()->with('success', 'Deepseek workflow test has been queued. Review the last workflow result on the settings page after the job runs.');
     }
 }
+

@@ -353,3 +353,4 @@ class StoreSubscriptionService
         return 'SUB_' . strtoupper(Str::random(20)) . '_' . time();
     }
 }
+

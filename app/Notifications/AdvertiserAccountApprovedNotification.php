@@ -35,7 +35,7 @@ class AdvertiserAccountApprovedNotification extends Notification implements Shou
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('✅ Account Approved - Welcome to DealsIntel!')
+            ->subject('✅ Account Approved - Welcome to ClicksIntel!')
             ->greeting('Congratulations, ' . $notifiable->name . '!')
             ->line('Your advertiser account has been approved! 🎉')
             ->line('')
@@ -83,3 +83,4 @@ class AdvertiserAccountApprovedNotification extends Notification implements Shou
         return $this->toDatabase($notifiable);
     }
 }
+

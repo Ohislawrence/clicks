@@ -194,3 +194,4 @@ class WeeklyPerformanceSummaryNotification extends Notification implements Shoul
         return $this->toDatabase($notifiable);
     }
 }
+

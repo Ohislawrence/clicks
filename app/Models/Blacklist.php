@@ -128,3 +128,4 @@ class Blacklist extends Model
         });
     }
 }
+

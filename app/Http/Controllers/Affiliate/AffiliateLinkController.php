@@ -123,3 +123,4 @@ class AffiliateLinkController extends Controller
         }
     }
 }
+

@@ -103,3 +103,4 @@ class AdvertiserPayoutController extends Controller
         return back()->with('success', 'Payout rejected and funds returned to advertiser balance.');
     }
 }
+

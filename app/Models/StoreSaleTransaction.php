@@ -50,3 +50,4 @@ class StoreSaleTransaction extends Model
         return $this->belongsTo(User::class, 'affiliate_id');
     }
 }
+

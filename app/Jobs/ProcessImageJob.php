@@ -139,3 +139,4 @@ class ProcessImageJob implements ShouldQueue
         ]);
     }
 }
+

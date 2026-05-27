@@ -42,3 +42,4 @@ class WalletDepositNotification extends Notification implements ShouldQueue
         ];
     }
 }
+

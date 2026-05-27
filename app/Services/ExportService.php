@@ -293,6 +293,7 @@ class ExportService
     public function getExportFilename(string $type): string
     {
         $timestamp = now()->format('Y-m-d_His');
-        return "dealsintel_{$type}_{$timestamp}.csv";
+        return "clicksintel_{$type}_{$timestamp}.csv";
     }
 }
+

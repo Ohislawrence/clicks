@@ -26,9 +26,9 @@ class AffiliateAccountRejectedNotification extends Notification implements Shoul
     public function toMail(object $notifiable): MailMessage
     {
         $message = (new MailMessage)
-            ->subject('Account Application Update - DealsIntel')
+            ->subject('Account Application Update - ClicksIntel')
             ->greeting('Hello, ' . $notifiable->name)
-            ->line('Thank you for your interest in joining DealsIntel as an affiliate.')
+            ->line('Thank you for your interest in joining ClicksIntel as an affiliate.')
             ->line('')
             ->line('After reviewing your application, we are unable to approve your account at this time.');
 
@@ -40,7 +40,7 @@ class AffiliateAccountRejectedNotification extends Notification implements Shoul
 
         $message->line('')
             ->line('If you believe this decision was made in error or wish to provide additional information, please contact our support team.')
-            ->action('Contact Support', 'mailto:support@dealsintel.com');
+            ->action('Contact Support', 'mailto:support@clicksintel.com');
 
         return $message;
     }
@@ -53,3 +53,6 @@ class AffiliateAccountRejectedNotification extends Notification implements Shoul
         ];
     }
 }
+
+
+

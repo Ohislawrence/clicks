@@ -229,3 +229,4 @@ class Store extends Model
         return now()->diffInDays($this->subscription_end_date, false);
     }
 }
+

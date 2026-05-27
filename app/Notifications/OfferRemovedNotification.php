@@ -72,3 +72,4 @@ class OfferRemovedNotification extends Notification implements ShouldQueue
         ];
     }
 }
+

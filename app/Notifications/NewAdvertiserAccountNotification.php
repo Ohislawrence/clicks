@@ -96,3 +96,4 @@ class NewAdvertiserAccountNotification extends Notification implements ShouldQue
         return $this->toDatabase($notifiable);
     }
 }
+

@@ -183,3 +183,4 @@ class OfferController extends Controller
         return back()->with('success', 'Access request submitted successfully!');
     }
 }
+

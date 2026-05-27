@@ -183,7 +183,7 @@ print_r($click->fraud_indicators);
 ### **Export Report**
 ```bash
 # Visit in browser or curl
-curl "https://dealsintel.com/admin/reports/export/stats?date_from=2026-04-01&date_to=2026-05-01" > stats.csv
+curl "https://clicksintel.com/admin/reports/export/stats?date_from=2026-04-01&date_to=2026-05-01" > stats.csv
 ```
 
 ---
@@ -224,3 +224,6 @@ Edit `ProcessClickJob.php`:
 ---
 
 **For full documentation, see:** `PHASE3_IMPLEMENTATION.md`
+
+
+

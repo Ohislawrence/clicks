@@ -110,3 +110,4 @@ class PayoutController extends Controller
         return back()->with('success', 'Payout marked as completed.');
     }
 }
+

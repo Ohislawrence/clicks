@@ -63,3 +63,4 @@ class LinkRotationGroup extends Model
         return $this->hasMany(AffiliateLink::class, 'rotation_group_id');
     }
 }
+

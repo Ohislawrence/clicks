@@ -46,7 +46,7 @@ class SendPostbackJob implements ShouldQueue
             // Send HTTP request with timeout
             $response = Http::timeout(30)
                 ->withHeaders([
-                    'User-Agent' => 'DealsIntel-Tracking/1.0',
+                    'User-Agent' => 'ClicksIntel-Tracking/1.0',
                     'X-Conversion-ID' => $this->conversion->id,
                 ])
                 ->get($url);
@@ -153,3 +153,4 @@ class SendPostbackJob implements ShouldQueue
         ]);
     }
 }
+

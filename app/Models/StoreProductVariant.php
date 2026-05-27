@@ -38,3 +38,4 @@ class StoreProductVariant extends Model
         return $this->stock_quantity === null || $this->stock_quantity > 0;
     }
 }
+

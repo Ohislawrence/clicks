@@ -151,7 +151,7 @@ $link = AffiliateLink::first();
 $url = route('track', ['trackingCode' => $link->tracking_code]);
 
 # Visit the URL in browser or curl
-curl -L "http://dealsintel.test/track/{tracking_code}"
+curl -L "http://clicksintel.test/track/{tracking_code}"
 ```
 
 ### **4. Test Conversion Tracking**
@@ -159,7 +159,7 @@ curl -L "http://dealsintel.test/track/{tracking_code}"
 #### **Postback Method (S2S):**
 ```bash
 # Get your postback_secret from the offer settings page in the advertiser dashboard
-curl -X POST https://dealsintel.com/api/postback \
+curl -X POST https://clicksintel.com/api/postback \
   -H "Content-Type: application/json" \
   -d '{
     "tracking_code": "YOUR_TRACKING_CODE",
@@ -172,7 +172,7 @@ curl -X POST https://dealsintel.com/api/postback \
 #### **Pixel Method (Browser):**
 ```html
 <!-- Place this on your thank-you/success page -->
-<img src="http://dealsintel.test/pixel?value=100.00&txn_id=ORDER123" width="1" height="1" />
+<img src="http://clicksintel.test/pixel?value=100.00&txn_id=ORDER123" width="1" height="1" />
 ```
 
 ### **5. Test Advertiser Postback**
@@ -230,7 +230,7 @@ For high traffic, consider:
 
 2. **Supervisor** (recommended for production):
    ```ini
-   [program:dealsintel-worker]
+   [program:clicksintel-worker]
    command=php /path/to/artisan queue:work --tries=3 --timeout=120
    numprocs=4
    autostart=true
@@ -312,3 +312,6 @@ php artisan queue:retry all
 
 **Implementation Date:** May 1, 2026  
 **Status:** ✅ Complete & Tested
+
+
+

@@ -53,3 +53,4 @@ class NewAffiliateAccountNotification extends Notification implements ShouldQueu
         ];
     }
 }
+

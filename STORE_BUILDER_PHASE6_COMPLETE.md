@@ -379,10 +379,10 @@ Ensure queue worker is running (required for processing jobs):
 
 **Option A: Supervisor (recommended for production)**
 
-Create supervisor config: `/etc/supervisor/conf.d/dealsintel-worker.conf`
+Create supervisor config: `/etc/supervisor/conf.d/clicksintel-worker.conf`
 
 ```ini
-[program:dealsintel-worker]
+[program:clicksintel-worker]
 process_name=%(program_name)s_%(process_num)02d
 command=php /home/boomcvmo/clicksintel.com/artisan queue:work --sleep=3 --tries=3 --max-time=3600
 autostart=true
@@ -400,16 +400,16 @@ stopwaitsecs=3600
 ```bash
 sudo supervisorctl reread
 sudo supervisorctl update
-sudo supervisorctl start dealsintel-worker:*
+sudo supervisorctl start clicksintel-worker:*
 ```
 
 **Option B: Systemd Service**
 
-Create service file: `/etc/systemd/system/dealsintel-worker.service`
+Create service file: `/etc/systemd/system/clicksintel-worker.service`
 
 ```ini
 [Unit]
-Description=DealsIntel Queue Worker
+Description=ClicksIntel Queue Worker
 After=network.target
 
 [Service]
@@ -426,9 +426,9 @@ WantedBy=multi-user.target
 
 **Enable and start:**
 ```bash
-sudo systemctl enable dealsintel-worker
-sudo systemctl start dealsintel-worker
-sudo systemctl status dealsintel-worker
+sudo systemctl enable clicksintel-worker
+sudo systemctl start clicksintel-worker
+sudo systemctl status clicksintel-worker
 ```
 
 ### 3. Monitoring
@@ -689,3 +689,4 @@ The subscription lifecycle is now fully automated, ensuring:
 - [PAYMENT_GATEWAY_SETUP_GUIDE.md](PAYMENT_GATEWAY_SETUP_GUIDE.md) - Payment configuration guide
 
 **Phase 6 Status:** ✅ COMPLETE
+

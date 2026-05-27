@@ -19,7 +19,7 @@ class AffiliateAccountApprovedNotification extends Notification implements Shoul
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('✅ Account Approved - Welcome to DealsIntel!')
+            ->subject('✅ Account Approved - Welcome to ClicksIntel!')
             ->greeting('Congratulations, ' . $notifiable->name . '!')
             ->line('Your affiliate account has been reviewed and approved! 🎉')
             ->line('')
@@ -43,3 +43,4 @@ class AffiliateAccountApprovedNotification extends Notification implements Shoul
         ];
     }
 }
+

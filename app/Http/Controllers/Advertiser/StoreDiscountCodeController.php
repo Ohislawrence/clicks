@@ -144,3 +144,4 @@ class StoreDiscountCodeController extends Controller
         return back()->with('success', 'Discount code status updated.');
     }
 }
+

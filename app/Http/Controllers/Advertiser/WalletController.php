@@ -196,3 +196,4 @@ class WalletController extends Controller
             ($additionalCap > 0 ? "Conversion cap increased by {$additionalCap}." : ''));
     }
 }
+

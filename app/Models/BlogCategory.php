@@ -52,3 +52,4 @@ class BlogCategory extends Model
             ->orderBy('published_at', 'desc');
     }
 }
+
