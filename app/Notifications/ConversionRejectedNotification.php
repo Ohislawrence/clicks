@@ -40,8 +40,8 @@ class ConversionRejectedNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $conversion = $this->conversion;
-        $commission = $conversion->commission ?? 0;
-        
+        $commission = $conversion->commission_amount ?? 0;
+
         $message = (new MailMessage)
             ->subject('Conversion Declined - ' . ($conversion->offer->name ?? 'Offer'))
             ->greeting('Hello, ' . $notifiable->name)
@@ -52,13 +52,13 @@ class ConversionRejectedNotification extends Notification implements ShouldQueue
             ->line('- **Commission Amount**: $' . number_format($commission, 2))
             ->line('- **Conversion ID**: ' . $conversion->conversion_id)
             ->line('- **Date**: ' . $conversion->created_at->format('M d, Y H:i'));
-        
+
         if ($this->reason) {
             $message->line('')
                 ->line('**Reason for Decline:**')
                 ->line($this->reason);
         }
-        
+
         $message->line('')
             ->line('💡 **Tips to avoid rejections:**')
             ->line('- Ensure traffic quality and relevance')
@@ -67,7 +67,7 @@ class ConversionRejectedNotification extends Notification implements ShouldQueue
             ->line('- Contact the advertiser for clarification')
             ->action('View Dashboard', route('affiliate.dashboard'))
             ->line('If you believe this was declined in error, please contact support.');
-        
+
         return $message;
     }
 
@@ -79,7 +79,7 @@ class ConversionRejectedNotification extends Notification implements ShouldQueue
     public function toDatabase(object $notifiable): array
     {
         $conversion = $this->conversion;
-        
+
         return [
             'type' => 'conversion_rejected',
             'title' => 'Conversion Declined',

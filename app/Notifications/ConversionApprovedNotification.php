@@ -38,8 +38,8 @@ class ConversionApprovedNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $conversion = $this->conversion;
-        $commission = $conversion->commission ?? 0;
-        
+        $commission = $conversion->commission_amount ?? 0;
+
         return (new MailMessage)
             ->subject('✅ Conversion Approved - $' . number_format($commission, 2) . ' Added to Your Balance')
             ->greeting('Congratulations, ' . $notifiable->name . '!')
@@ -66,15 +66,15 @@ class ConversionApprovedNotification extends Notification implements ShouldQueue
     public function toDatabase(object $notifiable): array
     {
         $conversion = $this->conversion;
-        
+
         return [
             'type' => 'conversion_approved',
             'title' => 'Conversion Approved!',
-            'message' => 'Your commission of $' . number_format($conversion->commission ?? 0, 2) . ' has been approved and added to your balance.',
+            'message' => 'Your commission of $' . number_format($conversion->commission_amount ?? 0, 2) . ' has been approved and added to your balance.',
             'action_url' => route('affiliate.payouts.index'),
             'action_text' => 'View Balance',
             'conversion_id' => $conversion->id,
-            'amount' => $conversion->commission ?? 0,
+            'amount' => $conversion->commission_amount ?? 0,
         ];
     }
 

@@ -2,7 +2,7 @@
 
 use App\Jobs\SendWeeklyPerformanceSummaries;
 use App\Jobs\CheckStoreSubscriptionExpiryJob;
-use App\Services\CpaleadService;
+// use App\Services\CpaleadService;
 use App\Services\OfferCapService;
 use App\Services\TierService;
 use App\Models\User;
@@ -14,45 +14,45 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote')->hourly();
 
-Artisan::command('cpalead:sync {--disable-missing}', function () {
-    $service = app(CpaleadService::class);
-
-    if (! $service->isConfigured()) {
-        $this->error('CPAlead service is not fully configured. Please set CPALEAD_API_KEY, CPALEAD_BASE_URL and CPALEAD_ADVERTISER_ID in your environment.');
-        return 1;
-    }
-
-    $this->info('Fetching offers from CPAlead...');
-    $rawOffers = $service->fetchOffers();
-
-    if (empty($rawOffers)) {
-        $this->warn('No offers were returned from the CPAlead API. Check your configuration and network connectivity.');
-        return 0;
-    }
-
-    if ($this->option('disable-missing')) {
-        config(['services.cpalead.disable_missing_offers' => true]);
-    }
-
-    $this->info('Importing offers...');
-    $results = $service->importOffers($rawOffers);
-
-    $created = collect($results)->where('status', 'created')->count();
-    $updated = collect($results)->where('status', 'updated')->count();
-
-    $this->info("Imported {$created} new CPAlead offers.");
-    $this->info("Updated {$updated} existing CPAlead offers.");
-
-    if ($this->option('disable-missing')) {
-        $this->info('Any CPAlead offers not returned by the API were deactivated.');
-    }
-
-    return 0;
-})->purpose('Sync CPAlead offers into the platform');
-
-Schedule::command('cpalead:sync')
-    ->hourly()
-    ->description('Sync CPAlead offers into the platform');
+// Artisan::command('cpalead:sync {--disable-missing}', function () {
+//     $service = app(CpaleadService::class);
+//
+//     if (! $service->isConfigured()) {
+//         $this->error('CPAlead service is not fully configured. Please set CPALEAD_API_KEY, CPALEAD_BASE_URL and CPALEAD_ADVERTISER_ID in your environment.');
+//         return 1;
+//     }
+//
+//     $this->info('Fetching offers from CPAlead...');
+//     $rawOffers = $service->fetchOffers();
+//
+//     if (empty($rawOffers)) {
+//         $this->warn('No offers were returned from the CPAlead API. Check your configuration and network connectivity.');
+//         return 0;
+//     }
+//
+//     if ($this->option('disable-missing')) {
+//         config(['services.cpalead.disable_missing_offers' => true]);
+//     }
+//
+//     $this->info('Importing offers...');
+//     $results = $service->importOffers($rawOffers);
+//
+//     $created = collect($results)->where('status', 'created')->count();
+//     $updated = collect($results)->where('status', 'updated')->count();
+//
+//     $this->info("Imported {$created} new CPAlead offers.");
+//     $this->info("Updated {$updated} existing CPAlead offers.");
+//
+//     if ($this->option('disable-missing')) {
+//         $this->info('Any CPAlead offers not returned by the API were deactivated.');
+//     }
+//
+//     return 0;
+// })->purpose('Sync CPAlead offers into the platform');
+//
+// Schedule::command('cpalead:sync')
+//     ->hourly()
+//     ->description('Sync CPAlead offers into the platform');
 
 // Reset daily offer caps at midnight
 Schedule::call(function () {

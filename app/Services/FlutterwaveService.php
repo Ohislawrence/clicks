@@ -36,17 +36,19 @@ class FlutterwaveService
                 'beneficiary_name' => $accountName,
             ]);
 
-            if ($response->successful() && $response->json()['status'] === 'success') {
+            $data = $response->json();
+
+            if ($response->successful() && ($data['status'] ?? '') === 'success') {
                 return [
                     'success' => true,
-                    'data' => $response->json()['data'],
+                    'data' => $data['data'] ?? [],
                 ];
             }
 
-            Log::error('Flutterwave Transfer Error', $response->json());
+            Log::error('Flutterwave Transfer Error', $data ?? []);
             return [
                 'success' => false,
-                'message' => $response->json()['message'] ?? 'Failed to initiate transfer',
+                'message' => $data['message'] ?? 'Failed to initiate transfer',
             ];
         } catch (\Exception $e) {
             Log::error('Flutterwave Exception', ['message' => $e->getMessage()]);

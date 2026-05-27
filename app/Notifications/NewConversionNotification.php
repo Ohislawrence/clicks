@@ -40,20 +40,19 @@ class NewConversionNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $conversion = $this->conversion;
-        
+
         if ($this->recipientType === 'affiliate') {
             return $this->affiliateEmail($notifiable);
         }
-        
+
         return $this->advertiserEmail($notifiable);
     }
 
     protected function affiliateEmail(object $notifiable): MailMessage
     {
         $conversion = $this->conversion;
-        $payout = $conversion->payout ?? 0;
-        $commission = $conversion->commission ?? 0;
-        
+        $commission = $conversion->commission_amount ?? 0;
+
         return (new MailMessage)
             ->subject('💰 New Conversion! You Earned $' . number_format($commission, 2))
             ->greeting('Great news, ' . $notifiable->name . '!')
@@ -66,8 +65,8 @@ class NewConversionNotification extends Notification implements ShouldQueue
             ->line('- **Date**: ' . $conversion->created_at->format('M d, Y H:i'))
             ->line('- **Status**: ' . ucfirst($conversion->status))
             ->line('')
-            ->line($conversion->status === 'pending' 
-                ? '⏳ This conversion is pending approval from the advertiser.' 
+            ->line($conversion->status === 'pending'
+                ? '⏳ This conversion is pending approval from the advertiser.'
                 : '✅ This conversion has been approved!')
             ->action('View Conversion', route('affiliate.dashboard'))
             ->line('Keep up the great work! 🚀');
@@ -76,9 +75,9 @@ class NewConversionNotification extends Notification implements ShouldQueue
     protected function advertiserEmail(object $notifiable): MailMessage
     {
         $conversion = $this->conversion;
-        $payout = $conversion->payout ?? 0;
+        $payout = $conversion->advertiser_payout ?? 0;
         $affiliate = $conversion->affiliate;
-        
+
         return (new MailMessage)
             ->subject('New Conversion on ' . ($conversion->offer->name ?? 'Your Offer'))
             ->greeting('Hello, ' . $notifiable->name . '!')
@@ -104,27 +103,27 @@ class NewConversionNotification extends Notification implements ShouldQueue
     public function toDatabase(object $notifiable): array
     {
         $conversion = $this->conversion;
-        
+
         if ($this->recipientType === 'affiliate') {
             return [
                 'type' => 'conversion_new',
                 'title' => 'New Conversion!',
-                'message' => 'You earned $' . number_format($conversion->commission ?? 0, 2) . ' from ' . ($conversion->offer->name ?? 'an offer'),
+                'message' => 'You earned $' . number_format($conversion->commission_amount ?? 0, 2) . ' from ' . ($conversion->offer->name ?? 'an offer'),
                 'action_url' => route('affiliate.dashboard'),
                 'action_text' => 'View Details',
                 'conversion_id' => $conversion->id,
-                'amount' => $conversion->commission ?? 0,
+                'amount' => $conversion->commission_amount ?? 0,
             ];
         }
-        
+
         return [
             'type' => 'conversion_new',
             'title' => 'New Conversion',
-            'message' => 'New conversion on ' . ($conversion->offer->name ?? 'your offer') . ' - $' . number_format($conversion->payout ?? 0, 2),
+            'message' => 'New conversion on ' . ($conversion->offer->name ?? 'your offer') . ' - $' . number_format($conversion->advertiser_payout ?? 0, 2),
             'action_url' => route('advertiser.conversions.index'),
             'action_text' => 'Review Now',
             'conversion_id' => $conversion->id,
-            'amount' => $conversion->payout ?? 0,
+            'amount' => $conversion->advertiser_payout ?? 0,
         ];
     }
 

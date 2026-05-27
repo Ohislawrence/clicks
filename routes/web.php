@@ -349,6 +349,16 @@ Route::middleware([
     Route::put('/blog/{post}', [AdminBlogController::class, 'update'])->name('blog.update');
     Route::delete('/blog/{post}', [AdminBlogController::class, 'destroy'])->name('blog.destroy');
 
+    // CRM Management
+    Route::get('/crm', [\App\Http\Controllers\Admin\CrmController::class, 'index'])->name('crm.index');
+    Route::post('/crm', [\App\Http\Controllers\Admin\CrmController::class, 'store'])->name('crm.store');
+    Route::get('/crm/{lead}', [\App\Http\Controllers\Admin\CrmController::class, 'show'])->name('crm.show');
+    Route::put('/crm/{lead}', [\App\Http\Controllers\Admin\CrmController::class, 'update'])->name('crm.update');
+    Route::delete('/crm/{lead}', [\App\Http\Controllers\Admin\CrmController::class, 'destroy'])->name('crm.destroy');
+    Route::post('/crm/{lead}/email', [\App\Http\Controllers\Admin\CrmController::class, 'sendEmail'])->name('crm.send-email');
+    Route::post('/crm/bulk-email', [\App\Http\Controllers\Admin\CrmController::class, 'bulkEmail'])->name('crm.bulk-email');
+    Route::post('/crm/{lead}/note', [\App\Http\Controllers\Admin\CrmController::class, 'addNote'])->name('crm.add-note');
+
     // Blog Categories
     Route::get('/blog/categories', [AdminBlogController::class, 'categories'])->name('blog.categories');
     Route::post('/blog/categories', [AdminBlogController::class, 'storeCategory'])->name('blog.categories.store');

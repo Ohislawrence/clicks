@@ -32,17 +32,19 @@ class PaystackService
                 'currency' => 'NGN',
             ]);
 
+            $data = $response->json();
+
             if ($response->successful()) {
                 return [
                     'success' => true,
-                    'data' => $response->json()['data'],
+                    'data' => $data['data'] ?? [],
                 ];
             }
 
-            Log::error('Paystack Create Recipient Error', $response->json());
+            Log::error('Paystack Create Recipient Error', $data ?? []);
             return [
                 'success' => false,
-                'message' => $response->json()['message'] ?? 'Failed to create recipient',
+                'message' => $data['message'] ?? 'Failed to create recipient',
             ];
         } catch (\Exception $e) {
             Log::error('Paystack Exception', ['message' => $e->getMessage()]);
@@ -69,17 +71,19 @@ class PaystackService
                 'reason' => $reason,
             ]);
 
+            $data = $response->json();
+
             if ($response->successful()) {
                 return [
                     'success' => true,
-                    'data' => $response->json()['data'],
+                    'data' => $data['data'] ?? [],
                 ];
             }
 
-            Log::error('Paystack Transfer Error', $response->json());
+            Log::error('Paystack Transfer Error', $data ?? []);
             return [
                 'success' => false,
-                'message' => $response->json()['message'] ?? 'Failed to initiate transfer',
+                'message' => $data['message'] ?? 'Failed to initiate transfer',
             ];
         } catch (\Exception $e) {
             Log::error('Paystack Exception', ['message' => $e->getMessage()]);
@@ -173,18 +177,20 @@ class PaystackService
                 'metadata'     => $metadata,
             ]);
 
-            if ($response->successful() && ($response->json()['status'] ?? false)) {
+            $data = $response->json();
+
+            if ($response->successful() && ($data['status'] ?? false)) {
                 return [
                     'success'           => true,
-                    'authorization_url' => $response->json()['data']['authorization_url'],
-                    'reference'         => $response->json()['data']['reference'],
+                    'authorization_url' => $data['data']['authorization_url'],
+                    'reference'         => $data['data']['reference'],
                 ];
             }
 
-            Log::error('Paystack Initialize Payment Error', $response->json());
+            Log::error('Paystack Initialize Payment Error', $data ?? []);
             return [
                 'success' => false,
-                'message' => $response->json()['message'] ?? 'Failed to initialize payment',
+                'message' => $data['message'] ?? 'Failed to initialize payment',
             ];
         } catch (\Exception $e) {
             Log::error('Paystack Exception', ['message' => $e->getMessage()]);
@@ -205,22 +211,23 @@ class PaystackService
                 'Authorization' => 'Bearer ' . $this->secretKey,
             ])->get($this->baseUrl . '/transaction/verify/' . $reference);
 
-            if ($response->successful() && ($response->json()['status'] ?? false)) {
-                $data   = $response->json()['data'];
-                $status = $data['status'] ?? '';
+            $data = $response->json();
+
+            if ($response->successful() && ($data['status'] ?? false)) {
+                $status = $data['data']['status'] ?? '';
 
                 return [
                     'success' => true,
                     'paid'    => $status === 'success',
-                    'data'    => $data,
+                    'data'    => $data['data'],
                 ];
             }
 
-            Log::error('Paystack Verify Payment Error', $response->json());
+            Log::error('Paystack Verify Payment Error', $data ?? []);
             return [
                 'success' => false,
                 'paid'    => false,
-                'message' => $response->json()['message'] ?? 'Failed to verify payment',
+                'message' => $data['message'] ?? 'Failed to verify payment',
             ];
         } catch (\Exception $e) {
             Log::error('Paystack Exception', ['message' => $e->getMessage()]);
