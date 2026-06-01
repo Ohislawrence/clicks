@@ -168,6 +168,18 @@ class PaystackService
         try {
             $amountKobo = (int) round($amount * 100);
 
+            $debugFile = storage_path('logs/paystack_web_debug.log');
+            $debugEntry = '[' . date('Y-m-d H:i:s') . '] initializePayment called | SAPI:' . PHP_SAPI
+                . ' | key_prefix:' . substr($this->secretKey ?? '', 0, 7)
+                . ' | key_null:' . ($this->secretKey === null ? 'YES' : 'no')
+                . ' | email:' . $email
+                . ' | amount_naira:' . $amount
+                . ' | amount_kobo:' . $amountKobo
+                . ' | ref:' . $reference
+                . ' | callback:' . $callbackUrl
+                . PHP_EOL;
+            file_put_contents($debugFile, $debugEntry, FILE_APPEND);
+
             Log::info('Paystack Initialize Payment: request', [
                 'email'        => $email,
                 'amount_naira' => $amount,
@@ -179,8 +191,7 @@ class PaystackService
 
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->secretKey,
-                'Content-Type'  => 'application/json',
-            ])->timeout(30)->post($this->baseUrl . '/transaction/initialize', [
+            ])->asJson()->timeout(30)->post($this->baseUrl . '/transaction/initialize', [
                 'email'        => $email,
                 'amount'       => $amountKobo,
                 'reference'    => $reference,
@@ -189,6 +200,14 @@ class PaystackService
             ]);
 
             $data = $response->json();
+
+            $debugEntry2 = '[' . date('Y-m-d H:i:s') . '] Paystack response | status:' . $response->status()
+                . ' | successful:' . ($response->successful() ? 'true' : 'false')
+                . ' | data_status:' . ($data['status'] ?? 'null')
+                . ' | message:' . ($data['message'] ?? 'NO_MSG')
+                . ' | body_len:' . strlen($response->body())
+                . PHP_EOL;
+            file_put_contents($debugFile, $debugEntry2, FILE_APPEND);
 
             Log::info('Paystack Initialize Payment: response', [
                 'http_status' => $response->status(),
@@ -205,16 +224,26 @@ class PaystackService
             }
 
             $errorMessage = $data['message'] ?? 'Payment provider rejected the request';
+            file_put_contents($debugFile, '[' . date('Y-m-d H:i:s') . '] FAILED: ' . $errorMessage . ' | raw_body:' . substr($response->body(), 0, 500) . PHP_EOL, FILE_APPEND);
             Log::error('Paystack Initialize Payment Error', [
                 'http_status'  => $response->status(),
                 'message'      => $errorMessage,
-                'response'     => $data,
+                'response_json' => $data,
+                'response_body' => $response->body(),
+                'request_params' => [
+                    'email' => $email,
+                    'amount' => $amountKobo,
+                    'reference' => $reference,
+                    'callback_url' => $callbackUrl,
+                ]
             ]);
             return [
                 'success' => false,
-                'message' => $errorMessage,
+                'message' => '[HTTP ' . $response->status() . '] ' . $errorMessage . (empty($response->body()) ? ' (empty response)' : ''),
             ];
         } catch (\Throwable $e) {
+            $debugFile = storage_path('logs/paystack_web_debug.log');
+            file_put_contents($debugFile, '[' . date('Y-m-d H:i:s') . '] EXCEPTION: ' . get_class($e) . ': ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
             Log::error('Paystack Exception in initializePayment', [
                 'class'   => get_class($e),
                 'message' => $e->getMessage(),
