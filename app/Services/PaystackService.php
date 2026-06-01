@@ -191,6 +191,7 @@ class PaystackService
 
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->secretKey,
+                'User-Agent'    => 'ClicksIntel/1.0 (Laravel; +https://clicksintel.com)',
             ])->asJson()->timeout(30)->post($this->baseUrl . '/transaction/initialize', [
                 'email'        => $email,
                 'amount'       => $amountKobo,
@@ -223,23 +224,33 @@ class PaystackService
                 ];
             }
 
-            $errorMessage = $data['message'] ?? 'Payment provider rejected the request';
-            file_put_contents($debugFile, '[' . date('Y-m-d H:i:s') . '] FAILED: ' . $errorMessage . ' | raw_body:' . substr($response->body(), 0, 500) . PHP_EOL, FILE_APPEND);
+            $rawBody = $response->body();
+            $httpStatus = $response->status();
+
+            if ($data !== null) {
+                // Paystack returned JSON — use their message
+                $errorMessage = '[HTTP ' . $httpStatus . '] ' . ($data['message'] ?? 'No message in response');
+            } elseif (!empty($rawBody)) {
+                // Non-JSON body — likely a Cloudflare/WAF block page
+                $bodyExcerpt = substr(strip_tags($rawBody), 0, 200);
+                $errorMessage = '[HTTP ' . $httpStatus . '] Gateway block: ' . trim($bodyExcerpt);
+            } else {
+                $errorMessage = '[HTTP ' . $httpStatus . '] Empty response from payment provider';
+            }
+
             Log::error('Paystack Initialize Payment Error', [
-                'http_status'  => $response->status(),
-                'message'      => $errorMessage,
-                'response_json' => $data,
-                'response_body' => $response->body(),
-                'request_params' => [
-                    'email' => $email,
-                    'amount' => $amountKobo,
-                    'reference' => $reference,
-                    'callback_url' => $callbackUrl,
-                ]
+                'http_status'    => $httpStatus,
+                'message'        => $errorMessage,
+                'response_json'  => $data,
+                'response_body'  => substr($rawBody, 0, 1000),
+                'request_email'  => $email,
+                'request_amount' => $amountKobo,
+                'request_ref'    => $reference,
+                'callback_url'   => $callbackUrl,
             ]);
             return [
                 'success' => false,
-                'message' => '[HTTP ' . $response->status() . '] ' . $errorMessage . (empty($response->body()) ? ' (empty response)' : ''),
+                'message' => $errorMessage,
             ];
         } catch (\Throwable $e) {
             $debugFile = storage_path('logs/paystack_web_debug.log');
