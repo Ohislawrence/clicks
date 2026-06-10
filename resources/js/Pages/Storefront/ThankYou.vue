@@ -59,7 +59,7 @@
                             <p class="font-medium">{{ item.name }}</p>
                             <p class="text-sm text-neutral-600">Quantity: {{ item.quantity }}</p>
                         </div>
-                        <p class="font-semibold">₦{{ formatPrice(item.total) }}</p>
+                        <p class="font-semibold">{{ currencySymbol }}{{ formatPrice(item.total) }}</p>
                     </div>
                 </div>
 
@@ -67,15 +67,22 @@
                 <div class="mt-4 space-y-2">
                     <div class="flex justify-between text-neutral-600">
                         <span>Subtotal:</span>
-                        <span>₦{{ formatPrice(order.subtotal) }}</span>
+                        <span>{{ currencySymbol }}{{ formatPrice(order.subtotal) }}</span>
                     </div>
                     <div class="flex justify-between text-neutral-600">
                         <span>Shipping:</span>
-                        <span>₦{{ formatPrice(order.shipping_fee) }}</span>
+                        <span>{{ currencySymbol }}{{ formatPrice(order.shipping_fee) }}</span>
+                    </div>
+                    <div v-if="order.discount_amount && parseFloat(order.discount_amount) > 0" class="flex justify-between text-green-600">
+                        <span>
+                            Discount
+                            <span v-if="order.discount_code" class="text-xs font-mono bg-green-50 border border-green-200 px-1.5 py-0.5 rounded ml-1">{{ order.discount_code }}</span>:
+                        </span>
+                        <span>−{{ currencySymbol }}{{ formatPrice(order.discount_amount) }}</span>
                     </div>
                     <div class="flex justify-between text-xl font-bold pt-2 border-t">
                         <span>Total:</span>
-                        <span>₦{{ formatPrice(order.total) }}</span>
+                        <span>{{ currencySymbol }}{{ formatPrice(order.total) }}</span>
                     </div>
                 </div>
             </div>
@@ -154,9 +161,11 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { Head } from '@inertiajs/vue3';
+import { getCurrencySymbol, formatPrice as formatCurrencyPrice } from '@/utils/currency';
 
-defineProps({
+const props = defineProps({
     store: {
         type: Object,
         required: true,
@@ -167,7 +176,7 @@ defineProps({
     },
 });
 
-const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-NG').format(price);
-};
+const currencyCode = computed(() => props.order.currency ?? props.store.currency ?? 'NGN');
+const currencySymbol = computed(() => getCurrencySymbol(currencyCode.value));
+const formatPrice = (price) => formatCurrencyPrice(price, currencyCode.value);
 </script>

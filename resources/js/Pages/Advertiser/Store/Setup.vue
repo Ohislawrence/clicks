@@ -162,6 +162,24 @@
 
                         <!-- Payment form (shown when not skipped) -->
                         <div v-else class="space-y-5">
+                            <!-- Currency -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Store Currency <span class="text-red-500">*</span></label>
+                                <select v-model="form.currency"
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="NGN">NGN — Nigerian Naira (₦)</option>
+                                    <option value="GHS">GHS — Ghanaian Cedi (GH₵)</option>
+                                    <option value="KES">KES — Kenyan Shilling (KSh)</option>
+                                    <option value="ZAR">ZAR — South African Rand (R)</option>
+                                    <option value="XOF">XOF — West African CFA Franc (CFA)</option>
+                                    <option value="EGP">EGP — Egyptian Pound (E£)</option>
+                                    <option value="RWF">RWF — Rwandan Franc (Rwf)</option>
+                                    <option value="USD">USD — US Dollar ($)</option>
+                                </select>
+                                <p class="mt-1 text-xs text-gray-500">This is the currency your customers will pay in. Cannot be changed after your first order.</p>
+                                <div v-if="form.errors.currency" class="mt-1 text-sm text-red-500">{{ form.errors.currency }}</div>
+                            </div>
+
                             <!-- Provider -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-3">Payment Provider *</label>
@@ -343,6 +361,7 @@ const form = useForm({
     payment_provider: 'paystack',
     payment_public_key: '',
     payment_secret_key: '',
+    currency: 'NGN',
 });
 
 const selectedPlan = computed(() => {

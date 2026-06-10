@@ -134,6 +134,24 @@
                                 </div>
                                 <p v-if="form.errors.subscription_payment_gateway" class="mt-1 text-sm text-red-500">{{ form.errors.subscription_payment_gateway }}</p>
                             </div>
+
+                            <!-- Currency Override -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-neutral-300 mb-2">Store Currency</label>
+                                <p class="text-xs text-neutral-400 mb-2">As admin you can override currency at any time. Past orders retain their own currency snapshot — only new orders will use the updated value.</p>
+                                <select v-model="form.currency"
+                                    class="w-full rounded-lg bg-neutral-950 border-neutral-800 text-neutral-100 focus:border-emerald-500 focus:ring-emerald-500">
+                                    <option value="NGN">NGN — Nigerian Naira (₦)</option>
+                                    <option value="GHS">GHS — Ghanaian Cedi (GH₵)</option>
+                                    <option value="KES">KES — Kenyan Shilling (KSh)</option>
+                                    <option value="ZAR">ZAR — South African Rand (R)</option>
+                                    <option value="XOF">XOF — West African CFA Franc (CFA)</option>
+                                    <option value="EGP">EGP — Egyptian Pound (E£)</option>
+                                    <option value="RWF">RWF — Rwandan Franc (Rwf)</option>
+                                    <option value="USD">USD — US Dollar ($)</option>
+                                </select>
+                                <p v-if="form.errors.currency" class="mt-1 text-sm text-red-500">{{ form.errors.currency }}</p>
+                            </div>
                         </div>
                     </div>
 
@@ -205,6 +223,7 @@ const form = useForm({
     subscription_status: props.store.subscription_status,
     subscription_payment_gateway: props.store.subscription_payment_gateway || 'paystack',
     is_active: props.store.is_active,
+    currency: props.store.currency || 'NGN',
 });
 
 const updateStore = () => {

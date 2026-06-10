@@ -176,6 +176,28 @@
                             </div>
                         </div>
 
+                        <!-- Currency -->
+                        <div class="mt-4">
+                            <h4 class="text-sm font-semibold text-gray-700 mb-2">Store Currency</h4>
+                            <div v-if="store.has_orders" class="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-3">
+                                <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                                Currency is locked because orders have already been placed.
+                            </div>
+                            <select v-model="form.currency" :disabled="store.has_orders"
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                :class="store.has_orders ? 'opacity-60 cursor-not-allowed bg-gray-50' : ''">
+                                <option value="NGN">NGN — Nigerian Naira (₦)</option>
+                                <option value="GHS">GHS — Ghanaian Cedi (GH₵)</option>
+                                <option value="KES">KES — Kenyan Shilling (KSh)</option>
+                                <option value="ZAR">ZAR — South African Rand (R)</option>
+                                <option value="XOF">XOF — West African CFA Franc (CFA)</option>
+                                <option value="EGP">EGP — Egyptian Pound (E£)</option>
+                                <option value="RWF">RWF — Rwandan Franc (Rwf)</option>
+                                <option value="USD">USD — US Dollar ($)</option>
+                            </select>
+                            <p class="mt-1 text-xs text-gray-500">Cannot be changed after your first order is placed.</p>
+                        </div>
+
                         <!-- Direct mode keys (only show when direct mode selected) -->
                         <template v-if="form.payment_mode === 'direct'">
                         <!-- Current status indicator -->
@@ -304,6 +326,7 @@ const form = useForm({
     payment_public_key: '',
     payment_secret_key: '',
     payment_webhook_secret: '',
+    currency: props.store.currency || 'NGN',
 });
 
 const submit = () => {

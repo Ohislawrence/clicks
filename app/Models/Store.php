@@ -39,6 +39,7 @@ class Store extends Model
         'payment_public_key',
         'payment_secret_key',
         'payment_webhook_secret',
+        'currency',
         'meta_title',
         'meta_description',
         'meta_image',

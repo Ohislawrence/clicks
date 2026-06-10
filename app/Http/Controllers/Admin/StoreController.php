@@ -67,14 +67,22 @@ class StoreController extends Controller
 
         // Get stats
         $stats = [
-            'total' => Store::count(),
-            'active' => Store::where('is_active', true)->count(),
-            'inactive' => Store::where('is_active', false)->count(),
-            'expired' => Store::where('subscription_status', 'expired')->count(),
-            'revenue_this_month' => StoreSubscription::where('status', 'paid')
+            'total'                  => Store::count(),
+            'active'                 => Store::where('is_active', true)->count(),
+            'inactive'               => Store::where('is_active', false)->count(),
+            'expired'                => Store::where('subscription_status', 'expired')->count(),
+            'subscription_revenue'   => StoreSubscription::where('status', 'paid')
                 ->whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
                 ->sum('amount'),
+            'order_revenue_month'    => StoreOrder::where('payment_status', 'paid')
+                ->whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
+                ->sum('total'),
+            'platform_fees_month'    => StoreOrder::where('payment_status', 'paid')
+                ->whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
+                ->sum('platform_fee_amount'),
         ];
 
         return Inertia::render('Admin/Stores/Index', [
@@ -113,17 +121,22 @@ class StoreController extends Controller
         ]);
 
         // Calculate stats
+        $paidOrders = $store->orders()->where('payment_status', 'paid');
         $stats = [
-            'total_products' => $store->products()->count(),
-            'active_products' => $store->products()->where('is_active', true)->count(),
-            'total_orders' => $store->orders()->count(),
-            'pending_orders' => $store->orders()->where('fulfillment_status', 'pending')->count(),
-            'total_revenue' => $store->orders()->where('payment_status', 'paid')->sum('total'),
-            'revenue_this_month' => $store->orders()
-                ->where('payment_status', 'paid')
+            'total_products'           => $store->products()->count(),
+            'active_products'          => $store->products()->where('is_active', true)->count(),
+            'total_orders'             => $store->orders()->count(),
+            'pending_orders'           => $store->orders()->where('fulfillment_status', 'pending')->count(),
+            'total_revenue'            => $paidOrders->sum('total'),
+            'revenue_this_month'       => (clone $paidOrders)
                 ->whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
                 ->sum('total'),
+            'platform_fees_collected'  => $paidOrders->sum('platform_fee_amount'),
+            'affiliate_commissions'    => $paidOrders->sum('affiliate_commission_amount'),
+            'advertiser_net_total'     => $paidOrders->sum('advertiser_net_amount'),
+            'discount_total'           => $paidOrders->sum('discount_amount'),
+            'platform_fee_percentage'  => $store->plan->platform_fee_percentage ?? 0,
         ];
 
         return Inertia::render('Admin/Stores/Show', [
@@ -164,8 +177,11 @@ class StoreController extends Controller
             'subscription_status' => 'required|in:active,expired,cancelled',
             'subscription_payment_gateway' => 'required|in:paystack,flutterwave',
             'is_active' => 'boolean',
+            'currency' => 'nullable|in:NGN,GHS,ZAR,KES,XOF,EGP,RWF,USD',
         ]);
 
+        // Admins may override currency at any time (with awareness that it affects display only;
+        // past orders retain their own currency snapshot).
         $store->update($validated);
 
         return redirect()->route('admin.stores.show', $store)

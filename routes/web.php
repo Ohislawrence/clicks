@@ -22,18 +22,26 @@ use App\Http\Controllers\Admin\ConversionController as AdminConversionController
 use App\Http\Controllers\Admin\SpreadController as AdminSpreadController;
 use App\Http\Controllers\Admin\DeepseekController as AdminDeepseekController;
 use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
+use App\Http\Controllers\Admin\LmsCourseController as AdminLmsCourseController;
+use App\Http\Controllers\Admin\LmsLessonController as AdminLmsLessonController;
+use App\Http\Controllers\Lms\CourseController as LmsCourseController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\FrontPageController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\AiChatController;
+use App\Http\Controllers\LmsPublicController;
 use App\Http\Controllers\Admin\BlogController as AdminBlogController;
 use App\Http\Controllers\PaymentDetailsController;
 use App\Http\Controllers\DataSubjectRightsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+// Payment Webhooks (no CSRF, secured by gateway signature)
+Route::post('/webhooks/store/paystack', [\App\Http\Controllers\Webhooks\StorePaymentWebhookController::class, 'paystack'])->name('webhooks.store.paystack');
+Route::post('/webhooks/store/flutterwave', [\App\Http\Controllers\Webhooks\StorePaymentWebhookController::class, 'flutterwave'])->name('webhooks.store.flutterwave');
 
 // Tracking Routes (Public)
 Route::get('/track/{trackingCode}', [TrackingController::class, 'track'])->name('track');
@@ -64,6 +72,10 @@ Route::get('/privacy', [FrontPageController::class, 'privacy'])->name('front.pri
 Route::get('/terms', [FrontPageController::class, 'terms'])->name('front.terms');
 Route::get('/contact', [FrontPageController::class, 'contact'])->name('front.contact');
 Route::post('/contact', [FrontPageController::class, 'submitContact'])->name('front.contact.submit');
+
+// Public Learning Center Routes
+Route::get('/learning', [LmsPublicController::class, 'index'])->name('learning.index');
+Route::get('/learning/{slug}', [LmsPublicController::class, 'show'])->name('learning.show');
 
 // Blog Routes (Public)
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
@@ -414,6 +426,41 @@ Route::middleware([
     Route::get('/store-refunds', [\App\Http\Controllers\Admin\StoreRefundController::class, 'index'])->name('store-refunds.index');
     Route::post('/store-refunds/{order}/approve', [\App\Http\Controllers\Admin\StoreRefundController::class, 'approve'])->name('store-refunds.approve');
     Route::post('/store-refunds/{order}/reject', [\App\Http\Controllers\Admin\StoreRefundController::class, 'reject'])->name('store-refunds.reject');
+
+    // LMS Management
+    Route::prefix('lms')->name('lms.')->group(function () {
+        Route::get('/courses', [AdminLmsCourseController::class, 'index'])->name('courses.index');
+        Route::get('/courses/create', [AdminLmsCourseController::class, 'create'])->name('courses.create');
+        Route::post('/courses', [AdminLmsCourseController::class, 'store'])->name('courses.store');
+        Route::get('/courses/{course}/edit', [AdminLmsCourseController::class, 'edit'])->name('courses.edit');
+        Route::put('/courses/{course}', [AdminLmsCourseController::class, 'update'])->name('courses.update');
+        Route::delete('/courses/{course}', [AdminLmsCourseController::class, 'destroy'])->name('courses.destroy');
+        Route::patch('/courses/{course}/toggle', [AdminLmsCourseController::class, 'toggle'])->name('courses.toggle');
+
+        Route::get('/courses/{course}/lessons', [AdminLmsLessonController::class, 'index'])->name('courses.lessons.index');
+        Route::get('/courses/{course}/lessons/create', [AdminLmsLessonController::class, 'create'])->name('courses.lessons.create');
+        Route::post('/courses/{course}/lessons', [AdminLmsLessonController::class, 'store'])->name('courses.lessons.store');
+        Route::get('/courses/{course}/lessons/{lesson}/edit', [AdminLmsLessonController::class, 'edit'])->name('courses.lessons.edit');
+        Route::put('/courses/{course}/lessons/{lesson}', [AdminLmsLessonController::class, 'update'])->name('courses.lessons.update');
+        Route::delete('/courses/{course}/lessons/{lesson}', [AdminLmsLessonController::class, 'destroy'])->name('courses.lessons.destroy');
+        Route::post('/courses/{course}/lessons/reorder', [AdminLmsLessonController::class, 'reorder'])->name('courses.lessons.reorder');
+        Route::post('/courses/{course}/lessons/generate-content', [AdminLmsLessonController::class, 'generateContent'])->name('courses.lessons.generate-content');
+    });
+});
+
+// ============================================================================
+// LMS ROUTES (for authenticated affiliates & advertisers)
+// ============================================================================
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->prefix('learn')->name('lms.')->group(function () {
+    Route::get('/', [LmsCourseController::class, 'index'])->name('index');
+    Route::get('/{course:slug}', [LmsCourseController::class, 'show'])->name('show');
+    Route::post('/{course:slug}/enroll', [LmsCourseController::class, 'enroll'])->name('enroll');
+    Route::get('/{course:slug}/{lesson:slug}', [LmsCourseController::class, 'lesson'])->name('lesson');
+    Route::post('/{course:slug}/{lesson:slug}/complete', [LmsCourseController::class, 'complete'])->name('complete');
 });
 
 // ============================================================================

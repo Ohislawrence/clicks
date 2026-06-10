@@ -93,6 +93,27 @@
                     <!-- Product Info -->
                     <div class="space-y-6">
                         <div>
+                            <!-- Product type badge -->
+                            <div class="mb-3">
+                                <span
+                                    v-if="product.product_type === 'digital'"
+                                    class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-sm font-semibold bg-gradient-to-r from-purple-500 to-violet-600 text-white"
+                                >
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    <span>Digital Product</span>
+                                </span>
+                                <span
+                                    v-else
+                                    class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-sm font-semibold bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
+                                >
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                    </svg>
+                                    <span>Physical Product</span>
+                                </span>
+                            </div>
                             <h1 class="text-3xl lg:text-4xl font-bold mb-2">{{ product.name }}</h1>
                             <p v-if="product.sku" class="text-sm text-neutral-500">SKU: {{ product.sku }}</p>
                         </div>
@@ -100,8 +121,8 @@
                         <!-- Price -->
                         <div class="space-y-2">
                             <div class="flex items-baseline space-x-3">
-                                <span class="text-4xl font-bold" :style="{ color: primaryColor }">₦{{ formatPrice(product.price) }}</span>
-                                <span v-if="product.compare_at_price" class="text-2xl line-through text-neutral-400">₦{{ formatPrice(product.compare_at_price) }}</span>
+                                <span class="text-4xl font-bold" :style="{ color: primaryColor }">{{ currencySymbol }}{{ formatPrice(product.price) }}</span>
+                                <span v-if="product.compare_at_price" class="text-2xl line-through text-neutral-400">{{ currencySymbol }}{{ formatPrice(product.compare_at_price) }}</span>
                             </div>
                             <p v-if="product.has_discount" class="inline-block px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-semibold">
                                 Save {{ product.discount_percentage }}%
@@ -159,6 +180,20 @@
                             </div>
                         </div>
 
+                        <!-- Digital instant delivery notice -->
+                        <div
+                            v-if="product.product_type === 'digital'"
+                            class="flex items-start space-x-3 p-4 bg-violet-50 border border-violet-200 rounded-lg"
+                        >
+                            <svg class="w-5 h-5 text-violet-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            <div>
+                                <p class="font-semibold text-violet-800 text-sm">Instant Digital Delivery</p>
+                                <p class="text-violet-700 text-sm">You'll receive download access immediately after payment — no shipping required.</p>
+                            </div>
+                        </div>
+
                         <!-- Add to Cart / Buy Now -->
                         <div v-if="previewMode" class="space-y-3">
                             <button
@@ -174,7 +209,7 @@
                                 class="w-full py-4 rounded-lg text-white font-semibold text-lg transition hover:opacity-90"
                                 :style="{ backgroundColor: primaryColor }"
                             >
-                                Buy Now
+                                {{ product.product_type === 'digital' ? `Get Instant Access — ${currencySymbol}${formatPrice(product.price)}` : 'Buy Now' }}
                             </button>
                             <button
                                 @click="addToCart"
@@ -233,6 +268,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { getCurrencySymbol, formatPrice as formatCurrencyPrice } from '@/utils/currency';
 import StoreLayout from '@/Components/Storefront/StoreLayout.vue';
 import ProductCard from '@/Components/Storefront/ProductCard.vue';
 import CheckoutModal from '@/Components/Storefront/CheckoutModal.vue';
@@ -279,9 +315,8 @@ const productImage = computed(() => {
     return img.startsWith('http') ? img : window.location.origin + '/storage/' + img;
 });
 
-const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-NG').format(price);
-};
+const formatPrice = (price) => formatCurrencyPrice(price, props.store.currency ?? 'NGN');
+const currencySymbol = computed(() => getCurrencySymbol(props.store.currency ?? 'NGN'));
 
 const stripHtml = (html) => {
     const tmp = document.createElement('DIV');

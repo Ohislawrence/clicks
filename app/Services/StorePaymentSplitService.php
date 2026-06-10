@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\AffiliateLink;
+use App\Models\Commission;
 use App\Models\Conversion;
 use App\Models\StoreSaleTransaction;
 use App\Models\StoreOrder;
@@ -29,9 +30,11 @@ class StorePaymentSplitService
         $advertiser = $store->user;
 
         // --- Amounts ---
-        $grossAmount = (float) $order->total;
-        $discountAmount = 0.0; // Future: support discount codes
-        $netAmount = $grossAmount - $discountAmount;
+        // `order->total` is already net of discounts (subtotal + shipping - discount_amount).
+        // We record the discount separately in the audit trail but the fee is on the final total.
+        $grossAmount    = (float) $order->total;
+        $discountAmount = (float) ($order->discount_amount ?? 0.0);
+        $netAmount      = $grossAmount; // total is already the payable net amount
 
         $feePct = (float) ($store->plan->platform_fee_percentage ?? 0);
         $platformFee = round($netAmount * ($feePct / 100), 2);
@@ -61,6 +64,15 @@ class StorePaymentSplitService
         }
 
         $advertiserNet = $netAmount - $platformFee - $affiliateCommission;
+        if ($advertiserNet < 0) {
+            Log::warning('StorePaymentSplitService: advertiser net is negative, flooring to 0', [
+                'order_id'        => $order->id,
+                'net_amount'      => $netAmount,
+                'platform_fee'    => $platformFee,
+                'affiliate_comm'  => $affiliateCommission,
+                'advertiser_net'  => $advertiserNet,
+            ]);
+        }
         $advertiserNet = max(0, round($advertiserNet, 2));
 
         DB::transaction(function () use (
@@ -122,6 +134,18 @@ class StorePaymentSplitService
 
                     $conversionId = $conversion->id;
                     $order->update(['conversion_id' => $conversionId]);
+
+                    // Create a Commission record so the affiliate dashboard earnings
+                    // breakdown (which reads from the commissions table) reflects this
+                    // store-sale payment correctly.
+                    Commission::create([
+                        'affiliate_id'  => $affiliateId,
+                        'conversion_id' => $conversionId,
+                        'offer_id'      => $affiliateLink->offer_id,
+                        'amount'        => $affiliateCommission,
+                        'status'        => 'approved',
+                        'approved_at'   => now(),
+                    ]);
 
                     // Update affiliate link stats
                     $affiliateLink->increment('conversion_count');

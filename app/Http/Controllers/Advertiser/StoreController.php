@@ -76,6 +76,7 @@ class StoreController extends Controller
             'payment_provider' => 'nullable|in:paystack,flutterwave',
             'payment_public_key' => 'nullable|string',
             'payment_secret_key' => 'nullable|string',
+            'currency' => 'nullable|in:NGN,GHS,ZAR,KES,XOF,EGP,RWF,USD',
         ]);
 
         // Get the selected plan
@@ -130,6 +131,7 @@ class StoreController extends Controller
                 'payment_link' => null,
                 'payment_public_key' => $validated['payment_public_key'] ?? null,
                 'payment_secret_key' => $paymentSecretKey,
+                'currency' => $validated['currency'] ?? 'NGN',
                 'subscription_start_date' => $subscriptionStart,
                 'subscription_end_date' => $subscriptionEnd,
                 'subscription_status' => 'expired', // Will be activated after first payment
@@ -321,6 +323,7 @@ class StoreController extends Controller
             'payment_public_key' => 'nullable|string',
             'payment_secret_key' => 'nullable|string',
             'payment_webhook_secret' => 'nullable|string',
+            'currency' => 'nullable|in:NGN,GHS,ZAR,KES,XOF,EGP,RWF,USD',
         ]);
 
         $updateData = [
@@ -354,6 +357,11 @@ class StoreController extends Controller
         // Only allow changing payment_mode if no platform orders have been placed yet
         if (!empty($validated['payment_mode']) && !$store->has_orders) {
             $updateData['payment_mode'] = $validated['payment_mode'];
+        }
+
+        // Only allow changing currency if no orders have been placed yet
+        if (!empty($validated['currency']) && !$store->has_orders) {
+            $updateData['currency'] = $validated['currency'];
         }
 
         $store->update($updateData);

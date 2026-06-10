@@ -107,22 +107,33 @@ class StoreRefundController extends Controller
         });
 
         // 4. Attempt Paystack refund (non-blocking — log failure but don't abort)
+        // For platform-mode orders, use the platform key.
+        // For direct-mode orders, the customer paid directly to the store's Paystack account;
+        // we cannot refund via our platform key. Log this so it can be handled manually.
         try {
-            $platformKey = config('services.paystack.secret_key');
-            if ($platformKey && $order->payment_reference) {
-                $response = Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $platformKey,
-                    'Content-Type'  => 'application/json',
-                ])->post('https://api.paystack.co/refund', [
-                    'transaction' => $order->payment_reference,
-                    'amount'      => (int) ($order->total * 100), // kobo
+            if ($order->payment_mode === 'direct') {
+                Log::warning('StoreRefundController: direct-mode order requires manual refund via store owner Paystack account', [
+                    'order_id'  => $order->id,
+                    'reference' => $order->payment_reference,
+                    'store_id'  => $order->store_id,
                 ]);
-
-                if (!$response->successful() || !$response->json('status')) {
-                    Log::warning('StoreRefundController: Paystack refund failed', [
-                        'order_id'  => $order->id,
-                        'response'  => $response->json(),
+            } else {
+                $platformKey = config('services.paystack.secret_key');
+                if ($platformKey && $order->payment_reference) {
+                    $response = Http::withHeaders([
+                        'Authorization' => 'Bearer ' . $platformKey,
+                        'Content-Type'  => 'application/json',
+                    ])->post('https://api.paystack.co/refund', [
+                        'transaction' => $order->payment_reference,
+                        'amount'      => (int) ($order->total * 100), // kobo
                     ]);
+
+                    if (!$response->successful() || !$response->json('status')) {
+                        Log::warning('StoreRefundController: Paystack refund failed', [
+                            'order_id'  => $order->id,
+                            'response'  => $response->json(),
+                        ]);
+                    }
                 }
             }
         } catch (\Exception $e) {

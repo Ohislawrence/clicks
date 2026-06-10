@@ -1,0 +1,1 @@
+import{F as e,b as t}from"./index.esm-CneLIe1t.js";import n from"./CourseForm-CzC9knNh.js";var r={__name:`Edit`,props:{course:Object},setup(r){return(i,a)=>(e(),t(n,{course:r.course},null,8,[`course`]))}};export{r as default};

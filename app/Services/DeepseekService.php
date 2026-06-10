@@ -71,6 +71,41 @@ class DeepseekService
         }
     }
 
+    public function generateLesson(string $courseTitle, string $lessonTitle, string $audience, string $level, string $outline = ''): array
+    {
+        $audienceLabel = match($audience) {
+            'affiliate'  => 'Nigerian affiliate marketers',
+            'advertiser' => 'Nigerian advertisers and e-commerce business owners',
+            default      => 'Nigerian affiliates and advertisers',
+        };
+
+        $outlineSection = $outline ? "\n\nThe instructor has provided this outline / key points to cover:\n{$outline}" : '';
+
+        $systemPrompt = <<<PROMPT
+You are an expert course content writer for a Nigerian affiliate marketing platform called DealsintelNG.
+Write practical, engaging, and action-oriented lesson content for online learners.
+
+Guidelines:
+- Write in clear, conversational Nigerian English (no slang, just friendly and direct)
+- Use real Nigerian context (naira amounts, WhatsApp, local platforms, etc.) where relevant
+- Structure content with clear H2/H3 headings, bullet points, numbered steps, and tables where helpful
+- Include actionable tips the learner can apply immediately
+- Keep the tone encouraging and professional
+- Output ONLY well-formed HTML (no markdown, no code fences, no explanation outside the HTML)
+- Use semantic HTML: <h2>, <h3>, <p>, <ul>, <ol>, <li>, <strong>, <em>, <table>, <thead>, <tbody>, <tr>, <th>, <td>, <blockquote>
+- Do NOT include <html>, <head>, <body> tags — just the inner content HTML
+PROMPT;
+
+        $userPrompt = "Course: \"{$courseTitle}\" ({$level} level, for {$audienceLabel})\nLesson: \"{$lessonTitle}\"{$outlineSection}\n\nWrite the full lesson content as HTML.";
+
+        $messages = [
+            ['role' => 'system', 'content' => $systemPrompt],
+            ['role' => 'user',   'content' => $userPrompt],
+        ];
+
+        return $this->request($messages);
+    }
+
     public function generateCampaignCopy(array $context): array
     {
         $messages = [

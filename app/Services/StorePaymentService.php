@@ -10,6 +10,44 @@ use Illuminate\Support\Facades\Log;
 class StorePaymentService
 {
     /**
+     * Initialize platform-managed Paystack payment (uses platform's own API key).
+     */
+    public function initializePlatformPayment(StoreOrder $order, Store $store): string
+    {
+        $platformKey = config('services.paystack.secret_key');
+        if (!$platformKey) {
+            throw new \RuntimeException('Platform payment is not configured. Contact support.');
+        }
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $platformKey,
+            'Content-Type'  => 'application/json',
+        ])->post('https://api.paystack.co/transaction/initialize', [
+            'email'        => $order->customer_email,
+            'amount'       => (int) ($order->total * 100),
+            'currency'     => $order->currency ?? 'NGN',
+            'reference'    => $order->payment_reference,
+            'callback_url' => route('storefront.checkout.verify', ['slug' => $store->slug]),
+            'metadata'     => [
+                'order_id' => $order->id,
+                'store_id' => $store->id,
+                'mode'     => 'platform',
+            ],
+        ]);
+
+        if ($response->successful() && $response->json('status') && $response->json('data.authorization_url')) {
+            return $response->json('data.authorization_url');
+        }
+
+        Log::error('Platform Paystack initialization failed', [
+            'order_id' => $order->id,
+            'response' => $response->json(),
+        ]);
+
+        throw new \RuntimeException('Failed to initialize platform payment: ' . $response->json('message', 'Unknown error'));
+    }
+
+    /**
      * Initialize payment for a store order.
      *
      * @param StoreOrder $order
@@ -43,8 +81,9 @@ class StorePaymentService
                 'Authorization' => 'Bearer ' . $store->payment_secret_key,
                 'Content-Type' => 'application/json',
             ])->post('https://api.paystack.co/transaction/initialize', [
-                'email' => $order->customer_email,
-                'amount' => $order->total * 100, // Convert to kobo
+                'email'     => $order->customer_email,
+                'amount'    => (int) ($order->total * 100),
+                'currency'  => $order->currency ?? 'NGN',
                 'reference' => $order->payment_reference,
                 'callback_url' => route('storefront.checkout.verify', [
                     'slug' => $store->slug,
@@ -95,9 +134,9 @@ class StorePaymentService
                 'Authorization' => 'Bearer ' . $store->payment_secret_key,
                 'Content-Type' => 'application/json',
             ])->post('https://api.flutterwave.com/v3/payments', [
-                'tx_ref' => $order->payment_reference,
-                'amount' => $order->total,
-                'currency' => 'NGN',
+                'tx_ref'   => $order->payment_reference,
+                'amount'   => $order->total,
+                'currency' => $order->currency ?? 'NGN',
                 'redirect_url' => route('storefront.checkout.verify', [
                     'slug' => $store->slug,
                     'reference' => $order->payment_reference,

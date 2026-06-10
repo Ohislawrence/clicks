@@ -35,27 +35,27 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Amount (₦)</label>
                                 <input
-                                    v-model="depositForm.amount"
+                                    v-model="amount"
                                     type="number"
                                     min="1000"
                                     step="1"
                                     class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                                     placeholder="Minimum ₦1,000"
                                 />
-                                <p v-if="depositForm.errors.amount" class="text-red-600 text-sm mt-1">{{ depositForm.errors.amount }}</p>
+                                <p v-if="amountError" class="text-red-600 text-sm mt-1">{{ amountError }}</p>
                             </div>
                             <div class="flex flex-wrap gap-2">
-                                <button type="button" v-for="preset in presets" :key="preset" @click="depositForm.amount = preset"
+                                <button type="button" v-for="preset in presets" :key="preset" @click="amount = preset"
                                     class="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-gray-50 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-colors">
                                     {{ formatCurrency(preset) }}
                                 </button>
                             </div>
                             <button
                                 type="submit"
-                                :disabled="depositForm.processing"
+                                :disabled="processing"
                                 class="w-full py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm transition-colors disabled:opacity-50"
                             >
-                                <span v-if="depositForm.processing">Redirecting to Paystack...</span>
+                                <span v-if="processing">Opening Paystack...</span>
                                 <span v-else>Pay via Paystack</span>
                             </button>
                         </form>
@@ -118,8 +118,9 @@
 </template>
 
 <script setup>
-import { Link, useForm } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import { ref } from 'vue';
 
 const props = defineProps({
     balance: Number,
@@ -128,11 +129,78 @@ const props = defineProps({
 
 const presets = [5000, 10000, 25000, 50000, 100000, 250000];
 
-const depositForm = useForm({ amount: '' });
+const amount = ref('');
+const processing = ref(false);
+const amountError = ref('');
 
-const submitDeposit = () => {
-    depositForm.post(route('advertiser.wallet.deposit'));
-};
+/** Load Paystack inline JS SDK on demand */
+function loadPaystackScript() {
+    return new Promise((resolve, reject) => {
+        if (window.PaystackPop) return resolve();
+        const script = document.createElement('script');
+        script.src = 'https://js.paystack.co/v2/inline.js';
+        script.onload = resolve;
+        script.onerror = () => reject(new Error('Failed to load Paystack SDK'));
+        document.head.appendChild(script);
+    });
+}
+
+async function submitDeposit() {
+    amountError.value = '';
+    const parsed = parseFloat(amount.value);
+
+    if (!parsed || parsed < 1000) {
+        amountError.value = 'Minimum deposit amount is ₦1,000';
+        return;
+    }
+
+    processing.value = true;
+
+    try {
+        // Ask the backend to create a pending transaction and return metadata.
+        // No server-to-Paystack API call is made here — that's handled client-side below.
+        const response = await fetch(route('advertiser.wallet.deposit'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ amount: parsed }),
+        });
+
+        if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            amountError.value = data?.errors?.amount?.[0] ?? 'Could not start payment. Please try again.';
+            processing.value = false;
+            return;
+        }
+
+        const { reference, public_key, email, amount: amountKobo, verify_url } = await response.json();
+
+        await loadPaystackScript();
+
+        const popup = new window.PaystackPop();
+        popup.newTransaction({
+            key: public_key,
+            email,
+            amount: amountKobo,
+            ref: reference,
+            metadata: { type: 'wallet_deposit' },
+            onSuccess(transaction) {
+                // Redirect to the verify URL — same endpoint the old redirect flow used
+                window.location.href = verify_url + '?reference=' + transaction.reference;
+            },
+            onCancel() {
+                processing.value = false;
+                amountError.value = 'Payment was cancelled.';
+            },
+        });
+    } catch (err) {
+        amountError.value = 'An unexpected error occurred. Please try again.';
+        processing.value = false;
+    }
+}
 
 const formatCurrency = (amount) =>
     new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0 }).format(amount ?? 0);

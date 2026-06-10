@@ -7,6 +7,7 @@ use App\Models\Click;
 use App\Models\Conversion;
 use App\Models\Commission;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -19,101 +20,112 @@ class DashboardController extends Controller
 
         $startDate = now()->subDays((int)$dateRange);
 
-        // Total Clicks
-        $totalClicks = Click::where('affiliate_id', $user->id)
-            ->where('created_at', '>=', $startDate)
-            ->count();
+        $cacheKey = "affiliate_dashboard_{$user->id}_{$dateRange}";
 
-        $totalClicksAllTime = Click::where('affiliate_id', $user->id)->count();
+        $cached = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($user, $startDate) {
+            // Total Clicks
+            $totalClicks = Click::where('affiliate_id', $user->id)
+                ->where('created_at', '>=', $startDate)
+                ->count();
 
-        // Conversions
-        $totalConversions = Conversion::where('affiliate_id', $user->id)
-            ->where('created_at', '>=', $startDate)
-            ->count();
+            $totalClicksAllTime = Click::where('affiliate_id', $user->id)->count();
 
-        $pendingConversions = Conversion::where('affiliate_id', $user->id)
-            ->where('status', 'pending')
-            ->count();
+            // Conversions
+            $totalConversions = Conversion::where('affiliate_id', $user->id)
+                ->where('created_at', '>=', $startDate)
+                ->count();
 
-        $approvedConversions = Conversion::where('affiliate_id', $user->id)
-            ->where('status', 'approved')
-            ->count();
+            $pendingConversions = Conversion::where('affiliate_id', $user->id)
+                ->where('status', 'pending')
+                ->count();
 
-        // Earnings
-        $pendingEarnings = Commission::where('affiliate_id', $user->id)
-            ->where('status', 'pending')
-            ->sum('amount');
+            $approvedConversions = Conversion::where('affiliate_id', $user->id)
+                ->where('status', 'approved')
+                ->count();
 
-        $approvedEarnings = Commission::where('affiliate_id', $user->id)
-            ->where('status', 'approved')
-            ->sum('amount');
+            // Earnings
+            $pendingEarnings = Commission::where('affiliate_id', $user->id)
+                ->where('status', 'pending')
+                ->sum('amount');
 
-        $paidEarnings = Commission::where('affiliate_id', $user->id)
-            ->where('status', 'paid')
-            ->sum('amount');
+            $approvedEarnings = Commission::where('affiliate_id', $user->id)
+                ->where('status', 'approved')
+                ->sum('amount');
 
-        $totalEarnings = $pendingEarnings + $approvedEarnings + $paidEarnings;
+            $paidEarnings = Commission::where('affiliate_id', $user->id)
+                ->where('status', 'paid')
+                ->sum('amount');
 
-        // Conversion Rate
-        $conversionRate = $totalClicks > 0 ? ($totalConversions / $totalClicks) * 100 : 0;
+            $totalEarnings = $pendingEarnings + $approvedEarnings + $paidEarnings;
 
-        // Top Performing Offers
-        $topOffers = Click::where('clicks.affiliate_id', $user->id)
-            ->where('clicks.created_at', '>=', $startDate)
-            ->join('offers', 'clicks.offer_id', '=', 'offers.id')
-            ->select(
-                'offers.id',
-                'offers.name',
-                'offers.thumbnail',
-                DB::raw('COUNT(clicks.id) as clicks'),
-                DB::raw('SUM(clicks.is_converted) as conversions')
-            )
-            ->groupBy('offers.id', 'offers.name', 'offers.thumbnail')
-            ->orderByDesc('clicks')
-            ->limit(5)
-            ->get();
+            // Conversion Rate
+            $conversionRate = $totalClicks > 0 ? ($totalConversions / $totalClicks) * 100 : 0;
 
-        // Traffic Sources
-        $trafficSources = Click::where('affiliate_id', $user->id)
-            ->where('created_at', '>=', $startDate)
-            ->whereNotNull('referrer')
-            ->select(
-                DB::raw('COALESCE(referrer, "Direct") as source'),
-                DB::raw('COUNT(*) as count')
-            )
-            ->groupBy('referrer')
-            ->orderByDesc('count')
-            ->limit(5)
-            ->get();
+            // Top Performing Offers
+            $topOffers = Click::where('clicks.affiliate_id', $user->id)
+                ->where('clicks.created_at', '>=', $startDate)
+                ->join('offers', 'clicks.offer_id', '=', 'offers.id')
+                ->select(
+                    'offers.id',
+                    'offers.name',
+                    'offers.thumbnail',
+                    DB::raw('COUNT(clicks.id) as clicks'),
+                    DB::raw('SUM(clicks.is_converted) as conversions')
+                )
+                ->groupBy('offers.id', 'offers.name', 'offers.thumbnail')
+                ->orderByDesc('clicks')
+                ->limit(5)
+                ->get();
 
-        // Geographic Performance
-        $geoPerformance = Click::where('affiliate_id', $user->id)
-            ->where('created_at', '>=', $startDate)
-            ->whereNotNull('country_name')
-            ->select(
-                'country_name',
-                'country_code',
-                DB::raw('COUNT(*) as clicks'),
-                DB::raw('SUM(is_converted) as conversions')
-            )
-            ->groupBy('country_name', 'country_code')
-            ->orderByDesc('clicks')
-            ->limit(10)
-            ->get();
+            // Traffic Sources
+            $trafficSources = Click::where('affiliate_id', $user->id)
+                ->where('created_at', '>=', $startDate)
+                ->whereNotNull('referrer')
+                ->select(
+                    DB::raw('COALESCE(referrer, "Direct") as source'),
+                    DB::raw('COUNT(*) as count')
+                )
+                ->groupBy('referrer')
+                ->orderByDesc('count')
+                ->limit(5)
+                ->get();
 
-        // Daily Stats for Chart (last 30 days)
-        $dailyStats = Click::where('affiliate_id', $user->id)
-            ->where('created_at', '>=', now()->subDays(30))
-            ->select(
-                DB::raw('DATE(created_at) as date'),
-                DB::raw('COUNT(*) as clicks'),
-                DB::raw('SUM(is_converted) as conversions')
-            )
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
+            // Geographic Performance
+            $geoPerformance = Click::where('affiliate_id', $user->id)
+                ->where('created_at', '>=', $startDate)
+                ->whereNotNull('country_name')
+                ->select(
+                    'country_name',
+                    'country_code',
+                    DB::raw('COUNT(*) as clicks'),
+                    DB::raw('SUM(is_converted) as conversions')
+                )
+                ->groupBy('country_name', 'country_code')
+                ->orderByDesc('clicks')
+                ->limit(10)
+                ->get();
 
-        // Referral Cap Status
+            // Daily Stats for Chart (last 30 days)
+            $dailyStats = Click::where('affiliate_id', $user->id)
+                ->where('created_at', '>=', now()->subDays(30))
+                ->select(
+                    DB::raw('DATE(created_at) as date'),
+                    DB::raw('COUNT(*) as clicks'),
+                    DB::raw('SUM(is_converted) as conversions')
+                )
+                ->groupBy('date')
+                ->orderBy('date')
+                ->get();
+
+            return compact(
+                'totalClicks', 'totalClicksAllTime', 'totalConversions',
+                'pendingConversions', 'approvedConversions', 'pendingEarnings',
+                'approvedEarnings', 'paidEarnings', 'totalEarnings', 'conversionRate',
+                'topOffers', 'trafficSources', 'geoPerformance', 'dailyStats'
+            );
+        });
+
+        // Referral cap data is always fresh (reads from the user model, no extra queries)
         $referralCapData = null;
         if ($user->parent_affiliate_id !== null || $user->referral_earnings > 0) {
             $referralCapData = [
@@ -133,23 +145,23 @@ class DashboardController extends Controller
 
         return Inertia::render('Affiliate/Dashboard', [
             'stats' => [
-                'totalClicks' => $totalClicks,
-                'totalClicksAllTime' => $totalClicksAllTime,
-                'totalConversions' => $totalConversions,
-                'pendingConversions' => $pendingConversions,
-                'approvedConversions' => $approvedConversions,
-                'conversionRate' => round($conversionRate, 2),
-                'pendingEarnings' => $pendingEarnings,
-                'approvedEarnings' => $approvedEarnings,
-                'paidEarnings' => $paidEarnings,
-                'totalEarnings' => $totalEarnings,
+                'totalClicks' => $cached['totalClicks'],
+                'totalClicksAllTime' => $cached['totalClicksAllTime'],
+                'totalConversions' => $cached['totalConversions'],
+                'pendingConversions' => $cached['pendingConversions'],
+                'approvedConversions' => $cached['approvedConversions'],
+                'conversionRate' => round($cached['conversionRate'], 2),
+                'pendingEarnings' => $cached['pendingEarnings'],
+                'approvedEarnings' => $cached['approvedEarnings'],
+                'paidEarnings' => $cached['paidEarnings'],
+                'totalEarnings' => $cached['totalEarnings'],
                 'balance' => $user->balance,
                 'lifetimeEarnings' => $user->lifetime_earnings,
             ],
-            'topOffers' => $topOffers,
-            'trafficSources' => $trafficSources,
-            'geoPerformance' => $geoPerformance,
-            'dailyStats' => $dailyStats,
+            'topOffers' => $cached['topOffers'],
+            'trafficSources' => $cached['trafficSources'],
+            'geoPerformance' => $cached['geoPerformance'],
+            'dailyStats' => $cached['dailyStats'],
             'dateRange' => $dateRange,
             'referralCapData' => $referralCapData,
             'mustAgree' => is_null($user->affiliate_agreement_agreed_at),

@@ -59,7 +59,9 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-purple-100 text-sm font-medium">Subscription Revenue (Month)</p>
-                                <p class="text-white text-3xl font-bold mt-2">₦{{ formatNumber(stats.revenue_this_month) }}</p>
+                                <p class="text-white text-3xl font-bold mt-2">₦{{ formatNumber(stats.subscription_revenue) }}</p>
+                                <p class="text-purple-200 text-xs mt-1">Order GMV: {{ formatNumber(stats.order_revenue_month) }} <span class="opacity-70">(multi-currency)</span></p>
+                                <p class="text-purple-200 text-xs">Platform Fees: {{ formatNumber(stats.platform_fees_month) }} <span class="opacity-70">(multi-currency)</span></p>
                             </div>
                             <div class="bg-white/20 p-3 rounded-lg">
                                 <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

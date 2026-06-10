@@ -81,11 +81,32 @@
                     </div>
                     <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
                         <p class="text-gray-500 text-xs font-medium uppercase tracking-wider">Total Revenue</p>
-                        <p class="text-gray-900 text-3xl font-bold mt-2">&#8358;{{ formatNumber(stats.total_revenue) }}</p>
+                        <p class="text-gray-900 text-3xl font-bold mt-2">{{ currencySymbol }}{{ formatNumber(stats.total_revenue) }}</p>
+                        <p class="text-green-600 text-sm mt-1">This month: {{ currencySymbol }}{{ formatNumber(stats.revenue_this_month) }}</p>
                     </div>
                     <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-                        <p class="text-gray-500 text-xs font-medium uppercase tracking-wider">This Month</p>
-                        <p class="text-gray-900 text-3xl font-bold mt-2">&#8358;{{ formatNumber(stats.revenue_this_month) }}</p>
+                        <p class="text-gray-500 text-xs font-medium uppercase tracking-wider">Platform Fees</p>
+                        <p class="text-gray-900 text-3xl font-bold mt-2">{{ currencySymbol }}{{ formatNumber(stats.platform_fees_collected) }}</p>
+                        <p class="text-gray-400 text-sm mt-1">{{ stats.platform_fee_percentage }}% fee rate</p>
+                    </div>
+                </div>
+
+                <!-- Financial Breakdown -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
+                        <p class="text-emerald-700 text-xs font-semibold uppercase tracking-wider">Advertiser Earnings</p>
+                        <p class="text-emerald-900 text-2xl font-bold mt-2">{{ currencySymbol }}{{ formatNumber(stats.advertiser_net_total) }}</p>
+                        <p class="text-emerald-600 text-xs mt-1">Net after fees &amp; commissions</p>
+                    </div>
+                    <div class="bg-violet-50 border border-violet-200 rounded-xl p-5">
+                        <p class="text-violet-700 text-xs font-semibold uppercase tracking-wider">Affiliate Commissions</p>
+                        <p class="text-violet-900 text-2xl font-bold mt-2">{{ currencySymbol }}{{ formatNumber(stats.affiliate_commissions) }}</p>
+                        <p class="text-violet-600 text-xs mt-1">Paid to affiliates</p>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-5">
+                        <p class="text-amber-700 text-xs font-semibold uppercase tracking-wider">Discount Total</p>
+                        <p class="text-amber-900 text-2xl font-bold mt-2">{{ currencySymbol }}{{ formatNumber(stats.discount_total) }}</p>
+                        <p class="text-amber-600 text-xs mt-1">Total discount codes applied</p>
                     </div>
                 </div>
 
@@ -128,6 +149,14 @@
                             <div class="flex justify-between py-2.5">
                                 <dt class="text-sm text-gray-500">Billing Cycle</dt>
                                 <dd class="text-sm text-gray-900 capitalize">{{ store.billing_cycle }}</dd>
+                            </div>
+                            <div class="flex justify-between py-2.5">
+                                <dt class="text-sm text-gray-500">Currency</dt>
+                                <dd class="text-sm text-gray-900 flex items-center gap-2">
+                                    <span class="font-semibold">{{ store.currency || 'NGN' }}</span>
+                                    <span class="text-gray-400">{{ currencySymbol }}</span>
+                                    <Link :href="route('admin.stores.edit', store.id)" class="text-xs text-blue-500 hover:underline">Change</Link>
+                                </dd>
                             </div>
                             <div class="flex justify-between py-2.5">
                                 <dt class="text-sm text-gray-500">Theme</dt>
@@ -247,8 +276,8 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900 font-medium">&#8358;{{ formatNumber(product.price) }}</div>
-                                            <div v-if="product.compare_at_price" class="text-xs text-gray-400 line-through">&#8358;{{ formatNumber(product.compare_at_price) }}</div>
+                                            <div class="text-sm text-gray-900 font-medium">{{ currencySymbol }}{{ formatNumber(product.price) }}</div>
+                                            <div v-if="product.compare_at_price" class="text-xs text-gray-400 line-through">{{ currencySymbol }}{{ formatNumber(product.compare_at_price) }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium"
                                             :class="product.stock_quantity === 0 ? 'text-red-600' : product.stock_quantity <= 5 ? 'text-orange-600' : 'text-gray-700'">
@@ -310,7 +339,7 @@
                                             <div class="text-sm text-gray-900">{{ order.customer_name }}</div>
                                             <div class="text-xs text-gray-500">{{ order.customer_email }}</div>
                                         </td>
-                                        <td class="px-6 py-4 text-sm font-semibold text-gray-900">&#8358;{{ formatNumber(order.total) }}</td>
+                                        <td class="px-6 py-4 text-sm font-semibold text-gray-900">{{ currencySymbol }}{{ formatNumber(order.total) }}</td>
                                         <td class="px-6 py-4">
                                             <span
                                                 class="px-2 py-1 text-xs rounded-full capitalize"
@@ -456,6 +485,7 @@
 import { ref, reactive, computed } from 'vue';
 import { router, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import { getCurrencySymbol, formatPrice } from '@/utils/currency';
 
 const props = defineProps({
     store: Object,
@@ -513,7 +543,8 @@ const extendSubscription = () => {
     });
 };
 
-const formatNumber = (num) => new Intl.NumberFormat('en-NG').format(num || 0);
+const formatNumber = (num) => formatPrice(num, props.store.currency ?? 'NGN');
+const currencySymbol = computed(() => getCurrencySymbol(props.store.currency ?? 'NGN'));
 
 const formatDate = (date) => {
     if (!date) return '\u2014';

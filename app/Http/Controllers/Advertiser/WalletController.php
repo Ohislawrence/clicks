@@ -58,32 +58,15 @@ class WalletController extends Controller
             'description' => 'Wallet top-up via Paystack',
         ]);
 
-        $result = $this->paystack->initializePayment(
-            email:       $user->email,
-            amount:      $amount,
-            reference:   $reference,
-            callbackUrl: route('advertiser.wallet.verify'),
-            metadata:    ['user_id' => $user->id, 'type' => 'wallet_deposit'],
-        );
-
-        if (!$result['success']) {
-            // Mark the pending transaction as failed so it doesn't clutter history
-            WalletTransaction::where('reference', $reference)->update(['status' => 'failed']);
-
-            Log::warning('Wallet deposit initiation failed', [
-                'user_id'   => $user->id,
-                'email'     => $user->email,
-                'amount'    => $amount,
-                'reference' => $reference,
-                'reason'    => $result['message'] ?? 'unknown',
-            ]);
-
-            return back()->withErrors([
-                'amount' => 'Could not initialize payment: ' . ($result['message'] ?? 'Please try again.'),
-            ]);
-        }
-
-        return Inertia::location($result['authorization_url']);
+        // Return metadata to the frontend so Paystack's inline JS can open the popup directly.
+        // This avoids a server-to-server call to api.paystack.co (which may be blocked by CDN/firewall).
+        return response()->json([
+            'reference'  => $reference,
+            'public_key' => config('services.paystack.public_key'),
+            'email'      => $user->email,
+            'amount'     => (int) ($amount * 100), // kobo
+            'verify_url' => route('advertiser.wallet.verify'),
+        ]);
     }
 
     /**

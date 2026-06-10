@@ -7,6 +7,7 @@
                 :src="product.images[0]"
                 :alt="product.name"
                 class="w-full h-full object-cover group-hover:scale-110 transition duration-500 ease-out"
+                loading="lazy"
             />
             <div v-else class="w-full h-full flex items-center justify-center text-neutral-400">
                 <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,6 +37,15 @@
                     </svg>
                     Featured
                 </span>
+                <span
+                    v-if="product.product_type === 'digital'"
+                    class="px-3 py-1.5 bg-gradient-to-r from-violet-500 to-purple-600 text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1"
+                >
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Digital
+                </span>
             </div>
 
             <!-- Out of Stock Overlay -->
@@ -58,10 +68,10 @@
             <!-- Price -->
             <div class="flex items-baseline space-x-2">
                 <span class="text-2xl font-bold" :style="{ color: primaryColor }">
-                    ₦{{ formatPrice(product.price) }}
+                    {{ currencySymbol }}{{ formatPrice(product.price) }}
                 </span>
                 <span v-if="product.compare_at_price" class="text-sm line-through opacity-40">
-                    ₦{{ formatPrice(product.compare_at_price) }}
+                    {{ currencySymbol }}{{ formatPrice(product.compare_at_price) }}
                 </span>
             </div>
 
@@ -88,6 +98,7 @@
 
 <script setup>
 import { computed } from 'vue';
+import { getCurrencySymbol, formatPrice as formatCurrencyPrice } from '@/utils/currency';
 
 const props = defineProps({
     product: {
@@ -97,6 +108,10 @@ const props = defineProps({
     primaryColor: {
         type: String,
         default: '#3B82F6',
+    },
+    currency: {
+        type: String,
+        default: 'NGN',
     },
     showButton: {
         type: Boolean,
@@ -119,9 +134,9 @@ const buttonStyles = computed(() => ({
     color: '#FFFFFF',
 }));
 
-const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-NG').format(price);
-};
+const currencySymbol = computed(() => getCurrencySymbol(props.currency));
+
+const formatPrice = (price) => formatCurrencyPrice(price, props.currency);
 
 const stripHtml = (html) => {
     if (!html) return '';

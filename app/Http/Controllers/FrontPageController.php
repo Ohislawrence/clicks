@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BlogPost;
+use App\Models\LmsCourse;
 use Illuminate\Http\Request;
 
 class FrontPageController extends Controller
@@ -18,7 +19,18 @@ class FrontPageController extends Controller
             ->limit(3)
             ->get();
 
-        return view('front.home', compact('latestPosts'));
+        $featuredCourses = LmsCourse::published()->featured()
+            ->withCount(['lessons', 'enrollments'])
+            ->orderBy('order')
+            ->limit(3)
+            ->get()
+            ->map(function ($c) {
+                $c->lesson_count = $c->lessons_count;
+                $c->enrollment_count = $c->enrollments_count;
+                return $c;
+            });
+
+        return view('front.home', compact('latestPosts', 'featuredCourses'));
     }
 
     /**

@@ -1043,6 +1043,66 @@
 </section>
 
 
+<section class="section py-28" style="background:#fff;border-top:1px solid var(--wire);" aria-label="Learning Center">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10">
+        <div class="mb-14 reveal">
+            <div class="eyebrow mb-5">Learning Center</div>
+            <div class="flex flex-wrap items-end justify-between gap-6">
+                <h2 class="display" style="font-size:clamp(26px,3.5vw,50px);">
+                    Learn to earn — <span style="color:#059669;">completely free</span>
+                </h2>
+                <a href="<?php echo e(route('learning.index')); ?>" class="btn-ghost-em" style="align-self:flex-end;">
+                    Browse all courses &rarr;
+                </a>
+            </div>
+            <p class="mt-5 text-base" style="color:var(--ash);max-width:620px;line-height:1.75;">
+                Free, practical courses curated for Nigerian affiliates and advertisers. No credit card, no catch — just knowledge that helps you earn more on <?php echo e(config('app.name')); ?>.
+            </p>
+        </div>
+
+        <?php if(isset($featuredCourses) && $featuredCourses->count() > 0): ?>
+        <div class="grid md:grid-cols-3 gap-8">
+            <?php $__currentLoopData = $featuredCourses->take(3); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $course): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <article class="card-lift reveal flex flex-col h-full" style="background:#fff;border:1px solid var(--wire);border-radius:20px;overflow:hidden;transition-delay:<?php echo e($i * 100); ?>ms;">
+                <a href="<?php echo e(route('learning.show', $course->slug)); ?>" class="block overflow-hidden relative group" style="height:200px;background:#eef2ff;">
+                    <?php if($course->thumbnail): ?>
+                        <img src="<?php echo e(Storage::url($course->thumbnail)); ?>" alt="<?php echo e($course->title); ?>" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    <?php else: ?>
+                        <div class="w-full h-full flex items-center justify-center">
+                            <svg class="w-16 h-16" style="color:#c7d2fe;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        </div>
+                    <?php endif; ?>
+                    <div class="absolute top-3 left-3">
+                        <span style="background:rgba(5,150,105,0.9);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:0.05em;">FREE</span>
+                    </div>
+                </a>
+                <div style="padding:24px;flex:1;display:flex;flex-direction:column;">
+                    <p class="eyebrow mb-2" style="font-size:10px;"><?php echo e($course->category ?: 'Course'); ?> · <span class="capitalize"><?php echo e($course->level); ?></span></p>
+                    <a href="<?php echo e(route('learning.show', $course->slug)); ?>" style="font-family:var(--fd);font-size:17px;font-weight:700;color:var(--ink);text-decoration:none;line-height:1.35;margin-bottom:10px;display:block;" onmouseover="this.style.color='#059669'" onmouseout="this.style.color='var(--ink)'">
+                        <?php echo e($course->title); ?>
+
+                    </a>
+                    <p style="font-size:13px;color:var(--ash);line-height:1.65;flex:1;"><?php echo e(Str::limit($course->description, 90)); ?></p>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:16px;border-top:1px solid var(--wire);font-size:12px;color:var(--stone);">
+                        <span><?php echo e($course->lesson_count); ?> lessons · <?php echo e($course->duration_minutes); ?>min</span>
+                        <a href="<?php echo e(route('learning.show', $course->slug)); ?>" style="color:#059669;font-weight:600;">View →</a>
+                    </div>
+                </div>
+            </article>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </div>
+        <?php endif; ?>
+
+        <div class="text-center mt-14 reveal">
+            <a href="<?php echo e(route('learning.index')); ?>" class="btn-em">
+                Browse all free courses
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M3 7.5h9M8 4l3.5 3.5L8 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+        </div>
+    </div>
+</section>
+
+
 <?php if($latestPosts && $latestPosts->count() > 0): ?>
 <section class="section py-28" style="background:#fff;border-top:1px solid var(--wire);" aria-label="Latest from blog">
     <div class="max-w-7xl mx-auto px-6 lg:px-10">
