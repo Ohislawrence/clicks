@@ -1,5 +1,60 @@
+<?php
+    $ogImage    = $course->thumbnail ? url(Storage::url($course->thumbnail)) : asset('images/clicksintel-frontpage.PNG');
+    $ogTitle    = $course->title . ' — Free Course on ' . config('app.name');
+    $ogDesc     = Str::limit($course->description, 160);
+    $metaKeys   = implode(', ', array_filter([$course->category, ucfirst($course->level) . ' course', 'affiliate marketing', 'free online course', 'performance marketing', config('app.name')]));
+    $canonUrl   = route('learning.show', $course->slug);
+    $schemaAud  = match($course->audience) {
+        'affiliate'  => 'Affiliates',
+        'advertiser' => 'Advertisers',
+        default      => 'Affiliates and Advertisers',
+    };
+?>
+
 <?php $__env->startSection('title', $course->title . ' — Free Course — ' . config('app.name')); ?>
-<?php $__env->startSection('meta_description', Str::limit($course->description, 160)); ?>
+<?php $__env->startSection('meta_description', $ogDesc); ?>
+<?php $__env->startSection('meta_keywords', $metaKeys); ?>
+<?php $__env->startSection('canonical', $canonUrl); ?>
+
+<?php $__env->startSection('og_type', 'website'); ?>
+<?php $__env->startSection('og_url', $canonUrl); ?>
+<?php $__env->startSection('og_title', $ogTitle); ?>
+<?php $__env->startSection('og_description', $ogDesc); ?>
+<?php $__env->startSection('og_image', $ogImage); ?>
+
+<?php $__env->startSection('twitter_url', $canonUrl); ?>
+<?php $__env->startSection('twitter_title', $ogTitle); ?>
+<?php $__env->startSection('twitter_description', $ogDesc); ?>
+<?php $__env->startSection('twitter_image', $ogImage); ?>
+
+<?php $__env->startPush('structured_data'); ?>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Course",
+  "name": <?php echo e(Js::from($course->title)); ?>,
+  "description": <?php echo e(Js::from(Str::limit($course->description, 300))); ?>,
+  "url": "<?php echo e($canonUrl); ?>",
+  "image": "<?php echo e($ogImage); ?>",
+  "isAccessibleForFree": true,
+  "educationalLevel": "<?php echo e(ucfirst($course->level)); ?>",
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "<?php echo e($schemaAud); ?>"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": <?php echo e(Js::from(config('app.name'))); ?>,
+    "url": "<?php echo e(url('/')); ?>"
+  },
+  "hasCourseInstance": {
+    "@type": "CourseInstance",
+    "courseMode": "online",
+    "courseWorkload": "PT<?php echo e($course->duration_minutes ?? 0); ?>M"
+  }
+}
+</script>
+<?php $__env->stopPush(); ?>
 
 <?php $__env->startSection('content'); ?>
 

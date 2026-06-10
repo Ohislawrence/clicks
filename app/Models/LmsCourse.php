@@ -21,16 +21,18 @@ class LmsCourse extends Model
         'duration_minutes',
         'is_published',
         'is_featured',
+        'pass_score',
         'order',
         'created_by',
     ];
 
     protected $casts = [
-        'is_published' => 'boolean',
-        'is_featured' => 'boolean',
+        'is_published'     => 'boolean',
+        'is_featured'      => 'boolean',
         'duration_minutes' => 'integer',
-        'order' => 'integer',
-        'what_you_learn' => 'array',
+        'order'            => 'integer',
+        'pass_score'       => 'integer',
+        'what_you_learn'   => 'array',
     ];
 
     protected static function boot()
@@ -57,6 +59,11 @@ class LmsCourse extends Model
     public function enrollments(): HasMany
     {
         return $this->hasMany(LmsEnrollment::class);
+    }
+
+    public function quiz(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(LmsQuiz::class, 'lms_course_id');
     }
 
     public function creator(): BelongsTo

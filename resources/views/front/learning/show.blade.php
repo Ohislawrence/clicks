@@ -1,7 +1,62 @@
 @extends('layouts.front')
 
+@php
+    $ogImage    = $course->thumbnail ? url(Storage::url($course->thumbnail)) : asset('images/clicksintel-frontpage.PNG');
+    $ogTitle    = $course->title . ' — Free Course on ' . config('app.name');
+    $ogDesc     = Str::limit($course->description, 160);
+    $metaKeys   = implode(', ', array_filter([$course->category, ucfirst($course->level) . ' course', 'affiliate marketing', 'free online course', 'performance marketing', config('app.name')]));
+    $canonUrl   = route('learning.show', $course->slug);
+    $schemaAud  = match($course->audience) {
+        'affiliate'  => 'Affiliates',
+        'advertiser' => 'Advertisers',
+        default      => 'Affiliates and Advertisers',
+    };
+@endphp
+
 @section('title', $course->title . ' — Free Course — ' . config('app.name'))
-@section('meta_description', Str::limit($course->description, 160))
+@section('meta_description', $ogDesc)
+@section('meta_keywords', $metaKeys)
+@section('canonical', $canonUrl)
+
+@section('og_type', 'website')
+@section('og_url', $canonUrl)
+@section('og_title', $ogTitle)
+@section('og_description', $ogDesc)
+@section('og_image', $ogImage)
+
+@section('twitter_url', $canonUrl)
+@section('twitter_title', $ogTitle)
+@section('twitter_description', $ogDesc)
+@section('twitter_image', $ogImage)
+
+@push('structured_data')
+<script type="application/ld+json">
+{
+  "@@context": "https://schema.org",
+  "@@type": "Course",
+  "name": {{ Js::from($course->title) }},
+  "description": {{ Js::from(Str::limit($course->description, 300)) }},
+  "url": "{{ $canonUrl }}",
+  "image": "{{ $ogImage }}",
+  "isAccessibleForFree": true,
+  "educationalLevel": "{{ ucfirst($course->level) }}",
+  "audience": {
+    "@@type": "Audience",
+    "audienceType": "{{ $schemaAud }}"
+  },
+  "provider": {
+    "@@type": "Organization",
+    "name": {{ Js::from(config('app.name')) }},
+    "url": "{{ url('/') }}"
+  },
+  "hasCourseInstance": {
+    "@@type": "CourseInstance",
+    "courseMode": "online",
+    "courseWorkload": "PT{{ $course->duration_minutes ?? 0 }}M"
+  }
+}
+</script>
+@endpush
 
 @section('content')
 

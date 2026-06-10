@@ -2,6 +2,19 @@
 
 @section('title', 'Free Learning Center — ' . config('app.name'))
 @section('meta_description', 'Free courses for affiliates and advertisers on ' . config('app.name') . '. Learn affiliate marketing, e-commerce, and digital sales — at your own pace.')
+@section('meta_keywords', 'free affiliate marketing course, performance marketing training, CPA network training, affiliate income Nigeria, ' . config('app.name') . ' learning center')
+@section('canonical', route('learning.index'))
+
+@section('og_type', 'website')
+@section('og_url', route('learning.index'))
+@section('og_title', 'Free Learning Center — ' . config('app.name'))
+@section('og_description', 'Free courses for affiliates and advertisers. Learn affiliate marketing, e-commerce, and digital sales — at your own pace.')
+@section('og_image', asset('images/clicksintel-frontpage.PNG'))
+
+@section('twitter_url', route('learning.index'))
+@section('twitter_title', 'Free Learning Center — ' . config('app.name'))
+@section('twitter_description', 'Free courses for affiliates and advertisers. Learn affiliate marketing, e-commerce, and digital sales — at your own pace.')
+@section('twitter_image', asset('images/clicksintel-frontpage.PNG'))
 
 @section('content')
 

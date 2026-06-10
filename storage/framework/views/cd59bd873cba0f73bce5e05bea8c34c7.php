@@ -1,5 +1,18 @@
 <?php $__env->startSection('title', 'Free Learning Center — ' . config('app.name')); ?>
 <?php $__env->startSection('meta_description', 'Free courses for affiliates and advertisers on ' . config('app.name') . '. Learn affiliate marketing, e-commerce, and digital sales — at your own pace.'); ?>
+<?php $__env->startSection('meta_keywords', 'free affiliate marketing course, performance marketing training, CPA network training, affiliate income Nigeria, ' . config('app.name') . ' learning center'); ?>
+<?php $__env->startSection('canonical', route('learning.index')); ?>
+
+<?php $__env->startSection('og_type', 'website'); ?>
+<?php $__env->startSection('og_url', route('learning.index')); ?>
+<?php $__env->startSection('og_title', 'Free Learning Center — ' . config('app.name')); ?>
+<?php $__env->startSection('og_description', 'Free courses for affiliates and advertisers. Learn affiliate marketing, e-commerce, and digital sales — at your own pace.'); ?>
+<?php $__env->startSection('og_image', asset('images/clicksintel-frontpage.PNG')); ?>
+
+<?php $__env->startSection('twitter_url', route('learning.index')); ?>
+<?php $__env->startSection('twitter_title', 'Free Learning Center — ' . config('app.name')); ?>
+<?php $__env->startSection('twitter_description', 'Free courses for affiliates and advertisers. Learn affiliate marketing, e-commerce, and digital sales — at your own pace.'); ?>
+<?php $__env->startSection('twitter_image', asset('images/clicksintel-frontpage.PNG')); ?>
 
 <?php $__env->startSection('content'); ?>
 

@@ -165,6 +165,34 @@
                                         </div>
                                     </template>
                                 </li>
+
+                                <!-- Final Quiz row -->
+                                <li v-if="quiz">
+                                    <template v-if="isEnrolled">
+                                        <Link
+                                            :href="route('lms.quiz', course.slug)"
+                                            class="flex items-center gap-3 px-5 py-3 hover:bg-indigo-50 transition-colors border-t-2 border-indigo-100"
+                                        >
+                                            <span class="text-xs text-gray-400 w-5">✦</span>
+                                            <svg class="w-4 h-4 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <span class="text-sm text-indigo-700 font-medium flex-1">{{ quiz.title }}</span>
+                                            <span v-if="quizPassed" class="text-xs bg-green-100 text-green-700 font-semibold px-2 py-0.5 rounded-full">Passed</span>
+                                            <span v-else class="text-xs text-indigo-500">Final Quiz</span>
+                                        </Link>
+                                    </template>
+                                    <template v-else>
+                                        <div class="flex items-center gap-3 px-5 py-3 opacity-50 border-t-2 border-indigo-100">
+                                            <span class="text-xs text-gray-400 w-5">✦</span>
+                                            <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                            </svg>
+                                            <span class="text-sm text-gray-600 flex-1">{{ quiz.title }}</span>
+                                            <span class="text-xs text-gray-400">Enroll to unlock</span>
+                                        </div>
+                                    </template>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -180,11 +208,13 @@ import { Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps({
-    course: Object,
-    lessons: Array,
+    course:     Object,
+    lessons:    Array,
     isEnrolled: Boolean,
-    progress: Number,
-    completed: Boolean,
+    progress:   Number,
+    completed:  Boolean,
+    quiz:       Object,   // null if no quiz exists
+    quizPassed: Boolean,
 });
 
 const firstUncompletedLesson = computed(() =>

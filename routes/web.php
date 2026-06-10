@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\SpreadController as AdminSpreadController;
 use App\Http\Controllers\Admin\DeepseekController as AdminDeepseekController;
 use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 use App\Http\Controllers\Admin\LmsCourseController as AdminLmsCourseController;
+use App\Http\Controllers\Lms\QuizController as LmsQuizController;
 use App\Http\Controllers\Admin\LmsLessonController as AdminLmsLessonController;
 use App\Http\Controllers\Lms\CourseController as LmsCourseController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -445,6 +446,11 @@ Route::middleware([
         Route::delete('/courses/{course}/lessons/{lesson}', [AdminLmsLessonController::class, 'destroy'])->name('courses.lessons.destroy');
         Route::post('/courses/{course}/lessons/reorder', [AdminLmsLessonController::class, 'reorder'])->name('courses.lessons.reorder');
         Route::post('/courses/{course}/lessons/generate-content', [AdminLmsLessonController::class, 'generateContent'])->name('courses.lessons.generate-content');
+
+        // Quiz management (one quiz per course)
+        Route::get('/courses/{course}/quiz', [\App\Http\Controllers\Admin\LmsQuizController::class, 'edit'])->name('courses.quiz.edit');
+        Route::put('/courses/{course}/quiz', [\App\Http\Controllers\Admin\LmsQuizController::class, 'update'])->name('courses.quiz.update');
+        Route::delete('/courses/{course}/quiz', [\App\Http\Controllers\Admin\LmsQuizController::class, 'destroy'])->name('courses.quiz.destroy');
     });
 });
 
@@ -459,6 +465,8 @@ Route::middleware([
     Route::get('/', [LmsCourseController::class, 'index'])->name('index');
     Route::get('/{course:slug}', [LmsCourseController::class, 'show'])->name('show');
     Route::post('/{course:slug}/enroll', [LmsCourseController::class, 'enroll'])->name('enroll');
+    Route::get('/{course:slug}/quiz', [LmsQuizController::class, 'show'])->name('quiz');
+    Route::post('/{course:slug}/quiz/submit', [LmsQuizController::class, 'submit'])->name('quiz.submit');
     Route::get('/{course:slug}/{lesson:slug}', [LmsCourseController::class, 'lesson'])->name('lesson');
     Route::post('/{course:slug}/{lesson:slug}/complete', [LmsCourseController::class, 'complete'])->name('complete');
 });

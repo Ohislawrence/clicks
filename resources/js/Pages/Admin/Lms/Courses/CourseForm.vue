@@ -83,22 +83,44 @@
                         <img v-else-if="course?.thumbnail" :src="`/storage/${course.thumbnail}`" class="mt-2 h-32 rounded-lg object-cover" alt="Current thumbnail" />
                     </div>
 
-                    <!-- Order -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Display Order</label>
-                        <input v-model.number="form.order" type="number" min="0" class="w-32 rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500" />
+                    <!-- Display Order + Pass Score -->
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Display Order</label>
+                            <input v-model.number="form.order" type="number" min="0" class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Quiz Pass Score (%)
+                                <span class="font-normal text-gray-400 ml-1">— score needed to pass the final quiz</span>
+                            </label>
+                            <input v-model.number="form.pass_score" type="number" min="0" max="100" class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500" placeholder="80" />
+                        </div>
                     </div>
 
                     <!-- Toggles -->
-                    <div class="flex flex-wrap gap-8">
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input v-model="form.is_published" type="checkbox" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 w-5 h-5" />
-                            <span class="text-sm font-medium text-gray-700">Published</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input v-model="form.is_featured" type="checkbox" class="rounded border-gray-300 text-yellow-500 focus:ring-yellow-400 w-5 h-5" />
-                            <span class="text-sm font-medium text-gray-700">Featured</span>
-                        </label>
+                    <div class="space-y-3">
+                        <div class="flex flex-wrap gap-8">
+                            <div>
+                                <label class="flex items-center gap-3" :class="canPublish ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'">
+                                    <input
+                                        v-model="form.is_published"
+                                        type="checkbox"
+                                        class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 w-5 h-5"
+                                        :disabled="!canPublish"
+                                    />
+                                    <span class="text-sm font-medium text-gray-700">Published</span>
+                                </label>
+                                <p v-if="!canPublish" class="mt-1 text-xs text-amber-600">
+                                    {{ isEdit ? 'Add at least one published lesson to enable publishing.' : 'Save the course first, then add lessons before publishing.' }}
+                                </p>
+                                <p v-if="errors.is_published" class="mt-1 text-xs text-red-600">{{ errors.is_published }}</p>
+                            </div>
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input v-model="form.is_featured" type="checkbox" class="rounded border-gray-300 text-yellow-500 focus:ring-yellow-400 w-5 h-5" />
+                                <span class="text-sm font-medium text-gray-700">Featured</span>
+                            </label>
+                        </div>
                     </div>
 
                     <!-- Submit -->
@@ -128,6 +150,13 @@ const props = defineProps({
 const isEdit = computed(() => !! props.course);
 const errors = computed(() => usePage().props.errors || {});
 
+// Publishing requires at least one published lesson — impossible on a brand-new course
+const canPublish = computed(() => {
+    if (! isEdit.value) return false;
+    const lessons = props.course?.lessons ?? [];
+    return lessons.some(l => l.is_published);
+});
+
 const form = ref({
     title:          props.course?.title ?? '',
     slug:           props.course?.slug ?? '',
@@ -138,6 +167,7 @@ const form = ref({
     level:          props.course?.level ?? 'beginner',
     is_published:   props.course?.is_published ?? false,
     is_featured:    props.course?.is_featured ?? false,
+    pass_score:     props.course?.pass_score ?? 80,
     order:          props.course?.order ?? 0,
     thumbnail:      null,
 });

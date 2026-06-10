@@ -1,1 +1,0 @@
-import{F as e,b as t}from"./index.esm-CneLIe1t.js";import n from"./CourseForm-CzC9knNh.js";var r={__name:`Create`,setup(r){return(r,i)=>(e(),t(n))}};export{r as default};

@@ -7,6 +7,7 @@ use App\Models\LmsCourse;
 use App\Models\LmsEnrollment;
 use App\Models\LmsLesson;
 use App\Models\LmsLessonProgress;
+use App\Models\LmsQuizAttempt;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -68,12 +69,24 @@ class CourseController extends Controller
                 return $lesson;
             });
 
+        $quiz = $course->quiz;
+        $quizPassed = false;
+
+        if ($quiz && $enrollment) {
+            $quizPassed = LmsQuizAttempt::where('lms_quiz_id', $quiz->id)
+                ->where('user_id', $user->id)
+                ->where('passed', true)
+                ->exists();
+        }
+
         return Inertia::render('Lms/Show', [
             'course'      => $course,
             'lessons'     => $lessons,
             'isEnrolled'  => (bool) $enrollment,
             'progress'    => $enrollment ? $enrollment->progress_percentage : 0,
             'completed'   => (bool) ($enrollment?->completed_at),
+            'quiz'        => $quiz ? ['id' => $quiz->id, 'title' => $quiz->title] : null,
+            'quizPassed'  => $quizPassed,
         ]);
     }
 

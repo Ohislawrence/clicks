@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\LmsCourse;
+use App\Models\User;
+use App\Notifications\NewCoursePublishedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -42,6 +44,7 @@ class LmsCourseController extends Controller
             'level'         => 'required|in:beginner,intermediate,advanced',
             'is_published'  => 'boolean',
             'is_featured'   => 'boolean',
+            'pass_score'    => 'integer|min:0|max:100',
             'order'         => 'integer|min:0',
         ]);
 
@@ -60,10 +63,13 @@ class LmsCourseController extends Controller
 
         $validated['created_by'] = auth()->id();
 
+        // Courses cannot be published at creation — no lessons exist yet.
+        $validated['is_published'] = false;
+
         LmsCourse::create($validated);
 
         return redirect()->route('admin.lms.courses.index')
-            ->with('success', 'Course created successfully.');
+            ->with('success', 'Course created. Add lessons before publishing.');
     }
 
     public function edit(LmsCourse $course)
@@ -87,11 +93,24 @@ class LmsCourseController extends Controller
             'level'         => 'required|in:beginner,intermediate,advanced',
             'is_published'  => 'boolean',
             'is_featured'   => 'boolean',
+            'pass_score'    => 'integer|min:0|max:100',
             'order'         => 'integer|min:0',
         ]);
 
         if (empty($validated['slug'])) {
             $validated['slug'] = Str::slug($validated['title']);
+        }
+
+        $wasPublished    = $course->is_published;
+        $wantsPublished  = (bool) ($validated['is_published'] ?? false);
+
+        if (! $wasPublished && $wantsPublished) {
+            $publishedLessonCount = $course->lessons()->where('is_published', true)->count();
+            if ($publishedLessonCount === 0) {
+                return back()
+                    ->withErrors(['is_published' => 'Add and publish at least one lesson before publishing the course.'])
+                    ->withInput();
+            }
         }
 
         if ($request->hasFile('thumbnail')) {
@@ -102,6 +121,10 @@ class LmsCourseController extends Controller
         }
 
         $course->update($validated);
+
+        if (! $wasPublished && $course->fresh()->is_published) {
+            $this->notifyUsers($course);
+        }
 
         return redirect()->route('admin.lms.courses.index')
             ->with('success', 'Course updated successfully.');
@@ -121,8 +144,38 @@ class LmsCourseController extends Controller
 
     public function toggle(LmsCourse $course)
     {
-        $course->update(['is_published' => ! $course->is_published]);
+        $publishing = ! $course->is_published;
 
-        return back()->with('success', 'Course status updated.');
+        if ($publishing) {
+            $publishedLessonCount = $course->lessons()->where('is_published', true)->count();
+            if ($publishedLessonCount === 0) {
+                return back()->with('error', 'Cannot publish a course with no published lessons. Add at least one lesson first.');
+            }
+        }
+
+        $course->update(['is_published' => $publishing]);
+
+        if ($publishing) {
+            $this->notifyUsers($course);
+        }
+
+        return back()->with('success', $publishing ? 'Course published and users notified.' : 'Course unpublished.');
+    }
+
+    private function notifyUsers(LmsCourse $course): void
+    {
+        $roles = match ($course->audience) {
+            'affiliate'  => ['affiliate'],
+            'advertiser' => ['advertiser'],
+            default      => ['affiliate', 'advertiser'],
+        };
+
+        User::role($roles)
+            ->where('is_active', true)
+            ->chunk(100, function ($users) use ($course) {
+                foreach ($users as $user) {
+                    $user->notify(new NewCoursePublishedNotification($course));
+                }
+            });
     }
 }

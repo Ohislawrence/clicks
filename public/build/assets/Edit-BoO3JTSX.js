@@ -1,1 +1,0 @@
-import{F as e,b as t}from"./index.esm-CneLIe1t.js";import n from"./Create-CKYu0KSG.js";var r={__name:`Edit`,props:{offer:Object,categories:Array},setup(r){return(i,a)=>(e(),t(n,{offer:r.offer,categories:r.categories},null,8,[`offer`,`categories`]))}};export{r as default};
