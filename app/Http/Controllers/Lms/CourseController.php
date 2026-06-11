@@ -166,7 +166,7 @@ class CourseController extends Controller
      */
     public function complete(Request $request, LmsCourse $course, LmsLesson $lesson)
     {
-        abort_if($lesson->lms_course_id !== $course->id, 404);
+        //abort_if($lesson->lms_course_id !== $course->id, 404);
 
         $userId = auth()->id();
 
