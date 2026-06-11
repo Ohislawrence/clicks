@@ -117,8 +117,8 @@ class CourseController extends Controller
      */
     public function lesson(LmsCourse $course, LmsLesson $lesson)
     {
-        //abort_if(! $course->is_published || ! $lesson->is_published, 404);
-        abort_if($lesson->lms_course_id !== $course->id, 404);
+        abort_if(! $course->is_published || ! $lesson->is_published, 404);
+        //abort_if($lesson->lms_course_id !== $course->id, 404);
 
         $user = auth()->user();
 
