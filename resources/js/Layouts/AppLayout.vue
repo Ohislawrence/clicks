@@ -61,8 +61,9 @@ const affiliateNavItems = [
     { name: 'Referrals', route: 'affiliate.referrals.index', match: 'affiliate.referrals.*', icon: 'M17 8V6a4 4 0 00-8 0v2a4 4 0 00-4 4v4a4 4 0 004 4h8a4 4 0 004-4v-4a4 4 0 00-4-4zm-6-2a2 2 0 114 0v2h-4V6zm6 12H9a2 2 0 01-2-2v-4a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2z' },
     { name: 'Reports', route: 'affiliate.reports.index', match: 'affiliate.reports.*', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
     { name: 'Payouts', route: 'affiliate.payouts.index', match: 'affiliate.payouts.*', icon: 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z' },
-    { name: 'Documentation', route: 'affiliate.documentation.index', match: 'affiliate.documentation.*', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' },
-    { name: 'Learning Center', route: 'lms.index', match: 'lms.*', icon: 'M9.663 17h4.673M12 3v1M6.343 6.343l-.707-.707M3 12H2m19 0h-1M6.343 17.657l-.707.707m11.657-11.314l-.707-.707M18 12a6 6 0 11-12 0 6 6 0 0112 0z' }
+    { name: 'Learning Center', route: 'lms.index', match: 'lms.*', icon: 'M9.663 17h4.673M12 3v1M6.343 6.343l-.707-.707M3 12H2m19 0h-1M6.343 17.657l-.707.707m11.657-11.314l-.707-.707M18 12a6 6 0 11-12 0 6 6 0 0112 0z' },
+    { name: 'Documentation', route: 'affiliate.documentation.index', match: 'affiliate.documentation.*', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' }
+
 ];
 
 const advertiserNavItems = [
@@ -74,8 +75,9 @@ const advertiserNavItems = [
     { name: 'My Stores', route: 'advertiser.store.index', match: 'advertiser.store.*', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
     { name: 'Sales Payouts', route: 'advertiser.payouts.sales.index', match: 'advertiser.payouts.sales.*', icon: 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z' },
     { name: 'Wallet', route: 'advertiser.wallet.index', match: 'advertiser.wallet.*', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
-    { name: 'Documentation', route: 'advertiser.documentation.index', match: 'advertiser.documentation.*', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' },
-    { name: 'Learning Center', route: 'lms.index', match: 'lms.*', icon: 'M9.663 17h4.673M12 3v1M6.343 6.343l-.707-.707M3 12H2m19 0h-1M6.343 17.657l-.707.707m11.657-11.314l-.707-.707M18 12a6 6 0 11-12 0 6 6 0 0112 0z' }
+    { name: 'Learning Center', route: 'lms.index', match: 'lms.*', icon: 'M9.663 17h4.673M12 3v1M6.343 6.343l-.707-.707M3 12H2m19 0h-1M6.343 17.657l-.707.707m11.657-11.314l-.707-.707M18 12a6 6 0 11-12 0 6 6 0 0112 0z' },
+    { name: 'Documentation', route: 'advertiser.documentation.index', match: 'advertiser.documentation.*', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' }
+
 ];
 
 const adminNavItems = [

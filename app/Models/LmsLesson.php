@@ -52,6 +52,15 @@ class LmsLesson extends Model
         return $this->belongsTo(LmsCourse::class, 'lms_course_id');
     }
 
+    /**
+     * Alias for route model binding scoping — Laravel looks for a relationship
+     * named after the parent class in camelCase (lmsCourse) to scope child bindings.
+     */
+    public function lmsCourse(): BelongsTo
+    {
+        return $this->course();
+    }
+
     public function progress(): HasMany
     {
         return $this->hasMany(LmsLessonProgress::class);

@@ -367,16 +367,16 @@ const updateRange = () => {
 const performanceSeries = computed(() => [
     {
         name: 'Clicks',
-        data: props.dailyStats.map(stat => stat.clicks)
+        data: (props.dailyStats ?? []).map(stat => stat.clicks)
     },
     {
         name: 'Conversions',
-        data: props.dailyStats.map(stat => stat.conversions)
+        data: (props.dailyStats ?? []).map(stat => stat.conversions)
     }
 ]);
 
 const performanceCategories = computed(() =>
-    props.dailyStats.map(stat => new Date(stat.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }))
+    (props.dailyStats ?? []).map(stat => new Date(stat.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }))
 );
 
 const formatCurrency = (amount) => {

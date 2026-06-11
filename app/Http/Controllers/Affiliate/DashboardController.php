@@ -115,7 +115,9 @@ class DashboardController extends Controller
                 )
                 ->groupBy('date')
                 ->orderBy('date')
-                ->get();
+                ->get()
+                ->values()
+                ->toArray(); // Convert to plain array before caching to avoid Collection deserialization issues
 
             return compact(
                 'totalClicks', 'totalClicksAllTime', 'totalConversions',
